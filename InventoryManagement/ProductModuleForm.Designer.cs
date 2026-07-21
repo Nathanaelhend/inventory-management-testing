@@ -46,6 +46,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.comboBoxCategory = new System.Windows.Forms.ComboBox();
             this.lblProductId = new System.Windows.Forms.Label();
+            this.txtCode = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.SuspendLayout();
@@ -92,7 +94,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(66, 171);
+            this.label6.Location = new System.Drawing.Point(63, 171);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(66, 13);
             this.label6.TabIndex = 26;
@@ -131,7 +133,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(77, 197);
+            this.label5.Location = new System.Drawing.Point(74, 197);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(55, 13);
             this.label5.TabIndex = 21;
@@ -147,7 +149,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(95, 145);
+            this.label4.Location = new System.Drawing.Point(92, 145);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(37, 13);
             this.label4.TabIndex = 19;
@@ -155,6 +157,7 @@
             // 
             // txtQty
             // 
+            this.txtQty.Enabled = false;
             this.txtQty.Location = new System.Drawing.Point(138, 112);
             this.txtQty.Name = "txtQty";
             this.txtQty.Size = new System.Drawing.Size(240, 20);
@@ -163,7 +166,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(80, 119);
+            this.label3.Location = new System.Drawing.Point(77, 119);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(52, 13);
             this.label3.TabIndex = 17;
@@ -179,7 +182,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(51, 93);
+            this.label2.Location = new System.Drawing.Point(48, 93);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(81, 13);
             this.label2.TabIndex = 15;
@@ -203,11 +206,30 @@
             this.lblProductId.Text = "Product Id";
             this.lblProductId.Visible = false;
             // 
+            // txtCode
+            // 
+            this.txtCode.Location = new System.Drawing.Point(138, 61);
+            this.txtCode.Name = "txtCode";
+            this.txtCode.Size = new System.Drawing.Size(240, 20);
+            this.txtCode.TabIndex = 38;
+            this.txtCode.Text = " ";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(51, 68);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(78, 13);
+            this.label7.TabIndex = 37;
+            this.label7.Text = "Product Code :";
+            // 
             // ProductModuleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(411, 248);
+            this.Controls.Add(this.txtCode);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.lblProductId);
             this.Controls.Add(this.comboBoxCategory);
             this.Controls.Add(this.panel1);
@@ -254,5 +276,7 @@
         private System.Windows.Forms.Label label2;
         public System.Windows.Forms.Label lblProductId;
         public System.Windows.Forms.ComboBox comboBoxCategory;
+        public System.Windows.Forms.TextBox txtCode;
+        private System.Windows.Forms.Label label7;
     }
 }

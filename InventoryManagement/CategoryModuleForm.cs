@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InventoryManagement.models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,15 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 
 namespace InventoryManagement
 {
     public partial class CategoryModuleForm : Form
     {
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""D:\IMS Program\dbMS.mdf"";Integrated Security=True;Connect Timeout=30");
-        SqlCommand cmd = new SqlCommand();
-
         public CategoryModuleForm()
         {
             InitializeComponent();
@@ -24,28 +21,6 @@ namespace InventoryManagement
         private void Clear()
         {
             txtName.Clear();
-        }
-
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (MessageBox.Show("Are you sure want to save Category?", "Save Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    cmd = new SqlCommand("INSERT INTO tbCategory(catname)VALUES(@catname)", con);
-                    cmd.Parameters.AddWithValue("@catname", txtName.Text);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("Category has been Saved!");
-                    Clear();
-                    this.Dispose();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
         }
 
         private void btnClear_Click(object sender, EventArgs e)
@@ -60,25 +35,46 @@ namespace InventoryManagement
             this.Dispose();
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
+        private async void btnUpdate_Click(object sender, EventArgs e)
         {
             try
             {
-                if(MessageBox.Show("Are you sure want to update this record?", "Saving Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    cmd = new SqlCommand("UPDATE tbCategory SET catname=@catname WHERE catid LIKE '" + lblCatId.Text + "'", con);
-                    cmd.Parameters.AddWithValue("@catname", txtName.Text);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("Category has been succesfully updated!");
-                    Clear();
-                    this.Dispose();
-                }
+                int id = Convert.ToInt32(lblCatId.Text);
+                string name = txtName.Text;
+
+                CategoryService service = new CategoryService();
+                await service.UpdateCategory(id, name);
+
+                MessageBox.Show("Category updated successfully");
+                this.Dispose();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async void btnSave_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (MessageBox.Show("Are you sure want to save this record?", "Saving record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    Category category = new Category
+                    {
+                        catname = txtName.Text,
+                    };
+
+                    CategoryService service = new CategoryService();
+                    await service.AddCategory(category);
+
+                    MessageBox.Show("Category successfully saved!");
+                    Clear();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Save failed: " + ex.Message);
             }
         }
     }

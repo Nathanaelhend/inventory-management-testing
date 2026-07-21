@@ -34,7 +34,6 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnAddCategory = new InventoryManagement.CustomerButton();
             this.label1 = new System.Windows.Forms.Label();
-            this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.catId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Edit = new System.Windows.Forms.DataGridViewImageColumn();
@@ -58,7 +57,6 @@
             this.dataGridCategory.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridCategory.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridCategory.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column7,
             this.catId,
             this.Column1,
             this.Edit,
@@ -110,13 +108,6 @@
             this.label1.Size = new System.Drawing.Size(150, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "Manage Category";
-            // 
-            // Column7
-            // 
-            this.Column7.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Column7.HeaderText = "No";
-            this.Column7.Name = "Column7";
-            this.Column7.Width = 48;
             // 
             // catId
             // 
@@ -172,7 +163,6 @@
         private System.Windows.Forms.Panel panel1;
         private CustomerButton btnAddCategory;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
         private System.Windows.Forms.DataGridViewTextBoxColumn catId;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewImageColumn Edit;

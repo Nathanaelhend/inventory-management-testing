@@ -1,40 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using InventoryManagement.models;
+using System;
 using System.Windows.Forms;
-using System.Data.SqlClient;
-using System.Xml.Linq;
 
 namespace InventoryManagement
 {
     public partial class ProductModuleForm : Form
     {
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""D:\IMS Program\dbMS.mdf"";Integrated Security=True;Connect Timeout=30");
-        SqlCommand cmd = new SqlCommand();
-        SqlDataReader dr;
-
         public ProductModuleForm()
         {
             InitializeComponent();
             LoadCategory();
         }
 
-        public void LoadCategory()
+        private async void LoadCategory()
         {
             comboBoxCategory.Items.Clear();
-            cmd = new SqlCommand("SELECT catname FROM tbCategory", con);
-            con.Open();
-            dr = cmd.ExecuteReader();
-            while (dr.Read()) {
-                comboBoxCategory.Items.Add(dr[0].ToString());
+
+            try
+            {
+                CategoryService service = new CategoryService();
+                var categories = await service.GetCategories();
+
+                foreach (var cat in categories)
+                {
+                    comboBoxCategory.Items.Add(new ComboboxItem
+                    {
+                        Text = cat.catname,
+                        Value = cat.catid,
+                    });
+                }
+
+                if (comboBoxCategory.Items.Count > 0)
+                    comboBoxCategory.SelectedIndex = 0;
             }
-            dr.Close();
-            con.Close();
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to load categories: " + ex.Message);
+            }
         }
 
         private void pictureBox3_Click(object sender, EventArgs e)
@@ -44,11 +46,16 @@ namespace InventoryManagement
 
         private void Clear()
         {
+            txtCode.Clear();
             txtProductName.Clear();
             txtPrice.Clear();
             txtDesc.Clear();
             txtQty.Clear();
-            comboBoxCategory.Items.Clear();
+
+            if (comboBoxCategory.Items.Count > 0)
+            {
+                comboBoxCategory.SelectedIndex = 0;
+            }
         }
 
         private void btnClear_Click(object sender, EventArgs e)
@@ -56,55 +63,74 @@ namespace InventoryManagement
             Clear();
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        private async void btnSave_Click(object sender, EventArgs e)
         {
             try
             {
                 if (MessageBox.Show("Are you sure you want to save this record?", "Saving Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    cmd = new SqlCommand("INSERT INTO tbProduct(pName,pQty,pPrice,pDescription,pCategory) VALUES(@pname,@pqty,@pprice,@pdescription,@pcategory)", con);
-                    cmd.Parameters.AddWithValue("@pname", txtProductName.Text);
-                    cmd.Parameters.AddWithValue("@pqty", Convert.ToInt16(txtQty.Text));
-                    cmd.Parameters.AddWithValue("@pprice", txtPrice.Text);
-                    cmd.Parameters.AddWithValue("@pdescription", txtDesc.Text);
-                    cmd.Parameters.AddWithValue("@pcategory", comboBoxCategory.Text);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("Product has been Successfully saved");
+                    var category = (ComboboxItem)comboBoxCategory.SelectedItem;
+
+                    Product product = new Product
+                    {
+                        pcode = txtCode.Text,
+                        pName = txtProductName.Text,
+                        pQty = 0,
+                        pPrice = Convert.ToInt32(txtPrice.Text),
+                        pDescription = txtDesc.Text,
+                        pCategory = (int)category.Value
+                    };
+
+                    ProductService service = new ProductService();
+                    await service.AddProduct(product);
+
+                    MessageBox.Show("Product successfully saved!");
                     Clear();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Save failed: " + ex.Message);
             }
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
+        private async void btnUpdate_Click(object sender, EventArgs e)
         {
             try
             {
-                if (MessageBox.Show("Are you sure want to update this record?", "Saving Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (string.IsNullOrWhiteSpace(txtCode.Text) ||
+                    string.IsNullOrWhiteSpace(txtProductName.Text) ||
+                    string.IsNullOrWhiteSpace(txtQty.Text) ||
+                    string.IsNullOrWhiteSpace(txtPrice.Text) ||
+                    comboBoxCategory.SelectedItem == null)
+                    {
+                        MessageBox.Show("Please fill all required fields!", "Validation Error",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                if (MessageBox.Show("Are you sure want to update this record?", "Update Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    cmd = new SqlCommand("UPDATE tbProduct SET pName=@pname, pQty=@pqty, pPrice=@pprice, pDescription=@pdescription, pCategory=@pcategory WHERE pId LIKE '" + lblProductId.Text + "'", con);
-                    cmd.Parameters.AddWithValue("@pname", txtProductName.Text);
-                    cmd.Parameters.AddWithValue("@pqty", Convert.ToInt16(txtQty.Text));
-                    cmd.Parameters.AddWithValue("@pprice", txtPrice.Text);
-                    cmd.Parameters.AddWithValue("@pdescription", txtDesc.Text);
-                    cmd.Parameters.AddWithValue("@pcategory", comboBoxCategory.Text);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("Product has been succesfully updated!");
-                    Clear();
-                    this.Dispose();
+                    var category = (ComboboxItem)comboBoxCategory.SelectedItem;
+
+                    Product product = new Product
+                    {
+                        pcode = txtCode.Text,
+                        pName = txtProductName.Text,
+                        pQty = Convert.ToInt32(txtQty.Text),
+                        pPrice = Convert.ToInt32(txtPrice.Text),
+                        pDescription = txtDesc.Text,
+                        pCategory = (int)category.Value
+                    };
+
+                    ProductService service = new ProductService();
+                    await service.UpdateProduct(product.pcode, product);
+                    MessageBox.Show("Update Successfully");
+                    this.Close();
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            catch(Exception ex) {
+                MessageBox.Show("Update failed: " + ex.Message);
+                }
         }
     }
 }

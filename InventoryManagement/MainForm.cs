@@ -63,6 +63,11 @@ namespace InventoryManagement
         {
             openChildForm(new OrderForm());
         }
+
+        private void btnCOA_Click(object sender, EventArgs e)
+        {
+            openChildForm(new PurchaseForm());
+        }
     }
 }
     

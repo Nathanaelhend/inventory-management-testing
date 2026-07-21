@@ -45,6 +45,7 @@
             this.btnClear = new System.Windows.Forms.Button();
             this.txtRePass = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.lbliduser = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.SuspendLayout();
@@ -192,11 +193,22 @@
             this.label6.TabIndex = 12;
             this.label6.Text = "Re-type Password :";
             // 
+            // lbliduser
+            // 
+            this.lbliduser.AutoSize = true;
+            this.lbliduser.Location = new System.Drawing.Point(12, 226);
+            this.lbliduser.Name = "lbliduser";
+            this.lbliduser.Size = new System.Drawing.Size(35, 13);
+            this.lbliduser.TabIndex = 14;
+            this.lbliduser.Text = "userid";
+            this.lbliduser.Visible = false;
+            // 
             // UserModuleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(411, 248);
+            this.Controls.Add(this.lbliduser);
             this.Controls.Add(this.txtRePass);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.btnClear);
@@ -241,5 +253,6 @@
         public System.Windows.Forms.TextBox txtPhone;
         public System.Windows.Forms.TextBox txtRePass;
         private System.Windows.Forms.Label label6;
+        public System.Windows.Forms.Label lbliduser;
     }
 }

@@ -1,46 +1,83 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using InventoryManagement.Models;
+using System;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 
 namespace InventoryManagement
 {
     public partial class CustomerModuleForm : Form
     {
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""D:\IMS Program\dbMS.mdf"";Integrated Security=True;Connect Timeout=30");
-        SqlCommand cmd = new SqlCommand();
-
         public CustomerModuleForm()
         {
             InitializeComponent();
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        private bool ValidateForm()
         {
+            return
+                (rbCustomer.Checked || rbVendor.Checked) &&
+                !string.IsNullOrWhiteSpace(txtCustCode.Text) &&
+                !string.IsNullOrWhiteSpace(txtName.Text);
+        }
+
+        private void ShowAllErrors()
+        {
+            ValidateType();
+
+            errorProvider1.SetError(
+                txtCustCode,
+                string.IsNullOrWhiteSpace(txtCustCode.Text)
+                    ? "Partner Code is required"
+                    : ""
+            );
+
+            errorProvider1.SetError(
+                txtName,
+                string.IsNullOrWhiteSpace(txtName.Text)
+                    ? "Partner name is required"
+                    : ""
+            );
+        }
+
+        private async Task btnSave_Click(object sender, EventArgs e)
+        {
+            if (!ValidateForm())
+            {
+                ShowAllErrors();
+                return;
+            }
+            string cType = rbCustomer.Checked ? "Customer" : "Vendor";
+
             try
             {
-                if (MessageBox.Show("Are you sure you want to save it?", "Saving Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                Partner partner = new Partner
                 {
-                    cmd = new SqlCommand("INSERT INTO tbCustomer(cname,cphone)VALUES(@cname,@cphone)", con);
-                    cmd.Parameters.AddWithValue("@cname", txtName.Text);
-                    cmd.Parameters.AddWithValue("@cphone", txtPhone.Text);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("Data Customer Successfully Saved!");
-                    Clear();
-                    this.Dispose();
-                }
+                    ccode = txtCustCode.Text,
+                    cname = txtName.Text,
+                    cphone = txtPhone.Text,
+                    cType = cType,
+                };
+
+                PartnerService service = new PartnerService();
+                await service.AddPartner(partner);
+
+                MessageBox.Show("Data Partner Successfully Saved!");
+
+                this.DialogResult = DialogResult;
+                this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                if (ex.Message.Contains("Duplicate"))
+                {
+                    MessageBox.Show(
+                        $"Partner dengankode '{txtCustCode.Text} dan tipe '{cType} sudah ada.", "Duplicate Data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show("Save failed: " + ex.Message);
+                }
             }
         }
 
@@ -62,26 +99,72 @@ namespace InventoryManagement
             this.Dispose();
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
+        private async void btnUpdate_Click(object sender, EventArgs e)
         {
             try
             {
-                if (MessageBox.Show("Are you sure to update this record?", "Saving Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    cmd = new SqlCommand("UPDATE tbCustomer SET cname=@cname, cphone=@cphone WHERE cid LIKE '" + lblCId.Text + "'", con);
-                    cmd.Parameters.AddWithValue("@cname", txtName.Text);
-                    cmd.Parameters.AddWithValue("@cphone", txtPhone.Text);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("Customer has been successfully updated!");
-                    this.Dispose();
-                }
+                string ccode = lblCId.Text;
+                string name = txtName.Text;
+                string phone = txtPhone.Text;
+                string cType = rbCustomer.Checked ? "Customer" : "Vendor";
+
+                PartnerService service = new PartnerService();
+                await service.UpdatePartner(ccode, name, phone, cType);
+
+                MessageBox.Show("Update Successfully");
+
+                this.DialogResult = DialogResult.OK;
+                this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Update failed: " + ex.Message);
             }
+        }
+
+        private void lblCId_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ValidateType()
+        {
+            errorProvider1.SetError(
+                gbType,
+                (!rbVendor.Checked && !rbCustomer.Checked)
+                    ? "Please select partner type"
+                    : ""
+            );
+        }
+
+        private void rbVendor_CheckedChanged(object sender, EventArgs e)
+        {
+            ValidateType();
+        }
+
+        private void rbCustomer_CheckedChanged(object sender, EventArgs e)
+        {
+            ValidateType();
+        }
+
+        private void txtCustCode_TextChanged(object sender, EventArgs e)
+        {
+            errorProvider1.SetError(
+                txtCustCode,
+                string.IsNullOrWhiteSpace(txtCustCode.Text)
+                    ? "Partner Code is required"
+                    : ""
+            );
+        }
+
+        private void txtName_TextChanged(object sender, EventArgs e)
+        {
+            errorProvider1.SetError(
+                txtName,
+                string.IsNullOrWhiteSpace(txtName.Text)
+                    ? "Partner name is required"
+                    : ""
+            );
         }
     }
 }

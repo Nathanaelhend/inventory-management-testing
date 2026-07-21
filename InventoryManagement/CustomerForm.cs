@@ -7,37 +7,40 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace InventoryManagement
 {
     public partial class CustomerForm : Form
     {
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""D:\IMS Program\dbMS.mdf"";Integrated Security=True;Connect Timeout=30");
-        SqlCommand cmd = new SqlCommand();
-        SqlDataReader dr;
+        PartnerService partnerService = new PartnerService();
 
         public CustomerForm()
         {
             InitializeComponent();
             LoadCustomer();
+            
         }
 
-        public void LoadCustomer()
+        public async Task LoadCustomer()
         {
-            int i = 0;
             dataGridCustomer.Rows.Clear();
-            cmd = new SqlCommand("SELECT * FROM tbCustomer", con);
-            con.Open();
-            dr = cmd.ExecuteReader();
 
-            while (dr.Read())
+            try
             {
-                i++;
-                dataGridCustomer.Rows.Add(i, dr[0].ToString(), dr[1].ToString(), dr[2].ToString());
+                var partners = await partnerService.GetPartner();
+                int i = 0;
+
+                foreach (var partner in partners)
+                {
+                    i++;
+                    dataGridCustomer.Rows.Add(i, partner.ccode, partner.cname, partner.cphone, partner.cType);
+                }
             }
-            dr.Close();
-            con.Close();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void btnAddCustomer_Click(object sender, EventArgs e)
@@ -46,35 +49,55 @@ namespace InventoryManagement
             custForm.btnSave.Enabled = true;
             custForm.btnUpdate.Enabled = false;
             custForm.ShowDialog();
-            LoadCustomer();
         }
 
-        private void dataGridCustomer_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private async void txtBoxSearch_TextChanged(object sender, EventArgs e)
         {
+            await LoadCustomer();
+        }
+
+        private async void dataGridCustomer_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
             string colName = dataGridCustomer.Columns[e.ColumnIndex].Name;
 
             if (colName == "Edit")
             {
-                CustomerModuleForm customerModule = new CustomerModuleForm();
-                customerModule.lblCId.Text = dataGridCustomer.Rows[e.RowIndex].Cells[1].Value.ToString();
-                customerModule.txtName.Text = dataGridCustomer.Rows[e.RowIndex].Cells[2].Value.ToString();
-                customerModule.txtPhone.Text = dataGridCustomer.Rows[e.RowIndex].Cells[3].Value.ToString();
-                customerModule.btnSave.Enabled = false;
-                customerModule.btnUpdate.Enabled = true;
-                customerModule.ShowDialog();
+                CustomerModuleForm custForm = new CustomerModuleForm();
+                custForm.lblCId.Text = dataGridCustomer.Rows[e.RowIndex].Cells[1].Value.ToString();
+                custForm.txtCustCode.Text = dataGridCustomer.Rows[e.RowIndex].Cells[1].Value.ToString();
+                custForm.txtName.Text = dataGridCustomer.Rows[e.RowIndex].Cells[2].Value.ToString();
+                custForm.txtPhone.Text = dataGridCustomer.Rows[e.RowIndex].Cells[3].Value.ToString();
+                string cType = dataGridCustomer.Rows[e.RowIndex].Cells[4].Value.ToString();
+
+                if(cType == "Customer")
+                {
+                    custForm.rbCustomer.Checked = true;
+                }
+                else
+                {
+                    custForm.rbVendor.Checked = true;
+                }
+
+                custForm.btnSave.Enabled = false;
+                custForm.txtCustCode.Enabled = false;
+                custForm.btnUpdate.Enabled = true;
+                custForm.ShowDialog();
+
+                await LoadCustomer();
             }
             else if (colName == "Delete")
             {
-                if (MessageBox.Show("Are you sure you want to delete this customer?", "Delete Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (MessageBox.Show("Are you sure want to delete this record?", "Deleted Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    con.Open();
-                    cmd = new SqlCommand("DELETE FROM tbCustomer where cid LIKE '" + dataGridCustomer.Rows[e.RowIndex].Cells[1].Value.ToString() + "'", con);
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("Record has been Successfully deleted!");
+                    int partnerId = Convert.ToInt32(dataGridCustomer.Rows[e.RowIndex].Cells[1]);
+                    PartnerService service = new PartnerService();
+                    await service.DeletePartner(partnerId);
+
+                    MessageBox.Show("Deleted!");
+                    await LoadCustomer();
                 }
             }
-            LoadCustomer();
         }
     }
 }

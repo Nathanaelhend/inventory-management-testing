@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InventoryManagement.models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,15 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 
 namespace InventoryManagement
 {
     public partial class UserModuleForm : Form
     {
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""D:\IMS Program\dbMS.mdf"";Integrated Security=True;Connect Timeout=30");
-        SqlCommand cmd = new SqlCommand();
-
 
         public UserModuleForm()
         {
@@ -32,36 +29,6 @@ namespace InventoryManagement
             this.Dispose();
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (txtPassword.Text != txtRePass.Text)
-                {
-                    MessageBox.Show("Password did not match!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                if (MessageBox.Show("Are You Sure want to save this User?", "Saving Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    cmd = new SqlCommand("INSERT INTO tbUser(username,fullname,password,phone)VALUES(@username,@fullname,@password,@phone)",con);
-                    cmd.Parameters.AddWithValue("@username",txtUsername.Text);
-                    cmd.Parameters.AddWithValue("@fullname",txtName.Text);
-                    cmd.Parameters.AddWithValue("@password",txtPassword.Text);
-                    cmd.Parameters.AddWithValue("@phone", txtPhone.Text);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("User Successfully Saved");
-                    Clear();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
         private void btnClear_Click(object sender, EventArgs e)
         {
             Clear();
@@ -74,7 +41,7 @@ namespace InventoryManagement
             txtUsername.Clear(); txtName.Clear(); txtPassword.Clear(); txtPhone.Clear(); txtRePass.Clear();
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
+        private async void btnSave_Click(object sender, EventArgs e)
         {
             try
             {
@@ -84,23 +51,61 @@ namespace InventoryManagement
                     return;
                 }
 
-                if (MessageBox.Show("Are You Sure want to update this User?", "Saving Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (MessageBox.Show("Are you sure want to save this record?", "Save", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    cmd = new SqlCommand("UPDATE tbUser SET fullname=@fullname,password=@password,phone=@phone WHERE username LIKE '" + txtUsername.Text + "' ", con);
-                    cmd.Parameters.AddWithValue("@username", txtUsername.Text);
-                    cmd.Parameters.AddWithValue("@fullname", txtName.Text);
-                    cmd.Parameters.AddWithValue("@password", txtPassword.Text);
-                    cmd.Parameters.AddWithValue("@phone", txtPhone.Text);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("User Successfully Updated!");
-                    this.Dispose();
+                    User user = new User
+                    {
+                        fullname = txtName.Text,
+                        username = txtUsername.Text,
+                        phone = txtPhone.Text,
+                        password = txtRePass.Text,
+                    };
+
+                    UserService service = new UserService();
+                    await service.AddUser(user);
+
+                    MessageBox.Show("User successfully saved!");
+                    Clear();
+                    this.Close();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Save failed: " + ex.Message);
+            }
+        }
+
+        private async void btnUpdate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if(string.IsNullOrWhiteSpace(txtUsername.Text) ||
+                   string.IsNullOrWhiteSpace(txtName.Text) ||
+                   string.IsNullOrWhiteSpace(txtPhone.Text))
+                {
+                    MessageBox.Show("Please fill in all required fields.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                if(MessageBox.Show("Are you sure want to update this record?", "Update Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    User user = new User
+                    {
+                        id = lbliduser.Text,
+                        username = txtUsername.Text,
+                        fullname = txtName.Text,
+                        phone = txtPhone.Text,
+                        password = txtRePass.Text,
+                    };
+                    UserService service = new UserService();
+                    await service.UpdateUser(user.id, user);
+                    MessageBox.Show("User successfully updated!");
+                    Clear();
+                    this.Close();
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Update failed: " + ex.Message);
             }
         }
     }

@@ -30,6 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label9 = new System.Windows.Forms.Label();
+            this.btnCOA = new InventoryManagement.CustomerButton();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label8 = new System.Windows.Forms.Label();
             this.btnOrders = new InventoryManagement.CustomerButton();
@@ -47,6 +49,7 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.panelMain = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.btnCOA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnOrders)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnUser)).BeginInit();
@@ -58,6 +61,8 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.MediumSpringGreen;
+            this.panel1.Controls.Add(this.label9);
+            this.panel1.Controls.Add(this.btnCOA);
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Controls.Add(this.label8);
             this.panel1.Controls.Add(this.btnOrders);
@@ -78,6 +83,28 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(984, 108);
             this.panel1.TabIndex = 0;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(661, 75);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(72, 16);
+            this.label9.TabIndex = 18;
+            this.label9.Text = "Purchase";
+            // 
+            // btnCOA
+            // 
+            this.btnCOA.Image = ((System.Drawing.Image)(resources.GetObject("btnCOA.Image")));
+            this.btnCOA.ImageHover = ((System.Drawing.Image)(resources.GetObject("btnCOA.ImageHover")));
+            this.btnCOA.ImageNormal = ((System.Drawing.Image)(resources.GetObject("btnCOA.ImageNormal")));
+            this.btnCOA.Location = new System.Drawing.Point(669, 22);
+            this.btnCOA.Name = "btnCOA";
+            this.btnCOA.Size = new System.Drawing.Size(55, 48);
+            this.btnCOA.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.btnCOA.TabIndex = 19;
+            this.btnCOA.TabStop = false;
+            this.btnCOA.Click += new System.EventHandler(this.btnCOA_Click);
             // 
             // pictureBox1
             // 
@@ -135,9 +162,9 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(335, 73);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(72, 16);
+            this.label5.Size = new System.Drawing.Size(57, 16);
             this.label5.TabIndex = 14;
-            this.label5.Text = "Customer";
+            this.label5.Text = "Partner";
             // 
             // label4
             // 
@@ -265,6 +292,7 @@
             this.Text = "MainForm";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.btnCOA)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnOrders)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnUser)).EndInit();
@@ -294,5 +322,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label label9;
+        private CustomerButton btnCOA;
     }
 }

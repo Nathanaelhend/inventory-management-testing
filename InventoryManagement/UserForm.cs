@@ -1,21 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using InventoryManagement.Models;
 
 namespace InventoryManagement
 {
     public partial class UserForm : Form
     {
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""D:\IMS Program\dbMS.mdf"";Integrated Security=True;Connect Timeout=30");
-        SqlCommand cmd = new SqlCommand();
-        SqlDataReader dr;
+        UserService userService = new UserService();
 
         public UserForm()
         {
@@ -23,49 +15,72 @@ namespace InventoryManagement
             LoadUser();
         }
 
-        public void LoadUser()
+        public async Task LoadUser()
         {
-            int i = 0;
             dataGridUser.Rows.Clear();
-            cmd = new SqlCommand("SELECT * FROM tbUser", con);
-            con.Open();
-            dr = cmd.ExecuteReader();
-            while (dr.Read())
-            {
-                i++;
-                dataGridUser.Rows.Add(i,dr[0].ToString(), dr[1].ToString(), dr[2].ToString(), dr[3].ToString());
-            }
-            dr.Close();
-            con.Close();
-        }
 
-        private void dataGridUser_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            string colName = dataGridUser.Columns[e.ColumnIndex].Name;
-            if(colName == "Edit")
+            try
             {
-                UserModuleForm userModule = new UserModuleForm();
-                userModule.txtUsername.Text = dataGridUser.Rows[e.RowIndex].Cells[1].Value.ToString();
-                userModule.txtName.Text = dataGridUser.Rows[e.RowIndex].Cells[2].Value.ToString();
-                userModule.txtPassword.Text = dataGridUser.Rows[e.RowIndex].Cells[3].Value.ToString();
-                userModule.txtPhone.Text = dataGridUser.Rows[e.RowIndex].Cells[4].Value.ToString();
-                
-                userModule.btnSave.Enabled = false;
-                userModule.btnUpdate.Enabled = true;
-                userModule.txtUsername.Enabled = false;
-                userModule.ShowDialog();
-            }
-            else if(colName == "Delete")
-            {
-                if(MessageBox.Show("Are you sure you want to delete this user?","Delete Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question)==DialogResult.Yes)
+                var users = await userService.GetUsers();
+                foreach (var user in users)
                 {
-                    con.Open();
-                    cmd = new SqlCommand("DELETE FROM tbUser where username LIKE '" + dataGridUser.Rows[e.RowIndex].Cells[1].Value.ToString() + "'", con);
-                    cmd.ExecuteNonQuery();
-                    con.Close();
+                    dataGridUser.Rows.Add(
+                        user.id,
+                        user.username, 
+                        user.fullname, 
+                        user.password, 
+                        user.phone
+                    );
                 }
             }
-            LoadUser();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async void dataGridUser_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            string colName = dataGridUser.Columns[e.ColumnIndex].Name;
+
+            if (colName == "Edit")
+            {
+                UserModuleForm userForm = new UserModuleForm();
+                userForm.lbliduser.Text = dataGridUser.Rows[e.RowIndex].Cells[0].Value?.ToString() ?? "";
+                userForm.txtUsername.Text = dataGridUser.Rows[e.RowIndex].Cells[1].Value?.ToString() ?? "";
+                userForm.txtName.Text = dataGridUser.Rows[e.RowIndex].Cells[2].Value?.ToString() ?? "";
+                userForm.txtPhone.Text = dataGridUser.Rows[e.RowIndex].Cells[4].Value?.ToString() ?? "";
+                userForm.btnSave.Enabled = false;
+                userForm.btnUpdate.Enabled = true;
+
+                userForm.ShowDialog();
+                LoadUser();
+            }
+            else if (colName == "Delete")
+            {
+                if (MessageBox.Show("Are you sure want to delete this record?",
+                    "Deleted Record",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    string userId = dataGridUser.Rows[e.RowIndex].Cells[0].Value?.ToString();
+
+                    if (!string.IsNullOrEmpty(userId) && int.TryParse(userId, out int id))
+                    {
+                        UserService service = new UserService();
+                        await service.DeleteUser(id);
+
+                        MessageBox.Show("Deleted!");
+                        LoadUser();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Invalid User ID");
+                    }
+                }
+            }
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
