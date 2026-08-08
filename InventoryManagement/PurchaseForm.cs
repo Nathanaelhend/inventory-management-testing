@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -21,12 +22,14 @@ namespace InventoryManagement
             try
             {
                 var purchase = await purchaseService.GetPurchase();
+                System.Diagnostics.Debug.WriteLine($"LoadPO: received {purchase?.Count ?? 0} purchases from API");
                 int i = 0;
 
                 foreach (var pr in purchase)
                 {
                     i++;
-                    dataGridOrder.Rows.Add(pr.noOrder, pr.odate.ToShortDateString(), pr.vendor, pr.netAmount);
+                    System.Diagnostics.Debug.WriteLine($"PO[{i}]: {pr.noOrder} - {pr.vendor} - {pr.netAmount}");
+                    dataGridOrder.Rows.Add(pr.noOrder, pr.odate.ToShortDateString(), pr.vendor, pr.netAmount.ToString("N0", new CultureInfo("id-ID")));
                 }
             }
             catch (Exception ex)
@@ -42,41 +45,48 @@ namespace InventoryManagement
             moduleForm.ShowDialog();
         }
 
-        //private void dataGridOrder_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        //{
-        //    string colName = dataGridOrder.Columns[e.ColumnIndex].Name;
-        //    if (colName == "Edit")
-        //    {
-        //        OrderModuleForm formModule = new OrderModuleForm();
-        //        formModule.lblOid.Text = dataGridOrder.Rows[e.RowIndex].Cells[2].Value.ToString();
-        //        formModule.dateTimePickerOrder.Text = dataGridOrder.Rows[e.RowIndex].Cells[2].Value.ToString();
-        //        formModule.txtProductId.Text = dataGridOrder.Rows[e.RowIndex].Cells[3].Value.ToString();
-        //        formModule.txtCustId.Text = dataGridOrder.Rows[e.RowIndex].Cells[4].Value.ToString();
-        //        formModule.numericQty.Value = Convert.ToInt32(dataGridOrder.Rows[e.RowIndex].Cells[5].Value.ToString());
-        //        formModule.txtPrice.Text = dataGridOrder.Rows[e.RowIndex].Cells[6].Value.ToString();
+        private void dataGridOrder_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
 
-        //        formModule.btnCreate.Enabled = false;
-        //        formModule.btnUpdate.Enabled = true;
-        //        formModule.ShowDialog();
-        //    }
-        //    if (colName == "Delete")
-        //    {
-        //        if (MessageBox.Show("Are you sure you want to delete this order?", "Delete Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-        //        {
-        //            con.Open();
-        //            cmd = new SqlCommand("DELETE FROM tbOrder WHERE orderId LIKE '" + dataGridOrder.Rows[e.RowIndex].Cells[1].Value.ToString() + "'", con);
-        //            cmd.ExecuteNonQuery();
-        //            con.Close();
-        //            MessageBox.Show("Record has been successfully deleted!");
+            string colName = dataGridOrder.Columns[e.ColumnIndex].Name;
+            string noOrder = dataGridOrder.Rows[e.RowIndex].Cells[0].Value?.ToString();
 
-        //            cmd = new SqlCommand("UPDATE tbProduct SET pqty=(pqty+@pqty) WHERE pid LIKE '" + dataGridOrder.Rows[e.RowIndex].Cells[3].Value.ToString() + "' ", con);
-        //            cmd.Parameters.AddWithValue("@pqty", Convert.ToInt32(dataGridOrder.Rows[e.RowIndex].Cells[5].Value.ToString()));
-        //            con.Open();
-        //            cmd.ExecuteNonQuery();
-        //            con.Close();
-        //        }
-        //    }
-        //    //LoadOrder();
-        //}
+            if (colName == "Edit")
+            {
+                if (string.IsNullOrWhiteSpace(noOrder))
+                {
+                    MessageBox.Show("Order number is empty!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                PurchaseModuleForm moduleForm = new PurchaseModuleForm(noOrder);
+                moduleForm.ShowDialog();
+
+                // Refresh grid after edit
+                LoadPO();
+            }
+            else if(colName == "Delete")
+            {
+                if (string.IsNullOrWhiteSpace(noOrder))
+                {
+                    MessageBox.Show("Order number is empty!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                if (MessageBox.Show($"Are you sure you want to delete order {noOrder}?", "Delete Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    try
+                    {
+                        purchaseService.DeletePurchase(noOrder).Wait();
+                        MessageBox.Show($"Order {noOrder} deleted successfully.", "Deleted", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadPO();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Failed to delete order {noOrder}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
     }
 }

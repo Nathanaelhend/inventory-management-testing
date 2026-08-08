@@ -133,15 +133,6 @@
     <value>True</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="Delete.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAL
-        DAAACwwBP0AiyAAAALhJREFUOE+tk0sOwjAMRHujxsBNsMsC7r9B4gKNMXLalGZqie9I2WQyL7Wddt0/
-        ZWnoLQnjfpV7fgb3i9zQxFdNko3ksvVZNMmoxDej4wHMKXwnMV8IqeHFR4h/2vrADBmN5OQr9LDUGMJq
-        NGQIZ+v53ISrIsjb4aoZ0txawiT6MuzyhlkEKOVsp9MIu40Lp9MoCvutWE4IiZr30RjDh7RqGF5QHtJO
-        9gtgDcHw058gYbjqp5/pWz0ALPw1qoYRgPkAAAAASUVORK5CYII=
-</value>
-  </data>
   <data name="btnAdd.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO

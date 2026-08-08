@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,15 +18,37 @@ namespace InventoryManagement
         int selectedRowIndex = -1;
         bool isEditMode = false;
         int qty = 0;
+        bool headerCreated = false;
+        private string existingOrderNo = null;
 
         private readonly PurchaseService purchaseService = new PurchaseService();
         private readonly ProductService productService = new ProductService();
 
+        // Constructor untuk mode CREATE
         public PurchaseModuleForm()
         {
             InitializeComponent();
             LoadProduct();
             LoadVendor();
+            isEditMode = false;
+        }
+
+        // Constructor untuk mode EDIT
+        public PurchaseModuleForm(string orderNo)
+        {
+            InitializeComponent();
+            LoadProduct();
+            LoadVendor();
+
+            existingOrderNo = orderNo;
+            isEditMode = true;
+
+            // Lock PO number field - tidak bisa diubah saat edit
+            txtBoxNoOrder.Text = orderNo;
+            txtBoxNoOrder.ReadOnly = true;
+
+            // Load existing data
+            LoadExistingPurchase();
         }
 
         private async Task LoadVendor()
@@ -71,6 +94,69 @@ namespace InventoryManagement
             }
         }
 
+        private async Task LoadExistingPurchase()
+        {
+            if (string.IsNullOrWhiteSpace(existingOrderNo))
+                return;
+
+            try
+            {
+                var detail = await purchaseService.GetPurchaseById(existingOrderNo);
+
+                if (detail?.header != null)
+                {
+                    // Load header data
+                    txtBoxNoOrder.Text = detail.header.noOrder;
+                    dateTimePickerOrder.Value = detail.header.odate;
+                    txtVendorId.Text = detail.header.vendor;
+                    
+                    // Load vendor name
+                    try
+                    {
+                        PartnerService partnerService = new PartnerService();
+                        var partners = await partnerService.GetPartner();
+                        var vendor = partners.FirstOrDefault(p => p.ccode == detail.header.vendor);
+                        if (vendor != null)
+                        {
+                            txtVendorName.Text = vendor.cname;
+                        }
+                    }
+                    catch
+                    {
+                        txtVendorName.Text = detail.header.vendor;
+                    }
+
+                    txtDpp.Text = detail.header.dpp.ToString("N0", new CultureInfo("id-ID"));
+                    txtDiscPrs.Text = detail.header.discPrs.ToString("N0", new CultureInfo("id-ID"));
+                    txtPPn.Text = detail.header.ppnPrs.ToString("N0", new CultureInfo("id-ID"));
+                    txtFinalPrice.Text = detail.header.netAmount.ToString("N0", new CultureInfo("id-ID"));
+                }
+
+                // Load lines data
+                if (detail?.lines != null)
+                {
+                    dataGridPurchaseModule.Rows.Clear();
+                    foreach (var line in detail.lines)
+                    {
+                        dataGridPurchaseModule.Rows.Add(
+                            line.prCode,
+                            line.pName,
+                            line.pPrice,
+                            line.qty,
+                            line.total
+                        );
+                    }
+                }
+
+                HitungTotalGrid();
+                headerCreated = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load purchase: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
 
         private void ClearProduct()
         {
@@ -79,6 +165,37 @@ namespace InventoryManagement
             txtPrice.Clear();
             numericQty.Value = 0;
             txtTotal.Clear();
+        }
+
+        private async Task LoadPurchaseLines()
+        {
+            dataGridPurchaseModule.Rows.Clear();
+
+            var noOrder = txtBoxNoOrder.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(noOrder))
+                return;
+
+            try
+            {
+                var detail = await purchaseService.GetPurchaseById(noOrder);
+
+                // If the API returns 404 it will return null - treat as empty lines (no header yet)
+                if (detail?.lines != null)
+                {
+                    foreach (var line in detail.lines)
+                    {
+                        dataGridPurchaseModule.Rows.Add(line.prCode, line.pName, line.qty, line.pPrice, line.total);
+                    }
+                }
+
+                HitungTotalGrid();
+            }
+            catch (Exception ex)
+            {
+                // Log detailed error and show non-blocking message
+                System.Diagnostics.Debug.WriteLine($"LoadPurchaseLines error: {ex.Message}");
+                MessageBox.Show("Failed to load purchase lines. Check the server or network.\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private bool ValidatePODetail()
@@ -117,12 +234,12 @@ namespace InventoryManagement
                     : ""
             );
 
-            // Price
+            // Price - use TryParse to avoid FormatException
+            decimal price;
+            var priceValid = decimal.TryParse(txtPrice.Text, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture, out price) && price > 0m;
             errorProvider1.SetError(
                 txtPrice,
-                string.IsNullOrWhiteSpace(txtPrice.Text) || Convert.ToInt32(txtPrice.Text) <= 0
-                    ? "Price must be greater than 0"
-                    : ""
+                !priceValid ? "Price must be a positive number" : ""
             );
 
             if (
@@ -130,8 +247,7 @@ namespace InventoryManagement
                 string.IsNullOrWhiteSpace(txtVendorId.Text) ||
                 string.IsNullOrWhiteSpace(txtProductId.Text) ||
                 numericQty.Value <= 0 ||
-                string.IsNullOrWhiteSpace(txtPrice.Text) ||
-                Convert.ToInt32(txtPrice.Text) <= 0
+                !priceValid
             )
                 valid = false;
 
@@ -179,68 +295,12 @@ namespace InventoryManagement
             txtTotal.Text = row.Cells[4].Value.ToString();
         }
 
-        //private void btnDelete_Click(object sender, EventArgs e)
-        //{
-        //    if (selectedRowIndex < 0)
-        //    {
-        //        MessageBox.Show("Select item first!");
-        //        return;
-        //    }
-
-        //    string noOrder = txtBoxNoOrder.Text;
-        //    int productId = Convert.ToInt32(txtProductId.Text);
-        //    int qtyToReturn = 0;
-
-        //    using(MySqlConnection cons = new MySqlConnection(con.ConnectionString))
-        //    {
-        //        cons.Open();
-        //        MySqlTransaction tran = cons.BeginTransaction();
-
-        //        try
-        //        {
-        //            cmd = new MySqlCommand(@"
-        //            SELECT qty FROM tbpurchaseline
-        //            WHERE noOrder=@noOrder AND prCode=@pcode", cons,tran);
-
-        //            cmd.Parameters.AddWithValue("@noOrder", noOrder);
-        //            cmd.Parameters.AddWithValue("@pcode", productId);
-
-        //            object result = cmd.ExecuteScalar();
-        //            if(result == null)
-        //            {
-        //                throw new Exception("Item not found");
-        //            }
-        //            qtyToReturn = Convert.ToInt32(result);
-
-        //            cmd = new MySqlCommand(@"
-        //            UPDATE tbproduct SET pQty= pQty + @pqty WHERE pcode=@pcode", cons, tran);
-
-        //            cmd.Parameters.AddWithValue("@pqty", qtyToReturn);
-        //            cmd.Parameters.AddWithValue("@pcode", productId);
-        //            cmd.ExecuteNonQuery();
-
-        //            cmd = new MySqlCommand(@"
-        //            DELETE FROM tbpurchaseline WHERE noOrder=@noOrder AND prCode=@prCode", cons, tran);
-                    
-        //            cmd.Parameters.AddWithValue("@noOrder", noOrder);
-        //            cmd.Parameters.AddWithValue("@prCode", productId);
-        //            cmd.ExecuteNonQuery();
-        //            tran.Commit();
-        //        }
-        //        catch(Exception ex)
-        //        {
-        //            tran.Rollback();
-        //            MessageBox.Show(ex.Message);
-        //            return;
-        //        }
-        //    }
-
-
-        //    dataGridPurchaseModule.Rows.RemoveAt(selectedRowIndex);
-        //    selectedRowIndex = -1;
-        //    isEditMode = false;
-        //    ClearProduct();
-        //}
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            ClearProduct();
+            selectedRowIndex = -1;
+            isEditMode = false;
+        }
 
         //private string GetProductName(int pid)
         //{
@@ -310,9 +370,28 @@ namespace InventoryManagement
         //    }
         //}
 
-        private void txtBoxNoOrder_Leave(object sender, EventArgs e)
+        private async void txtBoxNoOrder_Leave(object sender, EventArgs e)
         {
-            //LoadExistingOrder();
+            string noOrder = txtBoxNoOrder.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(noOrder))
+            {
+                headerCreated = false;
+                return;
+            }
+
+            // Check if purchase header already exists on server
+            try
+            {
+                var existing = await purchaseService.GetPurchaseById(noOrder);
+                headerCreated = (existing != null);
+                System.Diagnostics.Debug.WriteLine($"txtBoxNoOrder_Leave: Order '{noOrder}' exists={headerCreated}");
+            }
+            catch
+            {
+                headerCreated = false;
+            }
+
+            await LoadPurchaseLines();
         }
 
         private void txtDiscPrs_KeyPress(object sender, KeyPressEventArgs e)
@@ -421,7 +500,7 @@ namespace InventoryManagement
 
             float total = price * qty;
 
-            txtTotal.Text = total.ToString();
+            txtTotal.Text = total.ToString("N0", new CultureInfo("id-ID"));
         }
 
         private async void btnSaveDetail_Click(object sender, EventArgs e)
@@ -429,32 +508,70 @@ namespace InventoryManagement
             if (!ValidatePODetail())
                 return;
 
+            if (!System.Decimal.TryParse(txtPrice.Text, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture, out decimal priceDecimal))
+            {
+                MessageBox.Show("Invalid price format.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int qtyInt = Convert.ToInt32(numericQty.Value);
+            decimal totalDecimal = priceDecimal * qtyInt;
+
             var detail = new PurchaseLineRequest
             {
                 prDate = dateTimePickerOrder.Value,
                 prCode = txtProductId.Text,
-                pPrice = Convert.ToInt32(txtPrice.Text),
-                qty = Convert.ToInt32(numericQty.Value),
-                total = Convert.ToInt32(txtTotal.Text),
+                pPrice = Convert.ToInt32(Math.Round(priceDecimal)),
+                qty = qtyInt,
+                total = Convert.ToInt32(Math.Round(totalDecimal)),
                 vendor = txtVendorId.Text
             };
 
+            string orderNo = txtBoxNoOrder.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(orderNo))
+            {
+                MessageBox.Show("Order number is required before adding detail.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             try
             {
-                await purchaseService.AddLine(txtBoxNoOrder.Text, detail);
+                btnSaveDetail.Enabled = false;
 
-                LoadProduct();
+                // If in edit mode, update the existing line
+                if (isEditMode && selectedRowIndex >= 0)
+                {
+                    var row = dataGridPurchaseModule.Rows[selectedRowIndex];
+                    string oldPrCode = row.Cells[0].Value.ToString();
+                    
+                    await purchaseService.UpdateLine(orderNo, oldPrCode, detail);
+                    MessageBox.Show("Line berhasil diupdate!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    // Add new line
+                    await purchaseService.AddLine(orderNo, detail);
+                }
+
+                await LoadPurchaseLines();
                 ClearProduct();
+                selectedRowIndex = -1;
+                isEditMode = false;
+                headerCreated = true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                btnSaveDetail.Enabled = true;
             }
         }
 
         private async void btnCreate_Click(object sender, EventArgs e)
         {
-            string noOrder = txtBoxNoOrder.Text;
+            string noOrder = txtBoxNoOrder.Text?.Trim();
 
             if (string.IsNullOrWhiteSpace(noOrder))
             {
@@ -462,26 +579,101 @@ namespace InventoryManagement
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(txtVendorId.Text))
+            {
+                MessageBox.Show("Pilih vendor terlebih dahulu!");
+                return;
+            }
+
+            // ensure totals are up-to-date
+            HitungTotalGrid();
+
+            // Compute header amounts from current inputs and grid to ensure values are populated even if user didn't press Enter
+            decimal dppDec = 0m;
+            decimal discPrsDec = 0m;
+            decimal discRphDec = 0m;
+            decimal ppnPrsDec = 0m;
+            decimal ppnRphDec = 0m;
+            decimal netAmountDec = 0m;
+
+            // parse dpp from textbox (HitungTotalGrid sets txtDpp)
+            if (!decimal.TryParse(txtDpp.Text, System.Globalization.NumberStyles.Number, CultureInfo.CurrentCulture, out dppDec))
+            {
+                decimal.TryParse(txtDpp.Text, System.Globalization.NumberStyles.Number, CultureInfo.InvariantCulture, out dppDec);
+            }
+
+            // parse discount % and compute discount amount
+            if (!decimal.TryParse(txtDiscPrs.Text, System.Globalization.NumberStyles.Number, CultureInfo.CurrentCulture, out discPrsDec))
+            {
+                decimal.TryParse(txtDiscPrs.Text, System.Globalization.NumberStyles.Number, CultureInfo.InvariantCulture, out discPrsDec);
+            }
+
+            lblDisc.Text = discRphDec.ToString("0.##");
+
+            decimal priceAfterDisc = dppDec - discRphDec;
+
+            // parse ppn % and compute ppn amount
+            if (!decimal.TryParse(txtPPn.Text, System.Globalization.NumberStyles.Number, CultureInfo.CurrentCulture, out ppnPrsDec))
+            {
+                decimal.TryParse(txtPPn.Text, System.Globalization.NumberStyles.Number, CultureInfo.InvariantCulture, out ppnPrsDec);
+            }
+            ppnRphDec = (ppnPrsDec / 100m) * priceAfterDisc;
+            lblPPn.Text = ppnRphDec.ToString("0.##");
+
+            netAmountDec = priceAfterDisc + ppnRphDec;
+            txtFinalPrice.Text = netAmountDec.ToString("0.##");
+
             var purchase = new Purchase
             {
+                noOrder = noOrder,
                 odate = dateTimePickerOrder.Value,
                 vendor = txtVendorId.Text,
-                dpp = float.Parse(txtDpp.Text),
-                discPrs = float.Parse(txtDiscPrs.Text),
-                discRph = float.Parse(lblDisc.Text),
-                ppnPrs = float.Parse(txtPPn.Text),
-                ppnRph = float.Parse(lblPPn.Text),
-                netAmount = float.Parse(txtFinalPrice.Text)
+                dpp = (float)dppDec,
+                discPrs = (float)discPrsDec,
+                discRph = (float)discRphDec,
+                ppnPrs = (float)ppnPrsDec,
+                ppnRph = (float)ppnRphDec,
+                netAmount = (float)netAmountDec
             };
 
             try
             {
                 btnCreate.Enabled = false;
 
-                await purchaseService.UpdatePurchase(noOrder, purchase);
+                // Try to create first. If server returns conflict/already exists, fall back to update.
+                try
+                {
+                    bool re = headerCreated;
+                    if (headerCreated == false)
+                    {
+                        await purchaseService.CreatePurchase(noOrder, purchase);
+                    }
+                    else
+                    {
+                        await purchaseService.UpdatePurchase(noOrder, purchase);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var msg = ex.Message ?? string.Empty;
+                    if (msg.IndexOf("Conflict", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        msg.IndexOf("already exists", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        msg.IndexOf("409", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        // If already exists, update instead
+                        await purchaseService.UpdatePurchase(noOrder, purchase);
+                    }
+                    else
+                    {
+                        throw; // rethrow other exceptions
+                    }
+                }
 
                 MessageBox.Show("Purchase berhasil disimpan!",
-                    "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // reload purchase lines after saving header
+                await LoadPurchaseLines();
             }
             catch (Exception ex)
             {
@@ -490,7 +682,45 @@ namespace InventoryManagement
             }
             finally
             {
+                headerCreated = false;
                 btnCreate.Enabled = true;
+            }
+        }
+
+        private async void btnDelete_Click_1(object sender, EventArgs e)
+        {
+            if (selectedRowIndex < 0)
+            {
+                MessageBox.Show("Pilih line yang ingin dihapus!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var row = dataGridPurchaseModule.Rows[selectedRowIndex];
+            string prCode = row.Cells[0].Value.ToString();
+            string orderNo = txtBoxNoOrder.Text?.Trim();
+
+            if (string.IsNullOrWhiteSpace(orderNo))
+            {
+                MessageBox.Show("Order number is required!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (MessageBox.Show($"Yakin ingin menghapus line {prCode}?",
+                "Konfirmasi Hapus", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                try
+                {
+                    await purchaseService.DeleteLine(orderNo, prCode);
+                    await LoadPurchaseLines();
+                    ClearProduct();
+                    selectedRowIndex = -1;
+                    isEditMode = false;
+                    MessageBox.Show("Line berhasil dihapus!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
