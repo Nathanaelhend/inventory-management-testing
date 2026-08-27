@@ -1,4 +1,5 @@
 ﻿using InventoryManagement.models;
+using InventoryManagement.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,38 +21,118 @@ public class SaleService
     public async Task<List<Sale>> GetSale()
     {
         var response = await _http.GetAsync("api/sales");
-        response.EnsureSuccessStatusCode();
-
         var json = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<List<Sale>>(json);
+        System.Diagnostics.Debug.WriteLine($"GetSale API response: {json}");
+
+        if(!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Failed to get sales: {(int)response.StatusCode} ({response.StatusCode})\n{json}");
+        }
+
+        var sales = JsonConvert.DeserializeObject<List<Sale>>(json) ?? new List<Sale>();
+
+        var deduped = sales
+            .GroupBy(s => (s.noOrder ?? string.Empty).Trim(), StringComparer.OrdinalIgnoreCase)
+            .Select(g => g.OrderByDescending(x => x.total).First())
+            .ToList();
+
+        System.Diagnostics.Debug.WriteLine($"GetSale: {sales.Count} deduped sales count: {deduped.Count}");
+
+        return deduped;
     }
 
-    public async Task AddSale(Sale sale)
+    public async Task<SaleDetailResponse> GetSaleById(string noOrder)
     {
-        var content = new StringContent(
-            JsonConvert.SerializeObject(sale),
-            Encoding.UTF8,
-            "application/json"
-        );
+        var url = $"api/sales/{Uri.EscapeDataString(noOrder)}";
+        var response = await _http.GetAsync(url);
+        var json = await response.Content.ReadAsStringAsync();
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Failed to get sale by ID: {(int)response.StatusCode} ({response.StatusCode})\n{json}");
+        }
 
-        var response = await _http.PostAsync("api/sales", content);
+        return JsonConvert.DeserializeObject<SaleDetailResponse>(json);
+    }
+
+    public async Task CreateSale(string noOrder, Sale sale)
+    {
+        await UpdateSale(noOrder, sale);
+    }
+
+    public async Task AddLine(string noOrder, SaleLineRequest line)
+    {
+        if(string.IsNullOrWhiteSpace(noOrder))
+        {
+            throw new Exception("noOrder cannot be null or whitespace when adding a line.");
+        }
+
+        var content = new StringContent(JsonConvert.SerializeObject(line), Encoding.UTF8, "application/json");
+
+        var response = await _http.PostAsync($"api/sales/{noOrder}/lines", content);
+
+        if(!response.IsSuccessStatusCode)
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to add line to sale {noOrder}: {(int)response.StatusCode} ({response.StatusCode})\n{err}");
+        }
+    }
+
+    public async Task DeleteLine(string noOrder, string prCode)
+    {
+        var response = await _http.DeleteAsync($"api/sales/{noOrder}/lines/{prCode}");
         response.EnsureSuccessStatusCode();
+    }
+
+    public async Task UpdateLine(string noOrder, string prCode, SaleLineRequest line)
+    {
+        var content = new StringContent(JsonConvert.SerializeObject(line), Encoding.UTF8, "application/json");
+
+        var response = await _http.PutAsync($"api/sales/{noOrder}/lines/{prCode}", content);
+
+        if(!response.IsSuccessStatusCode)
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to update line {prCode} in sale {noOrder}: {(int)response.StatusCode} ({response.StatusCode})\n{err}");
+        }
     }
 
     public async Task UpdateSale(string noOrder, Sale sale)
     {
         var content = new StringContent(
-            JsonConvert.SerializeObject(sale),
-            Encoding.UTF8,
-            "application/json"
-        );
-        var response = await _http.PutAsync($"api/sales/{noOrder}", content);
-        response.EnsureSuccessStatusCode();
+            JsonConvert.SerializeObject(sale), Encoding.UTF8, "application/json");
+
+        var response = await _http.PutAsync($"api/sales/{Uri.EscapeDataString(noOrder)}", content);
+        var body = await response.Content.ReadAsStringAsync();
+
+        if(!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Failed to update sale {noOrder}: {(int)response.StatusCode} ({response.StatusCode})\n{body}");
+        }
     }
 
-    public async Task DeleteSale(string noOrder)
+    public async Task DeletePurchase(string noOrder, string prCode)
     {
-        var response = await _http.DeleteAsync($"api/sales/{noOrder}");
-        response.EnsureSuccessStatusCode();
+        var response = await _http.DeleteAsync($"api/sales/{noOrder}/lines/{prCode}");
+        var body = await response.
+            Content.ReadAsStringAsync();
+
+        if(!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Delete failed: {(int)response.StatusCode} ({response.StatusCode})\n{body}");
+        }
+    }
+
+    public async Task CancelPurchase(string noOrder)
+    {
+        var response = await _http.PutAsync($"api/sales/{Uri.EscapeDataString(noOrder)}/cancel", null);
+        var body = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Cancel failed: {(int)response.StatusCode} ({response.StatusCode})\n{body}");
+        }
     }
 }

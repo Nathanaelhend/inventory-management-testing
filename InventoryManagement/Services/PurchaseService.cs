@@ -144,7 +144,6 @@ public class PurchaseService
         var body = await response.Content.ReadAsStringAsync();
         if (!response.IsSuccessStatusCode)
         {
-            MessageBox.Show(body);
             throw new Exception($"Response status code does not indicate success: {(int)response.StatusCode} ({response.StatusCode})\n{body}");
         }
     }

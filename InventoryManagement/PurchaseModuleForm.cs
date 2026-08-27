@@ -264,21 +264,6 @@ namespace InventoryManagement
             LoadProduct();
         }
 
-        //private async Task GetQty()
-        //{
-        //    if (string.IsNullOrWhiteSpace(txtProductId.Text))
-        //        return;
-
-        //    try
-        //    {
-        //        qty = await productService.GetStock(txtProductId.Text);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message);
-        //    }
-        //}
-
         private void dataGridPurchaseModule_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
@@ -301,75 +286,7 @@ namespace InventoryManagement
             selectedRowIndex = -1;
             isEditMode = false;
         }
-
-        //private string GetProductName(int pid)
-        //{
-        //    using (MySqlConnection cons = new MySqlConnection(con.ConnectionString))
-        //    {
-        //        cons.Open();
-        //        cmd = new MySqlCommand("SELECT pName FROM tbproduct WHERE pcode=@pcode", cons);
-        //        cmd.Parameters.AddWithValue("@pcode", pid);
-        //        object result = cmd.ExecuteScalar();
-        //        return result?.ToString() ?? "";
-        //    }
-        //}
-
-        //private void LoadExistingOrder()
-        //{
-        //    string noOrder = txtBoxNoOrder.Text.Trim();
-        //    if (noOrder == "") return;
-
-        //    using (MySqlConnection cons = new MySqlConnection(con.ConnectionString))
-        //    {
-        //        cons.Open();
-
-        //        MySqlCommand cmd = new MySqlCommand(
-        //            "SELECT odate, vendor FROM tbpurchaseorder WHERE noOrder=@noOrder", cons);
-        //        cmd.Parameters.AddWithValue("@noOrder", noOrder);
-
-        //        MySqlDataReader dr = cmd.ExecuteReader();
-
-        //        if (!dr.Read())
-        //        {
-        //            dr.Close();
-        //            cons.Close();
-        //            return;
-        //        }
-
-        //        if (dr.Read())
-        //        {
-        //            dateTimePickerOrder.Value = Convert.ToDateTime(dr["odate"]);
-        //            txtVendorId.Text = dr["customerId"].ToString();
-        //        }
-        //        dr.Close();
-        //        cmd = new MySqlCommand(
-        //            @"SELECT pCode, qty, price, total
-        //            FROM tbpurchaseline
-        //            WHERE noOrder=@noOrder", cons
-        //        );
-        //        cmd.Parameters.AddWithValue("@noOrder", noOrder);
-
-        //        dr = cmd.ExecuteReader();
-
-        //        dataGridPurchaseModule.Rows.Clear();
-
-        //        while (dr.Read())
-        //        {
-        //            int pid = Convert.ToInt32(dr["pCode"]);
-        //            int qty = Convert.ToInt32(dr["qty"]);
-        //            int price = Convert.ToInt32(dr["price"]);
-        //            int total = Convert.ToInt32(dr["total"]);
-
-        //            string name = GetProductName(pid);
-
-        //            dataGridPurchaseModule.Rows.Add(pid, name, qty, price, total);
-        //        }
-
-        //        dr.Close();
-        //        cons.Close();
-        //    }
-        //}
-
+        
         private async void txtBoxNoOrder_Leave(object sender, EventArgs e)
         {
             string noOrder = txtBoxNoOrder.Text?.Trim();
@@ -723,48 +640,5 @@ namespace InventoryManagement
                 }
             }
         }
-
-        //private void GenerateJournal(string noOrder, double finalPrice)
-        //{
-        //    int accountCash = 1;
-        //    int accountPurchase = 3;
-
-        //    using (SqlConnection cons = new SqlConnection(con.ConnectionString))
-        //    {
-        //        con.Open();
-        //        SqlCommand cmdJE = new SqlCommand(@"
-        //        INSERT INTO JournalEntry (date, reference, description, total_debit, total_credit, posted)
-        //        VALUES (@date, @ref, @desc, @debit, @credit,1);
-        //        ", cons);
-        //        cmdJE.Parameters.AddWithValue("@date", DateTime.Now);
-        //        cmdJE.Parameters.AddWithValue("@ref", noOrder);
-        //        cmdJE.Parameters.AddWithValue("@desc", "Purchase Order " + noOrder);
-        //        cmdJE.Parameters.AddWithValue("@debit", finalPrice);
-        //        cmdJE.Parameters.AddWithValue("@credit", finalPrice);
-
-        //        int journalEntryId = Convert.ToInt32(cmdJE.ExecuteScalar());
-
-        //        SqlCommand cmdDebit = new SqlCommand(@"
-        //        INSERT INTO JournalItem (journal_entry_id, account_id, debit, credit, description)
-        //        VALUES (@jeId, @acc, @debit, 0, @desc);
-        //        ", cons);
-
-        //        cmdDebit.Parameters.AddWithValue("@jeId", journalEntryId);
-        //        cmdDebit.Parameters.AddWithValue("@acc", accountCash);
-        //        cmdDebit.Parameters.AddWithValue("@debit", finalPrice);
-        //        cmdDebit.Parameters.AddWithValue("@desc", "Penerimaan Kas Penjualan");
-        //        cmdDebit.ExecuteNonQuery();
-
-        //        SqlCommand cmdCredit = new SqlCommand(@"
-        //        INSERT INTO JournalItem(journal_entry_id, account_id, debit, credit, description)
-        //        VALUES (@jeId, @acc, 0, @credit, @desc);
-        //        ", cons);
-        //        cmdCredit.Parameters.AddWithValue("@jeId", journalEntryId);
-        //        cmdCredit.Parameters.AddWithValue("@acc", accountPurchase);
-        //        cmdCredit.Parameters.AddWithValue("@credit", finalPrice);
-        //        cmdCredit.Parameters.AddWithValue("@desc", "Pembelian Barang");
-        //        cmdCredit.ExecuteNonQuery();
-        //    }
-        //}
     }
 }

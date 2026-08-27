@@ -346,6 +346,7 @@
             this.btnDelete.TabIndex = 44;
             this.btnDelete.Text = "Delete";
             this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // btnSaveDetail
             // 
@@ -443,6 +444,7 @@
             this.btnCreate.TabIndex = 38;
             this.btnCreate.Text = "Create Order";
             this.btnCreate.UseVisualStyleBackColor = true;
+            this.btnCreate.Click += new System.EventHandler(this.btnCreate_Click);
             // 
             // label13
             // 
