@@ -29,6 +29,5 @@ namespace InventoryManagement.Models
         public int price { get; set; }
         public int qty { get; set; }
         public int total { get; set; }
-        public string customer { get; set; }
     }
 }

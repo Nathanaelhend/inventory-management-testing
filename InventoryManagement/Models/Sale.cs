@@ -10,7 +10,7 @@ namespace InventoryManagement.models
     {
         public string noOrder { get; set; }
         public DateTime odate { get; set; }
-        public string customer { get; set; }
+        public string customerId { get; set; }
         public float dpp { get; set; }
         public float discPrs { get; set; }
         public float discRph { get; set; }

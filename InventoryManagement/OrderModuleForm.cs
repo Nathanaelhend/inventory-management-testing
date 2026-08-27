@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace InventoryManagement
 {
@@ -111,13 +112,13 @@ namespace InventoryManagement
                 {
                     txtBoxNoOrder.Text = detail.header.noOrder;
                     dateTimePickerOrder.Value = detail.header.odate;
-                    txtCustId.Text = detail.header.customer;
+                    txtCustId.Text = detail.header.customerId;
 
                     try
                     {
                         PartnerService partnerService = new PartnerService();
                         var partners = await partnerService.GetPartner();
-                        var cust = partners.FirstOrDefault(p => p.ccode == detail.header.customer);
+                        var cust = partners.FirstOrDefault(p => p.ccode == detail.header.customerId);
                         if (cust != null)
                         {
                             txtCustName.Text = cust.cname;
@@ -125,7 +126,7 @@ namespace InventoryManagement
                     }
                     catch
                     {
-                        txtCustName.Text = detail.header.customer;
+                        txtCustName.Text = detail.header.customerId;
                     }
 
                     txtDpp.Text = detail.header.dpp.ToString("N0", new CultureInfo("id-ID"));
@@ -138,7 +139,7 @@ namespace InventoryManagement
                     dataGridOrderModule.Rows.Clear();
                     foreach (var line in detail.lines)
                     {
-                        dataGridOrderModule.Rows.Add(line.pcode, line.pName, line.qty, line.price, line.total);
+                        dataGridOrderModule.Rows.Add(line.pcode, line.pName, line.price, line.qty, line.total);
                     }
                 }
 
@@ -167,7 +168,7 @@ namespace InventoryManagement
                 {
                     foreach (var line in detail.lines)
                     {
-                        dataGridOrderModule.Rows.Add(line.pcode, line.pName, line.qty, line.price, line.total);
+                        dataGridOrderModule.Rows.Add(line.pcode, line.pName, line.price, line.qty, line.total);
                     }
                 }
 
@@ -248,7 +249,7 @@ namespace InventoryManagement
 
         private void numericQty_ValueChanged(object sender, EventArgs e)
         {
-            if (Convert.ToInt32(numericQty.Value) > qty)
+            if (Convert.ToInt32(numericQty.Value) > qty && isEditMode == false)
             {
                 MessageBox.Show("Instock quantity is not enough!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 numericQty.Value = numericQty.Value - 1;
@@ -281,7 +282,7 @@ namespace InventoryManagement
             txtProductId.Text = dataGridProduct.Rows[e.RowIndex].Cells[0].Value.ToString();
             txtProductName.Text = dataGridProduct.Rows[e.RowIndex].Cells[1].Value.ToString();
             txtPrice.Text = dataGridProduct.Rows[e.RowIndex].Cells[3].Value.ToString();
-            qty = Convert.ToInt32(dataGridProduct.Rows[e.RowIndex].Cells[2].Value.ToString());
+            qty = Convert.ToInt32(dataGridProduct.Rows[e.RowIndex].Cells[3].Value.ToString());
         }
 
         private void Clear()
@@ -321,8 +322,8 @@ namespace InventoryManagement
 
             txtProductId.Text = row.Cells[0].Value.ToString();
             txtProductName.Text = row.Cells[1].Value.ToString();
-            txtPrice.Text = row.Cells[3].Value.ToString();
-            numericQty.Value = Convert.ToInt32(row.Cells[2].Value);
+            txtPrice.Text = row.Cells[2].Value.ToString();
+            numericQty.Value = Convert.ToInt32(row.Cells[3].Value);
             txtTotal.Text = row.Cells[4].Value.ToString();
         }
 
@@ -455,7 +456,7 @@ namespace InventoryManagement
         {
             string noOrder = txtBoxNoOrder.Text?.Trim();
 
-            if(string.IsNullOrWhiteSpace(noOrder))
+            if (string.IsNullOrWhiteSpace(noOrder))
             {
                 MessageBox.Show("Order number is required.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -507,7 +508,7 @@ namespace InventoryManagement
             {
                 noOrder = noOrder,
                 odate = dateTimePickerOrder.Value,
-                customer = txtCustId.Text,
+                customerId = txtCustId.Text,
                 dpp = Convert.ToSingle(dppDec),
                 discPrs = Convert.ToSingle(discPrsDec),
                 discRph = Convert.ToSingle(discRphDec),
@@ -570,14 +571,29 @@ namespace InventoryManagement
             var row = dataGridOrderModule.Rows[selectedRowIndex];
             string pcode = row.Cells[0].Value.ToString();
             string noOrder = txtBoxNoOrder.Text?.Trim();
+            int rowCount = dataGridOrderModule.Rows.Count;
 
-            if(string.IsNullOrWhiteSpace(noOrder))
+            if (string.IsNullOrWhiteSpace(noOrder))
             {
                 MessageBox.Show("Order number is required.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            if (MessageBox.Show($"Yakin menghapus line {pcode}?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (rowCount <= 1)
+            {
+                if(MessageBox.Show($"Yakin menghapus order {noOrder}?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                try
+                {
+                    await saleService.DeleteSale(noOrder);
+                    MessageBox.Show("Order deleted successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to delete order: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else if(MessageBox.Show($"Yakin menghapus line {pcode}?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 try
                 {
@@ -587,7 +603,6 @@ namespace InventoryManagement
                     ClearProduct();
                     selectedRowIndex = -1;
                     isEditMode = false;
-
                 }
                 catch (Exception ex)
                 {
@@ -620,7 +635,6 @@ namespace InventoryManagement
                 qty = qtyInt,
                 price = Convert.ToInt32(Math.Round(priceDecimal)),
                 total = Convert.ToInt32(Math.Round(totalDecimal)),
-                customer = txtCustId.Text
             };
 
             string noOrder = txtBoxNoOrder.Text?.Trim();

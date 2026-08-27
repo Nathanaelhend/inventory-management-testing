@@ -114,9 +114,9 @@ public class SaleService
         }
     }
 
-    public async Task DeleteSale(string noOrder, string pcode)
+    public async Task DeleteSale(string noOrder)
     {
-        var response = await _http.DeleteAsync($"api/sales/{noOrder}/lines/{pcode}");
+        var response = await _http.DeleteAsync($"api/sales/{Uri.EscapeUriString(noOrder)}");
         var body = await response.
             Content.ReadAsStringAsync();
 
