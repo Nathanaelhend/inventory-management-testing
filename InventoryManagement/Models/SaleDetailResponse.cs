@@ -15,18 +15,18 @@ namespace InventoryManagement.Models
 
     public class SaleLine
     {
-        public string prCode { get; set; }
+        public string pcode { get; set; }
         public string pName { get; set; }
         public int qty { get; set; }
-        public int pPrice { get; set; }
+        public int price { get; set; }
         public int total { get; set; }
     }
 
     public class SaleLineRequest
     {
-        public DateTime prDate { get; set; }
-        public string prCode { get; set; }
-        public int pPrice { get; set; }
+        public DateTime odate { get; set; }
+        public string pcode { get; set; }
+        public int price { get; set; }
         public int qty { get; set; }
         public int total { get; set; }
         public string customer { get; set; }

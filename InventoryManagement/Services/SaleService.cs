@@ -81,22 +81,22 @@ public class SaleService
         }
     }
 
-    public async Task DeleteLine(string noOrder, string prCode)
+    public async Task DeleteLine(string noOrder, string pcode)
     {
-        var response = await _http.DeleteAsync($"api/sales/{noOrder}/lines/{prCode}");
+        var response = await _http.DeleteAsync($"api/sales/{noOrder}/lines/{pcode}");
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task UpdateLine(string noOrder, string prCode, SaleLineRequest line)
+    public async Task UpdateLine(string noOrder, string pcode, SaleLineRequest line)
     {
         var content = new StringContent(JsonConvert.SerializeObject(line), Encoding.UTF8, "application/json");
 
-        var response = await _http.PutAsync($"api/sales/{noOrder}/lines/{prCode}", content);
+        var response = await _http.PutAsync($"api/sales/{noOrder}/lines/{pcode}", content);
 
         if(!response.IsSuccessStatusCode)
         {
             var err = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Failed to update line {prCode} in sale {noOrder}: {(int)response.StatusCode} ({response.StatusCode})\n{err}");
+            throw new Exception($"Failed to update line {pcode} in sale {noOrder}: {(int)response.StatusCode} ({response.StatusCode})\n{err}");
         }
     }
 
@@ -114,9 +114,9 @@ public class SaleService
         }
     }
 
-    public async Task DeletePurchase(string noOrder, string prCode)
+    public async Task DeleteSale(string noOrder, string pcode)
     {
-        var response = await _http.DeleteAsync($"api/sales/{noOrder}/lines/{prCode}");
+        var response = await _http.DeleteAsync($"api/sales/{noOrder}/lines/{pcode}");
         var body = await response.
             Content.ReadAsStringAsync();
 
@@ -126,7 +126,7 @@ public class SaleService
         }
     }
 
-    public async Task CancelPurchase(string noOrder)
+    public async Task CancelSale(string noOrder)
     {
         var response = await _http.PutAsync($"api/sales/{Uri.EscapeDataString(noOrder)}/cancel", null);
         var body = await response.Content.ReadAsStringAsync();

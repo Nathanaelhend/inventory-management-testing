@@ -138,7 +138,7 @@ namespace InventoryManagement
                     dataGridOrderModule.Rows.Clear();
                     foreach (var line in detail.lines)
                     {
-                        dataGridOrderModule.Rows.Add(line.prCode, line.pName, line.qty, line.pPrice, line.total);
+                        dataGridOrderModule.Rows.Add(line.pcode, line.pName, line.qty, line.price, line.total);
                     }
                 }
 
@@ -167,7 +167,7 @@ namespace InventoryManagement
                 {
                     foreach (var line in detail.lines)
                     {
-                        dataGridOrderModule.Rows.Add(line.prCode, line.pName, line.qty, line.pPrice, line.total);
+                        dataGridOrderModule.Rows.Add(line.pcode, line.pName, line.qty, line.price, line.total);
                     }
                 }
 
@@ -568,7 +568,7 @@ namespace InventoryManagement
             }
 
             var row = dataGridOrderModule.Rows[selectedRowIndex];
-            string prCode = row.Cells[0].Value.ToString();
+            string pcode = row.Cells[0].Value.ToString();
             string noOrder = txtBoxNoOrder.Text?.Trim();
 
             if(string.IsNullOrWhiteSpace(noOrder))
@@ -577,11 +577,11 @@ namespace InventoryManagement
                 return;
             }
 
-            if (MessageBox.Show($"Yakin menghapus line {prCode}?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show($"Yakin menghapus line {pcode}?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 try
                 {
-                    await saleService.DeleteLine(noOrder, prCode);
+                    await saleService.DeleteLine(noOrder, pcode);
                     MessageBox.Show("Order line deleted successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await LoadOrderLines();
                     ClearProduct();
@@ -615,10 +615,10 @@ namespace InventoryManagement
 
             var detail = new SaleLineRequest
             {
-                prDate = dateTimePickerOrder.Value,
-                prCode = txtProductId.Text,
+                odate = dateTimePickerOrder.Value,
+                pcode = txtProductId.Text,
                 qty = qtyInt,
-                pPrice = Convert.ToInt32(Math.Round(priceDecimal)),
+                price = Convert.ToInt32(Math.Round(priceDecimal)),
                 total = Convert.ToInt32(Math.Round(totalDecimal)),
                 customer = txtCustId.Text
             };
