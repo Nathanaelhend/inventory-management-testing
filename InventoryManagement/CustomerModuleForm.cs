@@ -40,47 +40,6 @@ namespace InventoryManagement
             );
         }
 
-        private async Task btnSave_Click(object sender, EventArgs e)
-        {
-            if (!ValidateForm())
-            {
-                ShowAllErrors();
-                return;
-            }
-            string cType = rbCustomer.Checked ? "Customer" : "Vendor";
-
-            try
-            {
-                Partner partner = new Partner
-                {
-                    ccode = txtCustCode.Text,
-                    cname = txtName.Text,
-                    cphone = txtPhone.Text,
-                    cType = cType,
-                };
-
-                PartnerService service = new PartnerService();
-                await service.AddPartner(partner);
-
-                MessageBox.Show("Data Partner Successfully Saved!");
-
-                this.DialogResult = DialogResult;
-                this.Close();
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains("Duplicate"))
-                {
-                    MessageBox.Show(
-                        $"Partner dengankode '{txtCustCode.Text} dan tipe '{cType} sudah ada.", "Duplicate Data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                else
-                {
-                    MessageBox.Show("Save failed: " + ex.Message);
-                }
-            }
-        }
-
         private void Clear()
         {
             txtName.Clear();
@@ -165,6 +124,47 @@ namespace InventoryManagement
                     ? "Partner name is required"
                     : ""
             );
+        }
+
+        private async void btnSave_Click(object sender, EventArgs e)
+        {
+            if (!ValidateForm())
+            {
+                ShowAllErrors();
+                return;
+            }
+            string cType = rbCustomer.Checked ? "Customer" : "Vendor";
+
+            try
+            {
+                Partner partner = new Partner
+                {
+                    ccode = txtCustCode.Text,
+                    cname = txtName.Text,
+                    cphone = txtPhone.Text,
+                    cType = cType,
+                };
+
+                PartnerService service = new PartnerService();
+                await service.AddPartner(partner);
+
+                MessageBox.Show("Data Partner Successfully Saved!");
+
+                this.DialogResult = DialogResult;
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Duplicate"))
+                {
+                    MessageBox.Show(
+                        $"Partner dengankode '{txtCustCode.Text} dan tipe '{cType} sudah ada.", "Duplicate Data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    MessageBox.Show("Save failed: " + ex.Message);
+                }
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InventoryManagement.Models;
+using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -8,6 +9,7 @@ namespace InventoryManagement
     public partial class PurchaseForm : Form
     {
         PurchaseService purchaseService = new PurchaseService();
+        StockMoveService stockMoveService = new StockMoveService();
 
         public PurchaseForm()
         {
@@ -45,7 +47,7 @@ namespace InventoryManagement
             moduleForm.ShowDialog();
         }
 
-        private void dataGridOrder_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private async void dataGridOrder_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
 
@@ -66,7 +68,7 @@ namespace InventoryManagement
                 // Refresh grid after edit
                 LoadPO();
             }
-            else if(colName == "Delete")
+            else if (colName == "Delete")
             {
                 if (string.IsNullOrWhiteSpace(noOrder))
                 {
@@ -85,6 +87,37 @@ namespace InventoryManagement
                     {
                         MessageBox.Show($"Failed to delete order {noOrder}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                }
+            }
+            else if (colName == "Confirm")
+            {
+                try
+                {
+                    var detail = await purchaseService.GetPurchaseById(noOrder);
+
+                    if (detail?.lines != null)
+                    {
+                        foreach (var line in detail.lines)
+                        {
+                            var stockMove = new StockMove
+                            {
+                                name = $"IN//{noOrder}",
+                                pcode = line.prCode,
+                                qty = line.qty,
+                                type = "IN",
+                                mref = noOrder,
+                                @ref = noOrder,
+                                type_line = "IN"
+                            };
+
+                            await stockMoveService.CreateStockMove(stockMove);
+                        }
+                    }
+                    MessageBox.Show($"Order {noOrder} confirmed and stock moves created.", "Confirmed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to confirm order {noOrder}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

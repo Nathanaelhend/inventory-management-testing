@@ -48,6 +48,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panelMain = new System.Windows.Forms.Panel();
+            this.label10 = new System.Windows.Forms.Label();
+            this.btnReceipt = new InventoryManagement.CustomerButton();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.btnCOA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -56,11 +58,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.btnCategories)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnCustomer)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnProduct)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btnReceipt)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.MediumSpringGreen;
+            this.panel1.Controls.Add(this.label10);
+            this.panel1.Controls.Add(this.btnReceipt);
             this.panel1.Controls.Add(this.label9);
             this.panel1.Controls.Add(this.btnCOA);
             this.panel1.Controls.Add(this.pictureBox1);
@@ -276,6 +281,28 @@
             this.panelMain.Size = new System.Drawing.Size(984, 487);
             this.panelMain.TabIndex = 2;
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(749, 73);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(61, 16);
+            this.label10.TabIndex = 20;
+            this.label10.Text = "Receipt";
+            // 
+            // btnReceipt
+            // 
+            this.btnReceipt.Image = ((System.Drawing.Image)(resources.GetObject("btnReceipt.Image")));
+            this.btnReceipt.ImageHover = ((System.Drawing.Image)(resources.GetObject("btnReceipt.ImageHover")));
+            this.btnReceipt.ImageNormal = ((System.Drawing.Image)(resources.GetObject("btnReceipt.ImageNormal")));
+            this.btnReceipt.Location = new System.Drawing.Point(755, 22);
+            this.btnReceipt.Name = "btnReceipt";
+            this.btnReceipt.Size = new System.Drawing.Size(55, 48);
+            this.btnReceipt.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.btnReceipt.TabIndex = 21;
+            this.btnReceipt.TabStop = false;
+            this.btnReceipt.Click += new System.EventHandler(this.btnReceipt_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
@@ -299,6 +326,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.btnCategories)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnCustomer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnProduct)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btnReceipt)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -324,5 +352,7 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label9;
         private CustomerButton btnCOA;
+        private System.Windows.Forms.Label label10;
+        private CustomerButton btnReceipt;
     }
 }

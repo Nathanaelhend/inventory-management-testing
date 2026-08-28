@@ -79,6 +79,7 @@
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnConfirm = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
             this.txtProductName = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
@@ -546,6 +547,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.btnConfirm);
             this.panel2.Controls.Add(this.label26);
             this.panel2.Controls.Add(this.txtFinalPrice);
             this.panel2.Controls.Add(this.lblDisc);
@@ -586,6 +588,15 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(735, 549);
             this.panel2.TabIndex = 19;
+            // 
+            // btnConfirm
+            // 
+            this.btnConfirm.Location = new System.Drawing.Point(343, 497);
+            this.btnConfirm.Name = "btnConfirm";
+            this.btnConfirm.Size = new System.Drawing.Size(121, 23);
+            this.btnConfirm.TabIndex = 61;
+            this.btnConfirm.Text = "Confirm Order";
+            this.btnConfirm.UseVisualStyleBackColor = true;
             // 
             // label12
             // 
@@ -862,5 +873,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn vendorId;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.ErrorProvider errorProvider1;
+        public System.Windows.Forms.Button btnConfirm;
     }
 }

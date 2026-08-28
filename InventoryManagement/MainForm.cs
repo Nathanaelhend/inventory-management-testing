@@ -68,6 +68,11 @@ namespace InventoryManagement
         {
             openChildForm(new PurchaseForm());
         }
+
+        private void btnReceipt_Click(object sender, EventArgs e)
+        {
+            openChildForm(new StockMoveForm());
+        }
     }
 }
     
