@@ -156,6 +156,8 @@
     <Compile Include="Models\PurchaseDetailResponse.cs" />
     <Compile Include="Models\Sale.cs" />
     <Compile Include="Models\SaleDetailResponse.cs" />
+    <Compile Include="Models\StockMove.cs" />
+    <Compile Include="Models\StockMoveResponse.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="PurchaseForm.cs">
       <SubType>Form</SubType>
@@ -200,6 +202,7 @@
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\PurchaseService.cs" />
     <Compile Include="Services\SaleService.cs" />
+    <Compile Include="Services\StockMoveService.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="UserForm.cs">
       <SubType>Form</SubType>
