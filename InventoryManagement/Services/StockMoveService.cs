@@ -35,7 +35,6 @@ public class StockMoveService
                ?? new List<StockMove>();
     }
 
-    public async Task CreateStockMove(StockMove request)
     {
         var content = new StringContent(
             JsonConvert.SerializeObject(request),
@@ -57,5 +56,7 @@ public class StockMoveService
                 $"{(int)response.StatusCode} ({response.StatusCode})\n{json}"
             );
         }
+
+        return JsonConvert.DeserializeObject<StockMoveCreateResponse>(json);
     }
 }

@@ -8,7 +8,6 @@ namespace InventoryManagement.Models
 {
     public class StockMove
     {
-        public string name { get; set; }
         public string pcode { get; set; }
         public int qty { get; set; }
         public int qty_real { get; set; }
