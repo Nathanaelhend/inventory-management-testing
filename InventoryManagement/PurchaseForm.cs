@@ -31,7 +31,7 @@ namespace InventoryManagement
                 {
                     i++;
                     System.Diagnostics.Debug.WriteLine($"PO[{i}]: {pr.noOrder} - {pr.vendor} - {pr.netAmount}");
-                    dataGridOrder.Rows.Add(pr.noOrder, pr.odate.ToShortDateString(), pr.vendor, pr.netAmount.ToString("N0", new CultureInfo("id-ID")));
+                    dataGridOrder.Rows.Add(pr.noOrder, pr.odate.ToShortDateString(), pr.vendor, pr.netAmount.ToString("N0", new CultureInfo("id-ID")), pr.state);
                 }
             }
             catch (Exception ex)
@@ -95,6 +95,8 @@ namespace InventoryManagement
                 {
                     var detail = await purchaseService.GetPurchaseById(noOrder);
 
+                    var purchase = new Purchase();
+
                     if (detail?.lines != null)
                     {
                         foreach (var line in detail.lines)
@@ -112,12 +114,51 @@ namespace InventoryManagement
 
                             await stockMoveService.CreateStockMove(stockMove);
                         }
+
+                        foreach(var data in purchase)
+                        {
+                            var po = new Purchase
+                            {
+                                odate = data.odate,
+                                vendor = data.vendor,
+                                discPrs = data.discPrs,
+                                discRph = data.discRph,
+                                dpp = data.dpp,
+                                netAmount = data.netAmount,
+                                state = "CONFIRM"
+                            };
+
+                            await purchaseService.UpdatePurchase(noOrder, po);
+                            LoadPO();
+                        }
+
                     }
                     MessageBox.Show($"Order {noOrder} confirmed and stock moves created.", "Confirmed", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Failed to confirm order {noOrder}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void dataGridOrder_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            // Cek apakah ini kolom tombol "Action" dan bukan header row
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0 && dataGridOrder.Columns[e.ColumnIndex].Name == "Action")
+            {
+                var row = dataGridOrder.Rows[e.RowIndex];
+
+                // Ambil nilai kolom State (pastikan penulisan "state" atau "State" sesuai Name kolom)
+                string state = row.Cells["State"].Value?.ToString()?.Trim().ToUpper();
+
+                if (state != "DRAFT")
+                {
+                    // Menggambar latar belakang sel biasa (tanpa bingkai tombol)
+                    e.Paint(e.CellBounds, DataGridViewPaintParts.Background | DataGridViewPaintParts.Border);
+
+                    // Tandai bahwa penggambaran sel sudah ditangani (jangan gambar tombol bawaan)
+                    e.Handled = true;
                 }
             }
         }

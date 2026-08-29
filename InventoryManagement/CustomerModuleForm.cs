@@ -150,7 +150,7 @@ namespace InventoryManagement
 
                 MessageBox.Show("Data Partner Successfully Saved!");
 
-                this.DialogResult = DialogResult;
+                this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             catch (Exception ex)

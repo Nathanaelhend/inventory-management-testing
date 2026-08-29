@@ -29,5 +29,6 @@ namespace InventoryManagement.Models
         public int qty { get; set; }
         public int total { get; set; }
         public string vendor { get; set; }
+        public string state { get; set; }
     }
 }

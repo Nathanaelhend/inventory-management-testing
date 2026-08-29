@@ -17,5 +17,6 @@ namespace InventoryManagement.Models
         public float ppnPrs { get; set; }
         public float ppnRph { get; set; }
         public float netAmount { get; set; }
+        public string state { get; set; }
     }
 }

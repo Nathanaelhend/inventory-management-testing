@@ -35,8 +35,7 @@ public class StockMoveService
                ?? new List<StockMove>();
     }
 
-    public async Task CreateStockMove(StockMove request)
-    {
+    public async Task CreateStockMove(StockMove request) {
         var content = new StringContent(
             JsonConvert.SerializeObject(request),
             Encoding.UTF8,

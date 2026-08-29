@@ -441,6 +441,7 @@ namespace InventoryManagement
                 pPrice = Convert.ToInt32(Math.Round(priceDecimal)),
                 qty = qtyInt,
                 total = Convert.ToInt32(Math.Round(totalDecimal)),
+                state = "CONFIRM",
                 vendor = txtVendorId.Text
             };
 
@@ -550,7 +551,8 @@ namespace InventoryManagement
                 discRph = (float)discRphDec,
                 ppnPrs = (float)ppnPrsDec,
                 ppnRph = (float)ppnRphDec,
-                netAmount = (float)netAmountDec
+                netAmount = (float)netAmountDec,
+                state = "CONFIRM"
             };
 
             try
