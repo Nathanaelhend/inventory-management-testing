@@ -32,7 +32,8 @@ namespace InventoryManagement
                     dataGridSM.Rows.Add(
                         stockMove.name,
                         stockMove.type,
-                        stockMove.@ref
+                        stockMove.@ref,
+                        stockMove.state
                     );
                 }
 
@@ -40,6 +41,20 @@ namespace InventoryManagement
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void dataGridSM_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            string colName = dataGridSM.Columns[e.ColumnIndex].Name;
+            string name = dataGridSM.Rows[e.RowIndex].Cells[0].Value?.ToString();
+
+            if(colName == "Edit")
+            {
+                ReceiptDetailForm receiptDetail = new ReceiptDetailForm(name);
+                receiptDetail.ShowDialog();
             }
         }
     }

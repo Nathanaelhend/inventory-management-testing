@@ -65,7 +65,6 @@ namespace InventoryManagement
                 PurchaseModuleForm moduleForm = new PurchaseModuleForm(noOrder);
                 moduleForm.ShowDialog();
 
-                // Refresh grid after edit
                 LoadPO();
             }
             else if (colName == "Delete")
@@ -89,51 +88,52 @@ namespace InventoryManagement
                     }
                 }
             }
-            else if (colName == "Confirm")
+            else if (colName == "Confirm" || (e.RowIndex < 0 || e.ColumnIndex < 0))
             {
                 try
                 {
-                    var detail = await purchaseService.GetPurchaseById(noOrder);
+                    PurchaseDetailResponse detail = await purchaseService.GetPurchaseById(noOrder);
 
-                    var purchase = new Purchase();
-
-                    if (detail?.lines != null)
+                    if (detail?.lines != null && detail.lines.Count > 0)
                     {
                         foreach (var line in detail.lines)
                         {
                             var stockMove = new StockMove
                             {
-                                name = $"IN//{noOrder}",
+                                name = $"IN/{noOrder}",
                                 pcode = line.prCode,
                                 qty = line.qty,
                                 type = "IN",
                                 mref = noOrder,
                                 @ref = noOrder,
-                                type_line = "IN"
+                                type_line = "IN",
+                                state = "DRAFT"
                             };
 
                             await stockMoveService.CreateStockMove(stockMove);
                         }
-
-                        foreach(var data in purchase)
-                        {
-                            var po = new Purchase
-                            {
-                                odate = data.odate,
-                                vendor = data.vendor,
-                                discPrs = data.discPrs,
-                                discRph = data.discRph,
-                                dpp = data.dpp,
-                                netAmount = data.netAmount,
-                                state = "CONFIRM"
-                            };
-
-                            await purchaseService.UpdatePurchase(noOrder, po);
-                            LoadPO();
-                        }
-
                     }
-                    MessageBox.Show($"Order {noOrder} confirmed and stock moves created.", "Confirmed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (detail.header != null)
+                    {
+                        var po = new Purchase
+                        {
+                            noOrder = detail.header.noOrder,
+                            odate = detail.header.odate,
+                            vendor = detail.header.vendor,
+                            dpp = detail.header.dpp,
+                            discPrs = detail.header.discPrs,
+                            discRph = detail.header.discRph,
+                            ppnPrs = detail.header.ppnPrs,
+                            ppnRph = detail.header.ppnRph,
+                            netAmount = detail.header.netAmount,
+                            state = "CONFIRMED"
+                        };
+
+                        await purchaseService.UpdatePurchase(noOrder, po);
+                    }
+                    await LoadPO();
+
+                    MessageBox.Show($"Order {noOrder} confirmed successfully.", "Confirmed", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
@@ -144,23 +144,26 @@ namespace InventoryManagement
 
         private void dataGridOrder_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            // Cek apakah ini kolom tombol "Action" dan bukan header row
-            if (e.RowIndex >= 0 && e.ColumnIndex >= 0 && dataGridOrder.Columns[e.ColumnIndex].Name == "Action")
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
-                var row = dataGridOrder.Rows[e.RowIndex];
-
-                // Ambil nilai kolom State (pastikan penulisan "state" atau "State" sesuai Name kolom)
-                string state = row.Cells["State"].Value?.ToString()?.Trim().ToUpper();
-
-                if (state != "DRAFT")
+                if (dataGridOrder.Columns[e.ColumnIndex].Name.Equals("Confirm", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Menggambar latar belakang sel biasa (tanpa bingkai tombol)
-                    e.Paint(e.CellBounds, DataGridViewPaintParts.Background | DataGridViewPaintParts.Border);
+                    var row = dataGridOrder.Rows[e.RowIndex];
 
-                    // Tandai bahwa penggambaran sel sudah ditangani (jangan gambar tombol bawaan)
-                    e.Handled = true;
+                    string state = row.Cells["State"].Value?.ToString()?.Trim().ToUpper();
+
+                    if (state != "DRAFT")
+                    {
+                        e.Paint(e.CellBounds, DataGridViewPaintParts.Background | DataGridViewPaintParts.Border);
+                        e.Handled = true;
+                    }
                 }
             }
+        }
+
+        private void PurchaseForm_Load(object sender, EventArgs e)
+        {
+            dataGridOrder.CellPainting += dataGridOrder_CellPainting;
         }
     }
 }

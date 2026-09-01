@@ -441,7 +441,7 @@ namespace InventoryManagement
                 pPrice = Convert.ToInt32(Math.Round(priceDecimal)),
                 qty = qtyInt,
                 total = Convert.ToInt32(Math.Round(totalDecimal)),
-                state = "CONFIRM",
+                state = "DRAFT",
                 vendor = txtVendorId.Text
             };
 

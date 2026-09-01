@@ -35,6 +35,24 @@ public class StockMoveService
                ?? new List<StockMove>();
     }
 
+    public async Task<StockMoveCreateResponse> GetStockMoveByName(string name)
+    {
+        var url = $"api/stock-move/{Uri.EscapeDataString(name)}";
+        var response = await _http.GetAsync(url);
+        var json = await response.Content.ReadAsStringAsync();
+
+        if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Failed to get stock move by name: {(int)response.StatusCode} ({response.StatusCode})\n{json}");
+        }
+
+        return JsonConvert.DeserializeObject<StockMoveCreateResponse>(json);
+    }
+
     public async Task CreateStockMove(StockMove request) {
         var content = new StringContent(
             JsonConvert.SerializeObject(request),
