@@ -15,6 +15,8 @@ namespace InventoryManagement
 {
     public partial class PurchaseModuleForm : Form
     {
+        private ToolStripDropDown popUpContainer;
+
         int selectedRowIndex = -1;
         bool isEditMode = false;
         int qty = 0;
@@ -31,6 +33,37 @@ namespace InventoryManagement
             LoadProduct();
             LoadVendor();
             isEditMode = false;
+
+            SetupPopUpContainer();
+
+            txtBoxNoOrder.TabIndex = 0;
+            dateTimePickerOrder.TabIndex = 1;
+            txtProductId.TabIndex = 2;
+            dataGridVendor.TabIndex = 3;
+            numericQty.TabIndex = 4;
+            btnSaveDetail.TabIndex = 5;
+            txtDiscPrs.TabIndex = 6;
+            txtPPn.TabIndex = 7;
+            btnCreate.TabIndex = 8;
+
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Enter)
+            {
+                // Jangan ubah fungsi Enter jika user sedang berada di Button atau DataGridView
+                if (this.ActiveControl is Button || this.ActiveControl is DataGridView)
+                {
+                    return base.ProcessCmdKey(ref msg, keyData);
+                }
+
+                // Otomatis pindah ke kontrol selanjutnya berdasarkan TabIndex
+                this.SelectNextControl(this.ActiveControl, true, true, true, true);
+                return true; // Hilangkan suara "beep" Windows
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         // Constructor untuk mode EDIT
@@ -278,6 +311,8 @@ namespace InventoryManagement
             txtPrice.Text = row.Cells[3].Value.ToString();
             numericQty.Value = Convert.ToInt32(row.Cells[2].Value);
             txtTotal.Text = row.Cells[4].Value.ToString();
+
+            txtProductId.Focus();
         }
 
         private void btnClear_Click(object sender, EventArgs e)
@@ -309,43 +344,6 @@ namespace InventoryManagement
             }
 
             await LoadPurchaseLines();
-        }
-
-        private void txtDiscPrs_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            double dpp = 0;
-            double disc = 0;
-
-            if (e.KeyChar == (char)Keys.Enter)
-            {
-                double.TryParse(txtDpp.Text, out dpp);
-                double.TryParse(txtDiscPrs.Text, out disc);
-
-                double discRph = (disc / 100) * dpp;
-                lblDisc.Text = discRph.ToString();
-
-                double finalPrice = double.Parse(txtDpp.Text) - double.Parse(lblDisc.Text);
-                txtFinalPrice.Text = finalPrice.ToString();
-                txtDiscPrs.Focus();
-            }
-        }
-
-        private void txtPPn_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            double priceAftDisc = 0;
-            double ppn = 0;
-
-            if (e.KeyChar == (char)Keys.Enter)
-            {
-                double.TryParse(txtFinalPrice.Text, out priceAftDisc);
-                double.TryParse(txtPPn.Text, out ppn);
-
-                double ppnRph = (ppn / 100) * priceAftDisc;
-                lblPPn.Text = ppnRph.ToString();
-
-                double finalPrice = double.Parse(txtDpp.Text) - double.Parse(lblDisc.Text) + double.Parse(lblPPn.Text);
-                txtFinalPrice.Text = finalPrice.ToString();
-            }
         }
 
         private void PurchaseModuleForm_Load(object sender, EventArgs e)
@@ -476,6 +474,8 @@ namespace InventoryManagement
                 selectedRowIndex = -1;
                 isEditMode = false;
                 headerCreated = true;
+
+                txtProductId.Focus();
             }
             catch (Exception ex)
             {
@@ -640,6 +640,172 @@ namespace InventoryManagement
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        private void btnConfirm_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SetupPopUpContainer()
+        {
+            popUpContainer = new ToolStripDropDown
+            {
+                Margin = Padding.Empty,
+                Padding = Padding.Empty
+            };
+        }
+
+        private void ShowFloatingGrid(TextBox targetTextBox, DataGridView targetGrid, Size popupSize)
+        {
+            // Kosongkan item sebelumnya agar tidak menumpuk
+            popUpContainer.Items.Clear();
+
+            // Bungkus DataGridView target ke Host
+            targetGrid.Visible = true;
+            targetGrid.Size = popupSize;
+
+            ToolStripControlHost host = new ToolStripControlHost(targetGrid)
+            {
+                Margin = Padding.Empty,
+                Padding = Padding.Empty,
+                AutoSize = false,
+                Size = popupSize
+            };
+
+            popUpContainer.Items.Add(host);
+            popUpContainer.Size = popupSize;
+
+            // Tampilkan tepat di bawah TextBox target
+            popUpContainer.Show(targetTextBox, new Point(0, targetTextBox.Height));
+
+            // Pindahkan fokus ke grid agar bisa langsung navigasi panah/Enter
+            targetGrid.Focus();
+        }
+
+        private void txtVendorId_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+
+                ShowFloatingGrid(txtVendorId,dataGridVendor,new Size(500,200));
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                if (popUpContainer.Visible)
+                {
+                    popUpContainer.Close();
+                }
+            }
+        }
+
+        private void dataGridVendor_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                if (dataGridVendor.CurrentRow != null)
+                {
+                    txtVendorId.Text = dataGridVendor.CurrentRow.Cells[0].Value.ToString();
+                    txtVendorName.Text = dataGridVendor.CurrentRow.Cells[1].Value.ToString();
+                }
+                popUpContainer?.Close();
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                popUpContainer.Close();
+            }
+        }
+
+        private void txtProductId_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+
+                ShowFloatingGrid(txtProductId,dataGridProduct,new Size(500,200));
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                if (popUpContainer.Visible)
+                {
+                    popUpContainer.Close();
+                }
+
+                if(isEditMode == true)
+                {
+                    txtDiscPrs.Focus();
+                }
+            }
+        }
+
+        private void dataGridProduct_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (dataGridProduct.CurrentRow != null)
+                {
+                    txtProductId.Text = dataGridProduct.CurrentRow.Cells[0].Value.ToString();
+                    txtProductName.Text = dataGridProduct.CurrentRow.Cells[1].Value.ToString();
+                    txtPrice.Text = dataGridProduct.CurrentRow.Cells[3].Value.ToString();
+                }
+                popUpContainer.Close();
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                popUpContainer.Close();
+            }
+        }
+
+        private void txtBoxNoOrder_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(isEditMode == true)
+            {
+                if(e.KeyCode == Keys.Escape)
+                {
+                    txtDiscPrs.Focus();
+                }
+            }
+        }
+
+        private void txtDiscPrs_KeyDown(object sender, KeyEventArgs e)
+        {
+            double dpp = 0;
+            double disc = 0;
+
+            if (e.KeyCode == Keys.Enter)
+            {
+                double.TryParse(txtDpp.Text, out dpp);
+                double.TryParse(txtDiscPrs.Text, out disc);
+
+                double discRph = (disc / 100) * dpp;
+                lblDisc.Text = discRph.ToString();
+
+                double finalPrice = double.Parse(txtDpp.Text) - double.Parse(lblDisc.Text);
+                txtFinalPrice.Text = finalPrice.ToString();
+                txtPPn.Focus();
+            }
+        }
+
+        private void txtPPn_KeyDown(object sender, KeyEventArgs e)
+        {
+            double priceAftDisc = 0;
+            double ppn = 0;
+
+            if (e.KeyCode == Keys.Enter)
+            {
+                double.TryParse(txtFinalPrice.Text, out priceAftDisc);
+                double.TryParse(txtPPn.Text, out ppn);
+
+                double ppnRph = (ppn / 100) * priceAftDisc;
+                lblPPn.Text = ppnRph.ToString();
+
+                double finalPrice = double.Parse(txtDpp.Text) - double.Parse(lblDisc.Text) + double.Parse(lblPPn.Text);
+                txtFinalPrice.Text = finalPrice.ToString();
+                btnCreate.Focus();
             }
         }
     }

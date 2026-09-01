@@ -46,11 +46,13 @@ namespace InventoryManagement
                     foreach(var line in detail.lines)
                     {
                         dataGridReceipt.Rows.Add(
-                            line.pcode,
                             line.pName,
                             line.qty,
                             line.qty_real,
-                            line.@ref
+                            line.@ref,
+                            line.pcode,
+                            line.state,
+                            line.type_line
                         );
                     }
                 }
@@ -66,25 +68,77 @@ namespace InventoryManagement
             this.Dispose();
         }
 
-        private async Task btnSave_Click(object sender, EventArgs e)
+        private async void btnSave_Click(object sender, EventArgs e)
         {
             try
             {
-                foreach(DataGridViewRow row in dataGridReceipt.Rows)
+                foreach (DataGridViewRow row in dataGridReceipt.Rows)
                 {
-                    var item = new StockMoveLine
+                    ml.Add(new StockMoveLine
                     {
                         pcode = row.Cells["pcode"].Value?.ToString(),
                         pName = row.Cells["pname"].Value?.ToString(),
-                        qty = row.Cells["qty"].Value?.ToString(),
-                        qty_real = row.Cells["qty_real"].Value?.ToString(),
-                        @ref = row.Cells["ref"].Value?.ToString()
-                    };
-
-                    ml.Add(item);
-
-                    await stockMoveService.
+                        qty = Convert.ToInt32(row.Cells["qty"].Value ?? 0),
+                        qty_real = Convert.ToInt32(row.Cells["qty_real"].Value ?? 0),
+                        @ref = row.Cells["ref"].Value?.ToString(),
+                        state = row.Cells["state"].Value?.ToString(),
+                        type_line = row.Cells["line_type"].Value?.ToString()
+                    });
                 }
+
+                var payload = new StockMoveDetailResponse
+                {
+                    header = new StockMoveHeader
+                    {
+                        name = nameSM,
+                    },
+                    lines = ml
+                };
+
+                await stockMoveService.UpdateReceipt(nameSM, payload);
+
+                MessageBox.Show($"Receipt {nameSM} updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async void btnConfirm_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                foreach (DataGridViewRow row in dataGridReceipt.Rows)
+                {
+                    ml.Add(new StockMoveLine
+                    {
+                        pcode = row.Cells["pcode"].Value?.ToString(),
+                        pName = row.Cells["pname"].Value?.ToString(),
+                        qty = Convert.ToInt32(row.Cells["qty"].Value ?? 0),
+                        qty_real = Convert.ToInt32(row.Cells["qty_real"].Value ?? 0),
+                        @ref = row.Cells["ref"].Value?.ToString(),
+                        state = "CONFIRM",
+                        type_line = row.Cells["line_type"].Value?.ToString()
+                    });
+                }
+
+                var payload = new StockMoveDetailResponse
+                {
+                    header = new StockMoveHeader
+                    {
+                        name = nameSM,
+                    },
+                    lines = ml
+                };
+
+                await stockMoveService.ConfirmReceipt(nameSM, payload);
+
+                MessageBox.Show($"Receipt {nameSM} updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
     }

@@ -76,7 +76,7 @@ public class StockMoveService
         }
     }
 
-    public async Task UpdateReceipt(string name, StockMove sm)
+    public async Task UpdateReceipt(string name, StockMoveDetailResponse sm)
     {
         var content = new StringContent(
             JsonConvert.SerializeObject(sm), Encoding.UTF8, "application/json");
@@ -90,18 +90,15 @@ public class StockMoveService
         }
     }
 
-    public async Task UpdateLine(string name, string pcode, StockMoveLine line)
+    public async Task ConfirmReceipt(string name, StockMoveDetailResponse sm)
     {
         var content = new StringContent(
-            JsonConvert.SerializeObject(line), Encoding.UTF8, "application/json"
-        );
-
-        var response = await _http.PutAsync($"api/stock-move/{name}/lines/{pcode}", content);
-
-        if(!response.IsSuccessStatusCode)
+            JsonConvert.SerializeObject(sm), Encoding.UTF8, "application/json");
+        var response = await _http.PutAsync($"api/stock-move/{Uri.EscapeDataString(name)}/confirm", content);
+        var body = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
         {
-            var err = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Failed to update line {pcode} in move {name}: {(int)response.StatusCode} ({response.StatusCode})\n{err}");
+            throw new Exception($"Failed to confirm receipt {name}: {(int)response.StatusCode} ({response.StatusCode})\n{body}");
         }
     }
 }

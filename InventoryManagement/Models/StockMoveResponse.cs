@@ -30,5 +30,6 @@ namespace InventoryManagement.Models
         public string @ref { get; set; }
         public string type_line { get; set; }
         public int move_id { get; set; }
+        public string state { get; set; }
     }
 }
