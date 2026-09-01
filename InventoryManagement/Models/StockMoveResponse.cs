@@ -6,15 +6,29 @@ using System.Threading.Tasks;
 
 namespace InventoryManagement.Models
 {
-    public class StockMoveCreateResponse
+    public class StockMoveDetailResponse
     {
-        public string message { get; set; }
-        public StockMove data { get; set; }
+        public StockMoveHeader header { get; set; }
+        public List<StockMoveLine> lines { get; set; }
     }
 
-    public class StockMoveData
+    public class StockMoveHeader
     {
+        public int id { get; set; }
+        public string name { get; set; }
+        public string type { get; set; }
+        public string @ref { get; set; }
+    }
+
+    public class StockMoveLine
+    {
+        public int id { get; set; }
+        public string pcode { get; set; }
+        public string pName { get; set; }
+        public int qty { get; set; }
+        public int qty_real { get; set; }
+        public string @ref { get; set; }
+        public string type_line { get; set; }
         public int move_id { get; set; }
-        public int line_id { get; set; }
     }
 }

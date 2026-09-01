@@ -35,7 +35,7 @@ public class StockMoveService
                ?? new List<StockMove>();
     }
 
-    public async Task<StockMoveCreateResponse> GetStockMoveByName(string name)
+    public async Task<StockMoveDetailResponse> GetStockMoveByName(string name)
     {
         var url = $"api/stock-move/{Uri.EscapeDataString(name)}";
         var response = await _http.GetAsync(url);
@@ -50,7 +50,7 @@ public class StockMoveService
             throw new Exception($"Failed to get stock move by name: {(int)response.StatusCode} ({response.StatusCode})\n{json}");
         }
 
-        return JsonConvert.DeserializeObject<StockMoveCreateResponse>(json);
+        return JsonConvert.DeserializeObject<StockMoveDetailResponse>(json);
     }
 
     public async Task CreateStockMove(StockMove request) {
@@ -73,6 +73,35 @@ public class StockMoveService
                 $"Create Stock Move failed: " +
                 $"{(int)response.StatusCode} ({response.StatusCode})\n{json}"
             );
+        }
+    }
+
+    public async Task UpdateReceipt(string name, StockMove sm)
+    {
+        var content = new StringContent(
+            JsonConvert.SerializeObject(sm), Encoding.UTF8, "application/json");
+
+        var response = await _http.PutAsync($"api/stock-move/{Uri.EscapeDataString(name)}", content);
+        var body = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Failed to update receipt {name}: {(int)response.StatusCode} ({response.StatusCode})\n{body}");
+        }
+    }
+
+    public async Task UpdateLine(string name, string pcode, StockMoveLine line)
+    {
+        var content = new StringContent(
+            JsonConvert.SerializeObject(line), Encoding.UTF8, "application/json"
+        );
+
+        var response = await _http.PutAsync($"api/stock-move/{name}/lines/{pcode}", content);
+
+        if(!response.IsSuccessStatusCode)
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to update line {pcode} in move {name}: {(int)response.StatusCode} ({response.StatusCode})\n{err}");
         }
     }
 }
