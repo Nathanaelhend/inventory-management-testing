@@ -1,94 +1,105 @@
 ﻿using InventoryManagement.models;
 using InventoryManagement.Models;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Diagnostics.SymbolStore;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace InventoryManagement
 {
     public partial class OrderModuleForm : Form
     {
+        private ToolStripDropDown popUpContainer;
+
         int selectedRowIndex = -1;
         bool isEditMode = false;
         int qty = 0;
         bool headerCreated = false;
-        private string existingNoOrder = null;
+        private string existingOrderNo = null;
 
-        private readonly  SaleService saleService = new SaleService();
+        private readonly SaleService saleService = new SaleService();
         private readonly ProductService productService = new ProductService();
 
+        // Constructor untuk mode CREATE
         public OrderModuleForm()
         {
             InitializeComponent();
             LoadProduct();
             LoadCustomer();
-            dateTimePickerOrder.Value = DateTime.Now;
+            isEditMode = false;
+
+            SetupPopUpContainer();
+
+            txtBoxNoOrder.TabIndex = 0;
+            dateTimePickerOrder.TabIndex = 1;
+            txtProductId.TabIndex = 2;
+            dataGridCustomer.TabIndex = 3;
+            numericQty.TabIndex = 4;
+            btnSaveDetail.TabIndex = 5;
+            txtDiscPrs.TabIndex = 6;
+            txtPPn.TabIndex = 7;
+            btnCreate.TabIndex = 8;
+
         }
 
-        public OrderModuleForm(string noOrder)
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Enter)
+            {
+                // Jangan ubah fungsi Enter jika user sedang berada di Button atau DataGridView
+                if (this.ActiveControl is Button || this.ActiveControl is DataGridView)
+                {
+                    return base.ProcessCmdKey(ref msg, keyData);
+                }
+
+                // Otomatis pindah ke kontrol selanjutnya berdasarkan TabIndex
+                this.SelectNextControl(this.ActiveControl, true, true, true, true);
+                return true; // Hilangkan suara "beep" Windows
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        // Constructor untuk mode EDIT
+        public OrderModuleForm(string orderNo)
         {
             InitializeComponent();
             LoadProduct();
             LoadCustomer();
 
-            existingNoOrder = noOrder;
+            existingOrderNo = orderNo;
             isEditMode = true;
 
-            txtBoxNoOrder.Text = existingNoOrder;
+            // Lock PO number field - tidak bisa diubah saat edit
+            txtBoxNoOrder.Text = orderNo;
             txtBoxNoOrder.ReadOnly = true;
 
-            LoadExistingOrder();
+            // Load existing data
+            LoadExistingPurchase();
         }
 
-        private void pictureBox3_Click(object sender, EventArgs e)
-        {
-            this.Dispose();
-        }
-
-        public async Task LoadCustomer()
+        private async Task LoadCustomer()
         {
             dataGridCustomer.Rows.Clear();
 
             try
             {
-                PartnerService partnerService = new PartnerService();
-                var customers = await partnerService.GetPartner();
+                PartnerService service = new PartnerService();
+                var customer = await service.GetPartner();
 
-                foreach (var c in customers)
+                foreach (var c in customer)
                 {
                     if (c.cType == "Customer")
                     {
-                        dataGridCustomer.Rows.Add(c.ccode, c.cname, c.cphone, c.cType);
+                        dataGridCustomer.Rows.Add(c.ccode, c.cname);
                     }
-
-                }
-            }
-            catch (Exception ex) {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private async void LoadProduct()
-        {
-            dataGridCustomer.Rows.Clear();
-
-            try
-            {
-                ProductService productService = new ProductService();
-                var product = await productService.GetProducts();
-
-                foreach (var p in product)
-                {
-                    dataGridProduct.Rows.Add(p.pcode, p.pName, p.pQty, p.pPrice, p.pDescription, p.catname);
                 }
             }
             catch (Exception ex)
@@ -97,36 +108,56 @@ namespace InventoryManagement
             }
         }
 
-        private async Task LoadExistingOrder()
+        private async Task LoadProduct()
         {
-            if(string.IsNullOrWhiteSpace(existingNoOrder))
-            {
-                return;
-            }
+            dataGridProduct.Rows.Clear();
 
             try
             {
-                var detail = await saleService.GetSaleById(existingNoOrder);
+               ProductService service = new ProductService();
+               var product = await service.GetProducts();
+
+                foreach (var pr in product)
+                {
+                    dataGridProduct.Rows.Add(pr.pcode, pr.pName, pr.pPrice, pr.pQty, pr.pDescription, pr.catname);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private async Task LoadExistingPurchase()
+        {
+            if (string.IsNullOrWhiteSpace(existingOrderNo))
+                return;
+
+            try
+            {
+                var detail = await saleService.GetSaleById(existingOrderNo);
 
                 if (detail?.header != null)
                 {
+                    // Load header data
                     txtBoxNoOrder.Text = detail.header.noOrder;
                     dateTimePickerOrder.Value = detail.header.odate;
-                    txtCustId.Text = detail.header.customerId;
-
+                    txtCustomerId.Text = detail.header.customerId;
+                    
+                    // Load vendor name
                     try
                     {
                         PartnerService partnerService = new PartnerService();
                         var partners = await partnerService.GetPartner();
-                        var cust = partners.FirstOrDefault(p => p.ccode == detail.header.customerId);
-                        if (cust != null)
+                        var customer = partners.FirstOrDefault(p => p.ccode == detail.header.customerId);
+                        if (customerId != null)
                         {
-                            txtCustName.Text = cust.cname;
+                            txtCustomerName.Text = customerId.Name;
                         }
                     }
                     catch
                     {
-                        txtCustName.Text = detail.header.customerId;
+                        txtCustomerName.Text = detail.header.customerId;
                     }
 
                     txtDpp.Text = detail.header.dpp.ToString("N0", new CultureInfo("id-ID"));
@@ -134,41 +165,60 @@ namespace InventoryManagement
                     txtPPn.Text = detail.header.ppnPrs.ToString("N0", new CultureInfo("id-ID"));
                     txtFinalPrice.Text = detail.header.total.ToString("N0", new CultureInfo("id-ID"));
                 }
+
+                // Load lines data
                 if (detail?.lines != null)
                 {
-                    dataGridOrderModule.Rows.Clear();
+                    dataGridSaleModule.Rows.Clear();
                     foreach (var line in detail.lines)
                     {
-                        dataGridOrderModule.Rows.Add(line.pcode, line.pName, line.price, line.qty, line.total);
+                        dataGridSaleModule.Rows.Add(
+                            line.pcode,
+                            line.pName,
+                            line.price,
+                            line.qty,
+                            line.total
+                        );
                     }
                 }
 
                 HitungTotalGrid();
                 headerCreated = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                MessageBox.Show($"Failed to load existing order: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Failed to load sale: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+
+        private void ClearProduct()
+        {
+            txtProductId.Clear();
+            txtProductName.Clear();
+            txtPrice.Clear();
+            numericQty.Value = 0;
+            txtTotal.Clear();
         }
 
         private async Task LoadOrderLines()
         {
-            dataGridOrderModule.Rows.Clear();
+            dataGridSaleModule.Rows.Clear();
 
             var noOrder = txtBoxNoOrder.Text?.Trim();
-            if(string.IsNullOrWhiteSpace(noOrder))
+            if (string.IsNullOrWhiteSpace(noOrder))
                 return;
 
             try
             {
                 var detail = await saleService.GetSaleById(noOrder);
 
-                if(detail?.lines != null)
+                // If the API returns 404 it will return null - treat as empty lines (no header yet)
+                if (detail?.lines != null)
                 {
                     foreach (var line in detail.lines)
                     {
-                        dataGridOrderModule.Rows.Add(line.pcode, line.pName, line.price, line.qty, line.total);
+                        dataGridSaleModule.Rows.Add(line.pcode, line.pName, line.qty, line.price, line.total);
                     }
                 }
 
@@ -176,21 +226,13 @@ namespace InventoryManagement
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to load order lines: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Log detailed error and show non-blocking message
+                System.Diagnostics.Debug.WriteLine($"OrderLines error: {ex.Message}");
+                MessageBox.Show("Failed to load sale lines. Check the server or network.\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void txtCust_TextChanged(object sender, EventArgs e)
-        {
-            LoadCustomer();
-        }
-
-        private void txtProduct_TextChanged(object sender, EventArgs e)
-        {
-            LoadProduct();
-        }
-
-        private bool ValidateOrderDetail()
+        private bool ValidateSODetail()
         {
             bool valid = true;
 
@@ -204,9 +246,9 @@ namespace InventoryManagement
 
             // Customer
             errorProvider1.SetError(
-                txtCustId,
-                string.IsNullOrWhiteSpace(txtCustId.Text)
-                    ? "Customer is required"
+                txtCustomerId,
+                string.IsNullOrWhiteSpace(txtCustomerId.Text)
+                    ? "Vendor is required"
                     : ""
             );
 
@@ -226,121 +268,76 @@ namespace InventoryManagement
                     : ""
             );
 
-            // Price
+            // Price - use TryParse to avoid FormatException
+            decimal price;
+            var priceValid = decimal.TryParse(txtPrice.Text, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture, out price) && price > 0m;
             errorProvider1.SetError(
                 txtPrice,
-                string.IsNullOrWhiteSpace(txtPrice.Text) || Convert.ToInt32(txtPrice.Text) <= 0
-                    ? "Price must be greater than 0"
-                    : ""
+                !priceValid ? "Price must be a positive number" : ""
             );
 
             if (
                 string.IsNullOrWhiteSpace(txtBoxNoOrder.Text) ||
-                string.IsNullOrWhiteSpace(txtCustId.Text) ||
+                string.IsNullOrWhiteSpace(txtCustomerId.Text) ||
                 string.IsNullOrWhiteSpace(txtProductId.Text) ||
                 numericQty.Value <= 0 ||
-                string.IsNullOrWhiteSpace(txtPrice.Text) ||
-                Convert.ToInt32(txtPrice.Text) <= 0
+                !priceValid
             )
                 valid = false;
 
             return valid;
         }
 
-        private void numericQty_ValueChanged(object sender, EventArgs e)
+        private void txtCustomer_TextChanged(object sender, EventArgs e)
         {
-            if (Convert.ToInt32(numericQty.Value) > qty && isEditMode == false)
-            {
-                MessageBox.Show("Instock quantity is not enough!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                numericQty.Value = numericQty.Value - 1;
-                return;
-            }
-            else if (Convert.ToInt32(numericQty.Value) > 0)
-            {
-                int total = Convert.ToInt32(txtPrice.Text) * Convert.ToInt32(numericQty.Value);
-                txtTotal.Text = total.ToString();
-            }
-
-            if(numericQty.Value <= 0)
-            {
-                errorProvider1.SetError(numericQty, "Please increase qty");
-            }
-            else
-            {
-                errorProvider1.SetError(numericQty, "");
-            }
+            LoadCustomer();
         }
 
-        private void dataGridCustomer_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void txtProduct_TextChanged(object sender, EventArgs e)
         {
-            txtCustId.Text = dataGridCustomer.Rows[e.RowIndex].Cells[0].Value.ToString();
-            txtCustName.Text = dataGridCustomer.Rows[e.RowIndex].Cells[1].Value.ToString();
+            LoadProduct();
         }
 
-        private void dataGridProduct_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGridPurchaseModule_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            txtProductId.Text = dataGridProduct.Rows[e.RowIndex].Cells[0].Value.ToString();
-            txtProductName.Text = dataGridProduct.Rows[e.RowIndex].Cells[1].Value.ToString();
-            txtPrice.Text = dataGridProduct.Rows[e.RowIndex].Cells[3].Value.ToString();
-            qty = Convert.ToInt32(dataGridProduct.Rows[e.RowIndex].Cells[3].Value.ToString());
-        }
+            if (e.RowIndex < 0) return;
 
-        private void Clear()
-        {
-            txtProductId.Clear();
-            txtCustId.Clear();
-            numericQty.Value = 0;
-            txtPrice.Clear();
-            txtTotal.Clear();
-            txtCustName.Clear();
-            txtProductName.Clear();
-            dateTimePickerOrder.Value = DateTime.Now;
+            selectedRowIndex = e.RowIndex;
+            isEditMode = true;
+
+            DataGridViewRow row = dataGridSaleModule.Rows[selectedRowIndex];
+
+            txtProductId.Text = row.Cells[0].Value.ToString();
+            txtProductName.Text = row.Cells[1].Value.ToString();
+            txtPrice.Text = row.Cells[3].Value.ToString();
+            numericQty.Value = Convert.ToInt32(row.Cells[2].Value);
+            txtTotal.Text = row.Cells[4].Value.ToString();
+
+            txtProductId.Focus();
         }
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            Clear();
+            ClearProduct();
+            selectedRowIndex = -1;
+            isEditMode = false;
         }
-
-        private void ClearProduct()
-        {
-            txtProductId.Clear();
-            txtProductName.Clear();
-            txtPrice.Clear();
-            numericQty.Value = 0;
-            txtTotal.Clear();
-        }
-
-        private void dataGridOrderModule_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0) return;
-            
-            selectedRowIndex = e.RowIndex;
-            isEditMode = true;
-
-            DataGridViewRow row = dataGridOrderModule.Rows[e.RowIndex];
-
-            txtProductId.Text = row.Cells[0].Value.ToString();
-            txtProductName.Text = row.Cells[1].Value.ToString();
-            txtPrice.Text = row.Cells[2].Value.ToString();
-            numericQty.Value = Convert.ToInt32(row.Cells[3].Value);
-            txtTotal.Text = row.Cells[4].Value.ToString();
-        }
-
+        
         private async void txtBoxNoOrder_Leave(object sender, EventArgs e)
         {
             string noOrder = txtBoxNoOrder.Text?.Trim();
-
-            if(string.IsNullOrWhiteSpace(noOrder))
+            if (string.IsNullOrWhiteSpace(noOrder))
             {
                 headerCreated = false;
                 return;
             }
 
+            // Check if purchase header already exists on server
             try
             {
                 var existing = await saleService.GetSaleById(noOrder);
                 headerCreated = (existing != null);
+                System.Diagnostics.Debug.WriteLine($"txtBoxNoOrder_Leave: Order '{noOrder}' exists={headerCreated}");
             }
             catch
             {
@@ -350,106 +347,167 @@ namespace InventoryManagement
             await LoadOrderLines();
         }
 
-        private void txtDiscPrs_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            double dpp = 0;
-            double disc = 0;
-
-            if (e.KeyChar == (char)Keys.Enter)
-            {
-                double.TryParse(txtDpp.Text, out dpp);
-                double.TryParse(txtDiscPrs.Text, out disc);
-
-                double discRph = (dpp * disc) / 100;
-                lblDisc.Text = discRph.ToString();
-
-                double finalPrice = double.Parse(txtDpp.Text) - double.Parse(lblDisc.Text);
-                txtFinalPrice.Text = finalPrice.ToString();
-                txtDiscPrs.Focus();
-            }
-        }
-
-        private void txtPPn_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            double priceAftDisc = 0;
-            double ppn = 0;
-
-            if(e.KeyChar == (char)Keys.Enter)
-            {
-                double.TryParse(lblDisc.Text, out priceAftDisc);
-                double.TryParse(txtPPn.Text, out ppn);
-
-                double ppnRph = (priceAftDisc * ppn) / 100;
-                lblPPn.Text = ppnRph.ToString();
-
-                double finalPrice = double.Parse(txtDpp.Text) - double.Parse(lblDisc.Text) + double.Parse(lblPPn.Text);
-                txtFinalPrice.Text = finalPrice.ToString();
-            }
-        }
-
-        private void OrderModuleForm_Load(object sender, EventArgs e)
+        private async void OrderModuleForm_Load(object sender, EventArgs e)
         {
             HitungTotalGrid();
+
+            var po = await saleService.GetSaleById(txtBoxNoOrder.Text?.Trim());
+
+            if(po.header.state != "DRAFT")
+            {
+                btnClear.Visible = false;
+                btnDelete.Visible = false;
+                btnCreate.Visible = false;
+                btnSaveDetail.Visible = false;
+                btnConfirm.Visible = false;
+
+                dateTimePickerOrder.Enabled = false;
+                txtCustomerId.ReadOnly = true;
+                txtProductId.ReadOnly = true;
+                txtPrice.ReadOnly = true;
+                txtDiscPrs.ReadOnly = true;
+                txtFinalPrice.ReadOnly = true;
+                txtPPn.ReadOnly = true;
+                numericQty.ReadOnly = true;
+                dataGridProduct.ReadOnly = true;
+
+                dataGridProduct.Enabled = false;
+            }
         }
 
         private void HitungTotalGrid()
         {
             decimal total = 0;
-
-            foreach (DataGridViewRow row in dataGridOrderModule.Rows)
+            foreach(DataGridViewRow row in dataGridSaleModule.Rows)
             {
                 if (row.Cells[4].Value != null && row.Cells[4].Value.ToString() != "")
                 {
                     total += Convert.ToDecimal(row.Cells[4].Value);
                 }
             }
-
             txtDpp.Text = total.ToString();
         }
 
-        private void dataGridOrderModule_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        private void dataGridPurchaseModule_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
             HitungTotalGrid();
         }
 
-        private void dataGridOrderModule_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        private void dataGridPurchaseModule_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
             HitungTotalGrid();
         }
 
-        private void dataGridOrderModule_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        private void dataGridPurchaseModule_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             HitungTotalGrid();
         }
 
-        private void txtBoxNoOrder_TextChanged(object sender, EventArgs e)
+        private void pictureBox3_Click(object sender, EventArgs e)
         {
-            errorProvider1.SetError(txtBoxNoOrder, string.IsNullOrWhiteSpace(txtBoxNoOrder.Text) ? "Order number is required" : "");
+            this.Dispose();
         }
 
-        private void txtCustId_TextChanged(object sender, EventArgs e)
+        private void dataGridVendor_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            errorProvider1.SetError(txtCustId, string.IsNullOrWhiteSpace(txtCustId.Text) ? "Customer Id is required" : "");
+            txtCustomerId.Text = dataGridCustomer.Rows[e.RowIndex].Cells[0].Value.ToString();
+            txtCustomerName.Text = dataGridCustomer.Rows[e.RowIndex].Cells[1].Value.ToString();
         }
 
-        private void txtCustName_TextChanged(object sender, EventArgs e)
+        private void dataGridProduct_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            errorProvider1.SetError(txtCustName, string.IsNullOrWhiteSpace(txtCustName.Text) ? "Customer name is required" : "");
+            txtProductId.Text = dataGridProduct.Rows[e.RowIndex].Cells[0].Value.ToString();
+            txtProductName.Text = dataGridProduct.Rows[e.RowIndex].Cells[1].Value.ToString();
+            txtPrice.Text = dataGridProduct.Rows[e.RowIndex].Cells[3].Value.ToString();
         }
 
-        private void txtProductId_TextChanged(object sender, EventArgs e)
+        private async void numericQty_ValueChanged(object sender, EventArgs e)
         {
-            errorProvider1.SetError(txtProductId, string.IsNullOrWhiteSpace(txtProductId.Text) ? "Product Id is required" : "");
+            int qty = (int)numericQty.Value;
+
+            if (qty <= 0)
+            {
+                errorProvider1.SetError(numericQty, "Please increase qty");
+                txtTotal.Text = "0";
+                return;
+            }
+
+            errorProvider1.SetError(numericQty, "");
+
+            float price = 0;
+            float.TryParse(txtPrice.Text, out price);
+
+            float total = price * qty;
+
+            txtTotal.Text = total.ToString("N0", new CultureInfo("id-ID"));
         }
 
-        private void txtProductName_TextChanged(object sender, EventArgs e)
+        private async void btnSaveDetail_Click(object sender, EventArgs e)
         {
-            errorProvider1.SetError(txtProductName, string.IsNullOrWhiteSpace(txtProductName.Text) ? "Product name is required" : "");
-        }
+            if (!ValidateSODetail())
+                return;
 
-        private void txtPrice_TextChanged(object sender, EventArgs e)
-        {
-            errorProvider1.SetError(txtPrice, string.IsNullOrWhiteSpace(txtPrice.Text) ? "Product price is required" : "");
+            if (!System.Decimal.TryParse(txtPrice.Text, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture, out decimal priceDecimal))
+            {
+                MessageBox.Show("Invalid price format.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int qtyInt = Convert.ToInt32(numericQty.Value);
+            decimal totalDecimal = priceDecimal * qtyInt;
+
+            var detail = new SaleLineRequest
+            {
+                odate = dateTimePickerOrder.Value,
+                pcode = txtProductId.Text,
+                price = Convert.ToInt32(Math.Round(priceDecimal)),
+                qty = qtyInt,
+                total = Convert.ToInt32(Math.Round(totalDecimal)),
+                customerId = txtCustomerId.Text
+            };
+
+            string orderNo = txtBoxNoOrder.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(orderNo))
+            {
+                MessageBox.Show("Order number is required before adding detail.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            try
+            {
+                btnSaveDetail.Enabled = false;
+
+                // If in edit mode, update the existing line
+                if (isEditMode && selectedRowIndex >= 0)
+                {
+                    var row = dataGridSaleModule.Rows[selectedRowIndex];
+                    string oldPrCode = row.Cells[0].Value.ToString();
+                    
+                    await saleService.UpdateLine(orderNo, oldPrCode, detail);
+                    MessageBox.Show("Line berhasil diupdate!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    // Add new line
+                    await saleService.AddLine(orderNo, detail);
+                }
+
+                await LoadOrderLines();
+                ClearProduct();
+                selectedRowIndex = -1;
+                isEditMode = false;
+                headerCreated = true;
+
+                txtProductId.Focus();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                btnSaveDetail.Enabled = true;
+            }
         }
 
         private async void btnCreate_Click(object sender, EventArgs e)
@@ -458,18 +516,20 @@ namespace InventoryManagement
 
             if (string.IsNullOrWhiteSpace(noOrder))
             {
-                MessageBox.Show("Order number is required.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("No Order tidak boleh kosong!");
                 return;
             }
 
-            if(string.IsNullOrWhiteSpace(txtCustId.Text))
+            if (string.IsNullOrWhiteSpace(txtCustomerId.Text))
             {
-                MessageBox.Show("Customer is required.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Pilih customer terlebih dahulu!");
                 return;
             }
 
+            // ensure totals are up-to-date
             HitungTotalGrid();
 
+            // Compute header amounts from current inputs and grid to ensure values are populated even if user didn't press Enter
             decimal dppDec = 0m;
             decimal discPrsDec = 0m;
             decimal discRphDec = 0m;
@@ -489,7 +549,7 @@ namespace InventoryManagement
                 decimal.TryParse(txtDiscPrs.Text, System.Globalization.NumberStyles.Number, CultureInfo.InvariantCulture, out discPrsDec);
             }
 
-            lblDisc.Text = discRphDec.ToString("N0", new CultureInfo("id-ID"));
+            lblDisc.Text = discRphDec.ToString("0.##");
 
             decimal priceAfterDisc = dppDec - discRphDec;
 
@@ -504,33 +564,35 @@ namespace InventoryManagement
             netAmountDec = priceAfterDisc + ppnRphDec;
             txtFinalPrice.Text = netAmountDec.ToString("0.##");
 
-            var sales = new Sale
+            var sale = new Sale
             {
                 noOrder = noOrder,
                 odate = dateTimePickerOrder.Value,
-                customerId = txtCustId.Text,
-                dpp = Convert.ToSingle(dppDec),
-                discPrs = Convert.ToSingle(discPrsDec),
-                discRph = Convert.ToSingle(discRphDec),
-                ppnPrs = Convert.ToSingle(ppnPrsDec),
-                ppnRph = Convert.ToSingle(ppnRphDec),
-                total = Convert.ToSingle(netAmountDec)
+                customerId = txtCustomerId.Text,
+                dpp = (float)dppDec,
+                discPrs = (float)discPrsDec,
+                discRph = (float)discRphDec,
+                ppnPrs = (float)ppnPrsDec,
+                ppnRph = (float)ppnRphDec,
+                total = (float)netAmountDec,
+                state = "CONFIRM"
             };
 
             try
             {
                 btnCreate.Enabled = false;
 
+                // Try to create first. If server returns conflict/already exists, fall back to update.
                 try
                 {
                     bool re = headerCreated;
                     if (headerCreated == false)
                     {
-                        await saleService.CreateSale(noOrder, sales);
+                        await saleService.CreateSale(noOrder, sale);
                     }
                     else
                     {
-                        await saleService.UpdateSale(noOrder, sales);
+                        await saleService.UpdateSale(noOrder, sale);
                     }
                 }
                 catch (Exception ex)
@@ -540,142 +602,233 @@ namespace InventoryManagement
                         msg.IndexOf("already exists", StringComparison.OrdinalIgnoreCase) >= 0 ||
                         msg.IndexOf("409", StringComparison.OrdinalIgnoreCase) >= 0)
                     {
-                        await saleService.UpdateSale(noOrder, sales);
+                        // If already exists, update instead
+                        await saleService.UpdateSale(noOrder, sale);
                     }
                     else
                     {
-                        throw;
+                        throw; // rethrow other exceptions
                     }
                 }
-                MessageBox.Show("Order successfully saved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                MessageBox.Show("Purchase berhasil disimpan!",
+                "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // reload purchase lines after saving header
                 await LoadOrderLines();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            finally {
+            finally
+            {
                 headerCreated = false;
                 btnCreate.Enabled = true;
             }
         }
 
-        private async void btnDelete_Click(object sender, EventArgs e)
+        private async void btnDelete_Click_1(object sender, EventArgs e)
         {
-            if(selectedRowIndex < 0)
+            if (selectedRowIndex < 0)
             {
-                MessageBox.Show("Please select a row to delete.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Pilih line yang ingin dihapus!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            var row = dataGridOrderModule.Rows[selectedRowIndex];
-            string pcode = row.Cells[0].Value.ToString();
-            string noOrder = txtBoxNoOrder.Text?.Trim();
-            int rowCount = dataGridOrderModule.Rows.Count;
+            var row = dataGridSaleModule.Rows[selectedRowIndex];
+            string prCode = row.Cells[0].Value.ToString();
+            string orderNo = txtBoxNoOrder.Text?.Trim();
 
-            if (string.IsNullOrWhiteSpace(noOrder))
+            if (string.IsNullOrWhiteSpace(orderNo))
             {
-                MessageBox.Show("Order number is required.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Order number is required!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            if (rowCount <= 1)
-            {
-                if(MessageBox.Show($"Yakin menghapus order {noOrder}?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                try
-                {
-                    await saleService.DeleteSale(noOrder);
-                    MessageBox.Show("Order deleted successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to delete order: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else if(MessageBox.Show($"Yakin menghapus line {pcode}?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show($"Yakin ingin menghapus line {prCode}?",
+                "Konfirmasi Hapus", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 try
                 {
-                    await saleService.DeleteLine(noOrder, pcode);
-                    MessageBox.Show("Order line deleted successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await saleService.DeleteLine(orderNo, prCode);
                     await LoadOrderLines();
                     ClearProduct();
                     selectedRowIndex = -1;
                     isEditMode = false;
+                    MessageBox.Show("Line berhasil dihapus!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Failed to delete order line: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
-        private async void btnSaveDetail_Click(object sender, EventArgs e)
+        private void btnConfirm_Click(object sender, EventArgs e)
         {
-            if (!ValidateOrderDetail())
-            {
-                MessageBox.Show("Please fill in all required fields correctly.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
 
-            if (!System.Decimal.TryParse(txtPrice.Text, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture, out decimal priceDecimal))
-            {
-                MessageBox.Show("Invalid price format.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+        }
 
-            int qtyInt = Convert.ToInt32(numericQty.Value);
-            decimal totalDecimal = priceDecimal * qtyInt;
-
-            var detail = new SaleLineRequest
+        private void SetupPopUpContainer()
+        {
+            popUpContainer = new ToolStripDropDown
             {
-                odate = dateTimePickerOrder.Value,
-                pcode = txtProductId.Text,
-                qty = qtyInt,
-                price = Convert.ToInt32(Math.Round(priceDecimal)),
-                total = Convert.ToInt32(Math.Round(totalDecimal)),
+                Margin = Padding.Empty,
+                Padding = Padding.Empty
+            };
+        }
+
+        private void ShowFloatingGrid(TextBox targetTextBox, DataGridView targetGrid, Size popupSize)
+        {
+            // Kosongkan item sebelumnya agar tidak menumpuk
+            popUpContainer.Items.Clear();
+
+            // Bungkus DataGridView target ke Host
+            targetGrid.Visible = true;
+            targetGrid.Size = popupSize;
+
+            ToolStripControlHost host = new ToolStripControlHost(targetGrid)
+            {
+                Margin = Padding.Empty,
+                Padding = Padding.Empty,
+                AutoSize = false,
+                Size = popupSize
             };
 
-            string noOrder = txtBoxNoOrder.Text?.Trim();
+            popUpContainer.Items.Add(host);
+            popUpContainer.Size = popupSize;
 
-            if (string.IsNullOrWhiteSpace(noOrder))
+            // Tampilkan tepat di bawah TextBox target
+            popUpContainer.Show(targetTextBox, new Point(0, targetTextBox.Height));
+
+            // Pindahkan fokus ke grid agar bisa langsung navigasi panah/Enter
+            targetGrid.Focus();
+        }
+
+        private void txtVendorId_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
             {
-                MessageBox.Show("Order number is required.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+
+                ShowFloatingGrid(txtCustomerId,dataGridCustomer,new Size(500,200));
             }
-
-            try
+            else if (e.KeyCode == Keys.Escape)
             {
-                btnSaveDetail.Enabled = false;
-
-                if (isEditMode && selectedRowIndex >= 0)
+                if (popUpContainer.Visible)
                 {
-                    var row = dataGridOrderModule.Rows[selectedRowIndex];
-                    string oldPrCode = row.Cells[0].Value.ToString();
-
-                    await saleService.UpdateLine(noOrder, oldPrCode, detail);
-                    MessageBox.Show("Order line updated successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    popUpContainer.Close();
                 }
-                else
+            }
+        }
+
+        private void dataGridVendor_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                if (dataGridCustomer.CurrentRow != null)
                 {
-                    await saleService.AddLine(noOrder, detail);
-                    MessageBox.Show("Order line added successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    txtCustomerId.Text = dataGridCustomer.CurrentRow.Cells[0].Value.ToString();
+                    txtCustomerName.Text = dataGridCustomer.CurrentRow.Cells[1].Value.ToString();
+                }
+                popUpContainer?.Close();
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                popUpContainer.Close();
+            }
+        }
+
+        private void txtProductId_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+
+                ShowFloatingGrid(txtProductId,dataGridProduct,new Size(500,200));
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                if (popUpContainer.Visible)
+                {
+                    popUpContainer.Close();
                 }
 
-                await LoadOrderLines();
-                ClearProduct();
-                selectedRowIndex = -1;
-                isEditMode = false;
-                headerCreated = true;
+                if(isEditMode == true)
+                {
+                    txtDiscPrs.Focus();
+                }
             }
-            catch (Exception ex)
+        }
+
+        private void dataGridProduct_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
             {
-                MessageBox.Show($"Failed to save order line: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (dataGridProduct.CurrentRow != null)
+                {
+                    txtProductId.Text = dataGridProduct.CurrentRow.Cells[0].Value.ToString();
+                    txtProductName.Text = dataGridProduct.CurrentRow.Cells[1].Value.ToString();
+                    txtPrice.Text = dataGridProduct.CurrentRow.Cells[3].Value.ToString();
+                }
+                popUpContainer.Close();
             }
-            finally
+            else if (e.KeyCode == Keys.Escape)
             {
-                btnSaveDetail.Enabled = true;
+                popUpContainer.Close();
+            }
+        }
+
+        private void txtBoxNoOrder_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(isEditMode == true)
+            {
+                if(e.KeyCode == Keys.Escape)
+                {
+                    txtDiscPrs.Focus();
+                }
+            }
+        }
+
+        private void txtDiscPrs_KeyDown(object sender, KeyEventArgs e)
+        {
+            double dpp = 0;
+            double disc = 0;
+
+            if (e.KeyCode == Keys.Enter)
+            {
+                double.TryParse(txtDpp.Text, out dpp);
+                double.TryParse(txtDiscPrs.Text, out disc);
+
+                double discRph = (disc / 100) * dpp;
+                lblDisc.Text = discRph.ToString();
+
+                double finalPrice = double.Parse(txtDpp.Text) - double.Parse(lblDisc.Text);
+                txtFinalPrice.Text = finalPrice.ToString();
+                txtPPn.Focus();
+            }
+        }
+
+        private void txtPPn_KeyDown(object sender, KeyEventArgs e)
+        {
+            double priceAftDisc = 0;
+            double ppn = 0;
+
+            if (e.KeyCode == Keys.Enter)
+            {
+                double.TryParse(txtFinalPrice.Text, out priceAftDisc);
+                double.TryParse(txtPPn.Text, out ppn);
+
+                double ppnRph = (ppn / 100) * priceAftDisc;
+                lblPPn.Text = ppnRph.ToString();
+
+                double finalPrice = double.Parse(txtDpp.Text) - double.Parse(lblDisc.Text) + double.Parse(lblPPn.Text);
+                txtFinalPrice.Text = finalPrice.ToString();
+                btnCreate.Focus();
             }
         }
     }

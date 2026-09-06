@@ -1,4 +1,6 @@
-﻿using MySql.Data.MySqlClient;
+﻿using InventoryManagement.models;
+using InventoryManagement.Models;
+using MySql.Data.MySqlClient;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -9,6 +11,7 @@ namespace InventoryManagement
     public partial class OrderForm : Form
     {
         SaleService saleService = new SaleService();
+        StockMoveService stockMoveService = new StockMoveService();
 
         public OrderForm()
         {
@@ -44,7 +47,7 @@ namespace InventoryManagement
             moduleForm.ShowDialog();
         }
 
-        private void dataGridOrder_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private async void dataGridOrder_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
 
@@ -63,6 +66,59 @@ namespace InventoryManagement
                 moduleForm.ShowDialog();
 
                 LoadOrder();
+            }
+
+            else if (colName == "Confirm" || (e.RowIndex < 0 || e.ColumnIndex < 0))
+            {
+                try
+                {
+                    SaleDetailResponse detail = await saleService.GetSaleById(noOrder);
+
+                    if (detail?.lines != null && detail.lines.Count > 0)
+                    {
+                        foreach (var line in detail.lines)
+                        {
+                            var stockMove = new StockMove
+                            {
+                                name = $"OUT/{noOrder}",
+                                pcode = line.pcode,
+                                qty = line.qty,
+                                type = "OUT",
+                                mref = noOrder,
+                                @ref = noOrder,
+                                type_line = "OUT",
+                                state = "DRAFT"
+                            };
+
+                            await stockMoveService.CreateStockMove(stockMove);
+                        }
+                    }
+                    if (detail.header != null)
+                    {
+                        var so = new Sale
+                        {
+                            noOrder = detail.header.noOrder,
+                            odate = detail.header.odate,
+                            customerId = detail.header.customerId,
+                            dpp = detail.header.dpp,
+                            discPrs = detail.header.discPrs,
+                            discRph = detail.header.discRph,
+                            ppnPrs = detail.header.ppnPrs,
+                            ppnRph = detail.header.ppnRph,
+                            total = detail.header.total,
+                            state = "CONFIRMED"
+                        };
+
+                        await saleService.UpdateSale(noOrder, so);
+                    }
+                    await LoadOrder();
+
+                    MessageBox.Show($"Order {noOrder} confirmed successfully.", "Confirmed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to confirm order {noOrder}: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
 
             else if(colName == "delete")

@@ -20,6 +20,7 @@ namespace InventoryManagement.Models
         public int qty { get; set; }
         public int price { get; set; }
         public int total { get; set; }
+        public int customerId { get; set; }
     }
 
     public class SaleLineRequest
@@ -29,5 +30,6 @@ namespace InventoryManagement.Models
         public int price { get; set; }
         public int qty { get; set; }
         public int total { get; set; }
+        public string customerId { get; set; }
     }
 }
