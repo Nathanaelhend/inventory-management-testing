@@ -51,11 +51,8 @@ namespace InventoryManagement
         {
             if (keyData == Keys.Enter)
             {
-                // Jangan ubah fungsi Enter jika user sedang di Button, DataGridView, txtDiscPrs, atau txtPPn
-                if (this.ActiveControl is Button ||
-                    this.ActiveControl is DataGridView ||
-                    this.ActiveControl == txtDiscPrs ||
-                    this.ActiveControl == txtPPn)
+                // Jangan ubah fungsi Enter jika user sedang berada di Button atau DataGridView
+                if (this.ActiveControl is Button || this.ActiveControl is DataGridView || this.ActiveControl == txtPPn || this.ActiveControl == txtDiscPrs)
                 {
                     return base.ProcessCmdKey(ref msg, keyData);
                 }
@@ -122,7 +119,7 @@ namespace InventoryManagement
 
                 foreach (var pr in product)
                 {
-                    dataGridProduct.Rows.Add(pr.pcode, pr.pName, pr.pQty, pr.pPrice, pr.pDescription, pr.catname);
+                    dataGridProduct.Rows.Add(pr.pcode, pr.pName, pr.pPrice, pr.pQty, pr.pDescription, pr.catname);
                 }
             }
             catch (Exception ex)
@@ -312,9 +309,32 @@ namespace InventoryManagement
             await LoadPurchaseLines();
         }
 
-        private void PurchaseModuleForm_Load(object sender, EventArgs e)
+        private async void PurchaseModuleForm_Load(object sender, EventArgs e)
         {
             HitungTotalGrid();
+
+            var po = await purchaseService.GetPurchaseById(txtBoxNoOrder.Text?.Trim());
+
+            if(po.header.state != "DRAFT")
+            {
+                btnClear.Visible = false;
+                btnDelete.Visible = false;
+                btnCreate.Visible = false;
+                btnSaveDetail.Visible = false;
+                btnConfirm.Visible = false;
+
+                dateTimePickerOrder.Enabled = false;
+                txtVendorId.ReadOnly = true;
+                txtProductId.ReadOnly = true;
+                txtPrice.ReadOnly = true;
+                txtDiscPrs.ReadOnly = true;
+                txtFinalPrice.ReadOnly = true;
+                txtPPn.ReadOnly = true;
+                numericQty.ReadOnly = true;
+                dataGridProduct.ReadOnly = true;
+
+                dataGridProduct.Enabled = false;
+            }
         }
 
         private void HitungTotalGrid()
