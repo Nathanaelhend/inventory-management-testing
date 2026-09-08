@@ -1,5 +1,4 @@
 ﻿using InventoryManagement.Models;
-using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,7 +18,7 @@ namespace InventoryManagement
 
         int selectedRowIndex = -1;
         bool isEditMode = false;
-        int qty = 0;
+        float qty = 0;
         bool headerCreated = false;
         private string existingOrderNo = null;
 
@@ -40,29 +39,9 @@ namespace InventoryManagement
             dateTimePickerOrder.TabIndex = 1;
             txtProductId.TabIndex = 2;
             dataGridVendor.TabIndex = 3;
-            numericQty.TabIndex = 4;
-            btnSaveDetail.TabIndex = 5;
-            txtDiscPrs.TabIndex = 6;
-            txtPPn.TabIndex = 7;
-            btnCreate.TabIndex = 8;
-        }
-
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            if (keyData == Keys.Enter)
-            {
-                // Jangan ubah fungsi Enter jika user sedang berada di Button atau DataGridView
-                if (this.ActiveControl is Button || this.ActiveControl is DataGridView || this.ActiveControl == txtPPn || this.ActiveControl == txtDiscPrs)
-                {
-                    return base.ProcessCmdKey(ref msg, keyData);
-                }
-
-                // Otomatis pindah ke kontrol selanjutnya berdasarkan TabIndex
-                this.SelectNextControl(this.ActiveControl, true, true, true, true);
-                return true; // Hilangkan suara "beep" Windows
-            }
-
-            return base.ProcessCmdKey(ref msg, keyData);
+            txtQty.TabIndex = 4;
+            txtDiscDet.TabIndex = 5;
+            btnSaveDetail.TabIndex = 6;
         }
 
         // Constructor untuk mode EDIT
@@ -77,12 +56,27 @@ namespace InventoryManagement
             existingOrderNo = orderNo;
             isEditMode = true;
 
-            // Lock PO number field - tidak bisa diubah saat edit
+            // Lock PO number field saat edit
             txtBoxNoOrder.Text = orderNo;
             txtBoxNoOrder.ReadOnly = true;
 
-            // Load existing data
             LoadExistingPurchase();
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Enter)
+            {
+                if (this.ActiveControl is Button || this.ActiveControl is DataGridView || this.ActiveControl == txtPPn || this.ActiveControl == txtDiscPrs || this.ActiveControl == txtDiscDet || this.ActiveControl == txtQty)
+                {
+                    return base.ProcessCmdKey(ref msg, keyData);
+                }
+
+                this.SelectNextControl(this.ActiveControl, true, true, true, true);
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         private async Task LoadVendor()
@@ -135,21 +129,22 @@ namespace InventoryManagement
 
             try
             {
-                var detail = await purchaseService.GetPurchaseById(existingOrderNo);
+                // GetPurchaseById sekarang mengembalikan 1 objek Purchase (Header + Lines)
+                Purchase po = await purchaseService.GetPurchaseById(existingOrderNo);
 
-                if (detail?.header != null)
+                if (po != null)
                 {
                     // Load header data
-                    txtBoxNoOrder.Text = detail.header.noOrder;
-                    dateTimePickerOrder.Value = detail.header.odate;
-                    txtVendorId.Text = detail.header.vendor;
+                    txtBoxNoOrder.Text = po.noOrder;
+                    dateTimePickerOrder.Value = po.odate;
+                    txtVendorId.Text = po.vendor;
 
                     // Load vendor name
                     try
                     {
                         PartnerService partnerService = new PartnerService();
                         var partners = await partnerService.GetPartner();
-                        var vendor = partners.FirstOrDefault(p => p.ccode == detail.header.vendor);
+                        var vendor = partners.FirstOrDefault(p => p.ccode == po.vendor);
                         if (vendor != null)
                         {
                             txtVendorName.Text = vendor.cname;
@@ -157,33 +152,33 @@ namespace InventoryManagement
                     }
                     catch
                     {
-                        txtVendorName.Text = detail.header.vendor;
+                        txtVendorName.Text = po.vendor;
                     }
 
-                    txtDpp.Text = detail.header.dpp.ToString("N0", new CultureInfo("id-ID"));
-                    txtDiscPrs.Text = detail.header.discPrs.ToString("N0", new CultureInfo("id-ID"));
-                    txtPPn.Text = detail.header.ppnPrs.ToString("N0", new CultureInfo("id-ID"));
-                    txtFinalPrice.Text = detail.header.netAmount.ToString("N0", new CultureInfo("id-ID"));
-                }
+                    txtDpp.Text = po.dpp.ToString("N0", new CultureInfo("id-ID"));
+                    txtDiscPrs.Text = po.discPrs.ToString("N0", new CultureInfo("id-ID"));
+                    txtPPn.Text = po.ppnPrs.ToString("N0", new CultureInfo("id-ID"));
+                    txtFinalPrice.Text = po.netAmount.ToString("N0", new CultureInfo("id-ID"));
 
-                // Load lines data
-                if (detail?.lines != null)
-                {
-                    dataGridPurchaseModule.Rows.Clear();
-                    foreach (var line in detail.lines)
+                    // Load lines data
+                    if (po.lines != null)
                     {
-                        dataGridPurchaseModule.Rows.Add(
-                            line.prCode,
-                            line.pName,
-                            line.pPrice,
-                            line.qty,
-                            line.total
-                        );
+                        dataGridPurchaseModule.Rows.Clear();
+                        foreach (var line in po.lines)
+                        {
+                            dataGridPurchaseModule.Rows.Add(
+                                line.prCode,
+                                line.pName,
+                                line.pPrice,
+                                line.qty,
+                                line.total
+                            );
+                        }
                     }
-                }
 
-                HitungTotalGrid();
-                headerCreated = true;
+                    HitungTotalGrid();
+                    headerCreated = true;
+                }
             }
             catch (Exception ex)
             {
@@ -196,8 +191,7 @@ namespace InventoryManagement
             txtProductId.Clear();
             txtProductName.Clear();
             txtPrice.Clear();
-            numericQty.Value = 0;
-            txtTotal.Clear();
+            txtTotalDet.Clear();
         }
 
         private async Task LoadPurchaseLines()
@@ -210,11 +204,11 @@ namespace InventoryManagement
 
             try
             {
-                var detail = await purchaseService.GetPurchaseById(noOrder);
+                Purchase po = await purchaseService.GetPurchaseById(noOrder);
 
-                if (detail?.lines != null)
+                if (po?.lines != null)
                 {
-                    foreach (var line in detail.lines)
+                    foreach (var line in po.lines)
                     {
                         dataGridPurchaseModule.Rows.Add(line.prCode, line.pName, line.qty, line.pPrice, line.total);
                     }
@@ -236,7 +230,7 @@ namespace InventoryManagement
             errorProvider1.SetError(txtBoxNoOrder, string.IsNullOrWhiteSpace(txtBoxNoOrder.Text) ? "Order number is required" : "");
             errorProvider1.SetError(txtVendorId, string.IsNullOrWhiteSpace(txtVendorId.Text) ? "Vendor is required" : "");
             errorProvider1.SetError(txtProductId, string.IsNullOrWhiteSpace(txtProductId.Text) ? "Product is required" : "");
-            errorProvider1.SetError(numericQty, numericQty.Value <= 0 ? "Quantity must be greater than 0" : "");
+            errorProvider1.SetError(txtQty, string.IsNullOrWhiteSpace(txtQty.Text) ? "Quantity must be greater than zero" : "");
 
             decimal price;
             var priceValid = decimal.TryParse(txtPrice.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out price) && price > 0m;
@@ -245,7 +239,7 @@ namespace InventoryManagement
             if (string.IsNullOrWhiteSpace(txtBoxNoOrder.Text) ||
                 string.IsNullOrWhiteSpace(txtVendorId.Text) ||
                 string.IsNullOrWhiteSpace(txtProductId.Text) ||
-                numericQty.Value <= 0 ||
+                string.IsNullOrWhiteSpace(txtQty.Text) ||
                 !priceValid)
                 valid = false;
 
@@ -274,8 +268,10 @@ namespace InventoryManagement
             txtProductId.Text = row.Cells[0].Value?.ToString();
             txtProductName.Text = row.Cells[1].Value?.ToString();
             txtPrice.Text = row.Cells[3].Value?.ToString();
-            numericQty.Value = Convert.ToInt32(row.Cells[2].Value ?? 0);
-            txtTotal.Text = row.Cells[4].Value?.ToString();
+            txtQty.Text = row.Cells[2].Value.ToString();
+            txtDiscDet.Text = row.Cells[4].Value.ToString();
+            lblDiscDet.Text = row.Cells[5].Value.ToString();
+            txtTotalDet.Text = row.Cells[6].Value?.ToString();
 
             txtProductId.Focus();
         }
@@ -312,28 +308,38 @@ namespace InventoryManagement
         private async void PurchaseModuleForm_Load(object sender, EventArgs e)
         {
             HitungTotalGrid();
-
-            var po = await purchaseService.GetPurchaseById(txtBoxNoOrder.Text?.Trim());
-
-            if(po.header.state != "DRAFT")
+            
+            string noOrder = txtBoxNoOrder.Text?.Trim();
+            if (!string.IsNullOrWhiteSpace(noOrder))
             {
-                btnClear.Visible = false;
-                btnDelete.Visible = false;
-                btnCreate.Visible = false;
-                btnSaveDetail.Visible = false;
-                btnConfirm.Visible = false;
+                var po = await purchaseService.GetPurchaseById(noOrder);
 
-                dateTimePickerOrder.Enabled = false;
-                txtVendorId.ReadOnly = true;
-                txtProductId.ReadOnly = true;
-                txtPrice.ReadOnly = true;
-                txtDiscPrs.ReadOnly = true;
-                txtFinalPrice.ReadOnly = true;
-                txtPPn.ReadOnly = true;
-                numericQty.ReadOnly = true;
-                dataGridProduct.ReadOnly = true;
+                // Akses state langsung dari po (Purchase)
+                if (po != null && po.state != "DRAFT")
+                {
+                    btnClear.Visible = false;
+                    btnDelete.Visible = false;
+                    btnCreate.Visible = false;
+                    btnSaveDetail.Visible = false;
+                    btnConfirm.Visible = false;
 
-                dataGridProduct.Enabled = false;
+                    dateTimePickerOrder.Enabled = false;
+                    txtVendorId.ReadOnly = true;
+                    txtProductId.ReadOnly = true;
+                    txtPrice.ReadOnly = true;
+                    txtDiscPrs.ReadOnly = true;
+                    txtFinalPrice.ReadOnly = true;
+                    txtPPn.ReadOnly = true;
+                    txtQty.ReadOnly = true;
+
+                    dataGridProduct.Enabled = false;
+                }
+            }
+            else
+            {
+                string generateNo = await purchaseService.GenerateNumber();
+                txtBoxNoOrder.Text = generateNo;
+                txtBoxNoOrder.ReadOnly = true;
             }
         }
 
@@ -386,51 +392,31 @@ namespace InventoryManagement
             {
                 txtProductId.Text = dataGridProduct.Rows[e.RowIndex].Cells[0].Value?.ToString() ?? "";
                 txtProductName.Text = dataGridProduct.Rows[e.RowIndex].Cells[1].Value?.ToString() ?? "";
-                txtPrice.Text = dataGridProduct.Rows[e.RowIndex].Cells[3].Value?.ToString() ?? "";
+                txtPrice.Text = dataGridProduct.Rows[e.RowIndex].Cells[2].Value?.ToString() ?? ""; // Index disesuaikan dengan kolom pPrice
                 popUpContainer?.Close();
             }
-        }
-
-        private async void numericQty_ValueChanged(object sender, EventArgs e)
-        {
-            int qty = (int)numericQty.Value;
-
-            if (qty <= 0)
-            {
-                errorProvider1.SetError(numericQty, "Please increase qty");
-                txtTotal.Text = "0";
-                return;
-            }
-
-            errorProvider1.SetError(numericQty, "");
-
-            float price = 0;
-            float.TryParse(txtPrice.Text, out price);
-            float total = price * qty;
-
-            txtTotal.Text = total.ToString("N0", new CultureInfo("id-ID"));
         }
 
         private async void btnSaveDetail_Click(object sender, EventArgs e)
         {
             if (!ValidatePODetail()) return;
 
-            if (!decimal.TryParse(txtPrice.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out decimal priceDecimal))
+            if (!float.TryParse(txtPrice.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out float priceDecimal))
             {
                 MessageBox.Show("Invalid price format.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            int qtyInt = Convert.ToInt32(numericQty.Value);
-            decimal totalDecimal = priceDecimal * qtyInt;
+            float qtyInt = float.Parse(txtQty.Text);
+            float totalDecimal = priceDecimal * qtyInt;
 
             var detail = new PurchaseLineRequest
             {
                 prDate = dateTimePickerOrder.Value,
                 prCode = txtProductId.Text,
-                pPrice = Convert.ToInt32(Math.Round(priceDecimal)),
+                pPrice = priceDecimal,
                 qty = qtyInt,
-                total = Convert.ToInt32(Math.Round(totalDecimal)),
+                total = totalDecimal,
                 state = "DRAFT",
                 vendor = txtVendorId.Text
             };
@@ -766,7 +752,7 @@ namespace InventoryManagement
                 {
                     txtProductId.Text = dataGridProduct.CurrentRow.Cells[0].Value?.ToString() ?? "";
                     txtProductName.Text = dataGridProduct.CurrentRow.Cells[1].Value?.ToString() ?? "";
-                    txtPrice.Text = dataGridProduct.CurrentRow.Cells[3].Value?.ToString() ?? "";
+                    txtPrice.Text = dataGridProduct.CurrentRow.Cells[2].Value?.ToString() ?? "";
                 }
                 popUpContainer?.Close();
             }
@@ -809,7 +795,6 @@ namespace InventoryManagement
             }
         }
 
-        // PERBAIKAN UTAMA: Menggunakan KeyDown menggantikan KeyPress
         private void txtDiscPrs_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -828,6 +813,33 @@ namespace InventoryManagement
 
                 txtPPn.Focus();
                 txtPPn.SelectAll();
+            }
+        }
+
+        private void txtDiscDet_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                float totalAwal = float.Parse(txtTotalDet.Text);
+                float persenDiskon = float.Parse(txtDiscDet.Text);
+
+                float discountRph = totalAwal * (persenDiskon / 100f);
+
+                float totalAkhir = totalAwal - discountRph;
+
+                lblDiscDet.Text = discountRph.ToString("N0", new CultureInfo("id-ID"));
+                txtTotalDet.Text = totalAkhir.ToString("N0", new CultureInfo("id-ID"));
+            }
+        }
+
+        private void txtQty_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                float price = float.Parse(txtPrice.Text);
+                float qty = float.Parse(txtQty.Text);
+                float total = price * qty;
+                txtTotalDet.Text = total.ToString("N0", new CultureInfo("id-ID"));
             }
         }
     }

@@ -8,13 +8,18 @@ namespace InventoryManagement
 {
     public partial class PurchaseForm : Form
     {
-        PurchaseService purchaseService = new PurchaseService();
-        StockMoveService stockMoveService = new StockMoveService();
+        private readonly PurchaseService _purchaseService = new PurchaseService();
+        private readonly StockMoveService _stockMoveService = new StockMoveService();
 
         public PurchaseForm()
         {
             InitializeComponent();
-            LoadPO();
+        }
+
+        private async void PurchaseForm_Load(object sender, EventArgs e)
+        {
+            dataGridOrder.CellPainting += dataGridOrder_CellPainting;
+            await LoadPO();
         }
 
         public async Task LoadPO()
@@ -23,28 +28,38 @@ namespace InventoryManagement
 
             try
             {
-                var purchase = await purchaseService.GetPurchase();
-                System.Diagnostics.Debug.WriteLine($"LoadPO: received {purchase?.Count ?? 0} purchases from API");
+                var purchases = await _purchaseService.GetPurchase();
                 int i = 0;
 
-                foreach (var pr in purchase)
+                foreach (var pr in purchases)
                 {
                     i++;
                     System.Diagnostics.Debug.WriteLine($"PO[{i}]: {pr.noOrder} - {pr.vendor} - {pr.netAmount}");
-                    dataGridOrder.Rows.Add(pr.noOrder, pr.odate.ToShortDateString(), pr.vendor, pr.netAmount.ToString("N0", new CultureInfo("id-ID")), pr.state);
+
+                    dataGridOrder.Rows.Add(
+                        pr.noOrder,
+                        pr.odate.ToShortDateString(),
+                        pr.vendor,
+                        pr.netAmount.ToString("N0", new CultureInfo("id-ID")),
+                        pr.state
+                    );
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show($"Failed to load Purchase Orders: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void btnAdd_Click(object sender, EventArgs e)
+        private async void btnAdd_Click(object sender, EventArgs e)
         {
-            PurchaseModuleForm moduleForm = new PurchaseModuleForm();
-            moduleForm.btnCreate.Enabled = true;
-            moduleForm.ShowDialog();
+            using (PurchaseModuleForm moduleForm = new PurchaseModuleForm())
+            {
+                moduleForm.btnCreate.Enabled = true;
+                moduleForm.ShowDialog();
+            }
+
+            await LoadPO();
         }
 
         private async void dataGridOrder_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -54,33 +69,31 @@ namespace InventoryManagement
             string colName = dataGridOrder.Columns[e.ColumnIndex].Name;
             string noOrder = dataGridOrder.Rows[e.RowIndex].Cells[0].Value?.ToString();
 
+            if (string.IsNullOrWhiteSpace(noOrder))
+            {
+                MessageBox.Show("Order number is empty!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             if (colName == "Edit")
             {
-                if (string.IsNullOrWhiteSpace(noOrder))
+                using (PurchaseModuleForm moduleForm = new PurchaseModuleForm(noOrder))
                 {
-                    MessageBox.Show("Order number is empty!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    moduleForm.ShowDialog();
                 }
 
-                PurchaseModuleForm moduleForm = new PurchaseModuleForm(noOrder);
-                moduleForm.ShowDialog();
-
-                LoadPO();
+                await LoadPO();
             }
+
             else if (colName == "Delete")
             {
-                if (string.IsNullOrWhiteSpace(noOrder))
-                {
-                    MessageBox.Show("Order number is empty!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
                 if (MessageBox.Show($"Are you sure you want to delete order {noOrder}?", "Delete Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
                     try
                     {
-                        purchaseService.DeletePurchase(noOrder).Wait();
+                        await _purchaseService.DeletePurchase(noOrder);
                         MessageBox.Show($"Order {noOrder} deleted successfully.", "Deleted", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        LoadPO();
+                        await LoadPO();
                     }
                     catch (Exception ex)
                     {
@@ -88,52 +101,41 @@ namespace InventoryManagement
                     }
                 }
             }
-            else if (colName == "Confirm" || (e.RowIndex < 0 || e.ColumnIndex < 0))
+
+            else if (colName == "Confirm")
             {
                 try
                 {
-                    PurchaseDetailResponse detail = await purchaseService.GetPurchaseById(noOrder);
+                    Purchase po = await _purchaseService.GetPurchaseById(noOrder);
 
-                    if (detail?.lines != null && detail.lines.Count > 0)
+                    if (po != null)
                     {
-                        foreach (var line in detail.lines)
+                        if (po.lines != null && po.lines.Count > 0)
                         {
-                            var stockMove = new StockMove
+                            foreach (var line in po.lines)
                             {
-                                name = $"IN/{noOrder}",
-                                pcode = line.prCode,
-                                qty = line.qty,
-                                type = "IN",
-                                mref = noOrder,
-                                @ref = noOrder,
-                                type_line = "IN",
-                                state = "DRAFT"
-                            };
+                                var stockMove = new StockMove
+                                {
+                                    name = $"IN/{noOrder}",
+                                    pcode = line.prCode,
+                                    qty = line.qty,
+                                    type = "IN",
+                                    mref = noOrder,
+                                    @ref = noOrder,
+                                    type_line = "IN",
+                                    state = "DRAFT"
+                                };
 
-                            await stockMoveService.CreateStockMove(stockMove);
+                                await _stockMoveService.CreateStockMove(stockMove);
+                            }
                         }
-                    }
-                    if (detail.header != null)
-                    {
-                        var po = new Purchase
-                        {
-                            noOrder = detail.header.noOrder,
-                            odate = detail.header.odate,
-                            vendor = detail.header.vendor,
-                            dpp = detail.header.dpp,
-                            discPrs = detail.header.discPrs,
-                            discRph = detail.header.discRph,
-                            ppnPrs = detail.header.ppnPrs,
-                            ppnRph = detail.header.ppnRph,
-                            netAmount = detail.header.netAmount,
-                            state = "CONFIRMED"
-                        };
 
-                        await purchaseService.UpdatePurchase(noOrder, po);
-                    }
-                    await LoadPO();
+                        po.state = "CONFIRMED";
+                        await _purchaseService.UpdatePurchase(noOrder, po);
 
-                    MessageBox.Show($"Order {noOrder} confirmed successfully.", "Confirmed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        await LoadPO();
+                        MessageBox.Show($"Order {noOrder} confirmed successfully.", "Confirmed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -149,7 +151,6 @@ namespace InventoryManagement
                 if (dataGridOrder.Columns[e.ColumnIndex].Name.Equals("Confirm", StringComparison.OrdinalIgnoreCase))
                 {
                     var row = dataGridOrder.Rows[e.RowIndex];
-
                     string state = row.Cells["State"].Value?.ToString()?.Trim().ToUpper();
 
                     if (state != "DRAFT")
@@ -159,11 +160,6 @@ namespace InventoryManagement
                     }
                 }
             }
-        }
-
-        private void PurchaseForm_Load(object sender, EventArgs e)
-        {
-            dataGridOrder.CellPainting += dataGridOrder_CellPainting;
         }
     }
 }

@@ -186,7 +186,6 @@
     <Compile Include="Models\Partner.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Purchase.cs" />
-    <Compile Include="Models\PurchaseDetailResponse.cs" />
     <Compile Include="Models\Sale.cs" />
     <Compile Include="Models\SaleDetailResponse.cs" />
     <Compile Include="Models\StockMove.cs" />
@@ -236,6 +235,12 @@
     </Compile>
     <Compile Include="DeliveryDetailForm.Designer.cs">
       <DependentUpon>DeliveryDetailForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BillDetailForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BillDetailForm.Designer.cs">
+      <DependentUpon>BillDetailForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ReceiptDetailForm.cs">
       <SubType>Form</SubType>
@@ -334,6 +339,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DeliveryDetailForm.resx">
       <DependentUpon>DeliveryDetailForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BillDetailForm.resx">
+      <DependentUpon>BillDetailForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ReceiptDetailForm.resx">
       <DependentUpon>ReceiptDetailForm.cs</DependentUpon>
