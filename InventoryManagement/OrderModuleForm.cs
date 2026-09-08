@@ -54,7 +54,7 @@ namespace InventoryManagement
             if (keyData == Keys.Enter)
             {
                 // Jangan ubah fungsi Enter jika user sedang berada di Button atau DataGridView
-                if (this.ActiveControl is Button || this.ActiveControl is DataGridView)
+                if (this.ActiveControl is Button || this.ActiveControl is DataGridView || this.ActiveControl == txtPPn || this.ActiveControl == txtDiscPrs)
                 {
                     return base.ProcessCmdKey(ref msg, keyData);
                 }
