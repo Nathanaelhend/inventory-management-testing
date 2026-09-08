@@ -182,7 +182,6 @@
     <Compile Include="MasterCoaForm.Designer.cs">
       <DependentUpon>MasterCoaForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Models\BillDetailResponse.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Partner.cs" />
     <Compile Include="Models\Product.cs" />
@@ -257,6 +256,12 @@
     </Compile>
     <Compile Include="DeliveryForm.Designer.cs">
       <DependentUpon>DeliveryForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VendorBillForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VendorBillForm.Designer.cs">
+      <DependentUpon>VendorBillForm.cs</DependentUpon>
     </Compile>
     <Compile Include="StockMoveForm.cs">
       <SubType>Form</SubType>
@@ -335,6 +340,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DeliveryForm.resx">
       <DependentUpon>DeliveryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VendorBillForm.resx">
+      <DependentUpon>VendorBillForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="StockMoveForm.resx">
       <DependentUpon>StockMoveForm.cs</DependentUpon>

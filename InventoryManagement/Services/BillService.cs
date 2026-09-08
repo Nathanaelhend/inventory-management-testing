@@ -30,11 +30,11 @@ public class BillService
             );
         }
 
-        return JsonConvert.DeserializeObject<List<VendorBill>>(json)
-            ?? new List<VendorBill>();
+        var result = JsonConvert.DeserializeObject<VendorBillResponse>(json);
+        return result?.data ?? new List<VendorBill>();
     }
 
-    public async Task<BillDetailResponse> GetBillById(int id)
+    public async Task<VendorBillResponse> GetBillById(int id)
     {
         var url = $"api/vendor-bill/{id}";
         var response = await _http.GetAsync(url);
@@ -49,7 +49,7 @@ public class BillService
             throw new Exception($"Failed to get vendor bill: {(int)response.StatusCode} ({response.StatusCode})\n{json}");
         }
 
-        return JsonConvert.DeserializeObject<BillDetailResponse>(json);
+        return JsonConvert.DeserializeObject<VendorBillResponse>(json);
     }
 
     public async Task CreateBill(VendorBill request)
@@ -76,7 +76,7 @@ public class BillService
         }
     }
 
-    public async Task UpdateVendorBill(int id, BillDetailResponse bill)
+    public async Task UpdateVendorBill(int id, VendorBillResponse bill)
     {
         var content = new StringContent(
             JsonConvert.SerializeObject(bill),

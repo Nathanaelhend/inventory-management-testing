@@ -42,7 +42,7 @@ namespace InventoryManagement
 
         private void btnUser_Click(object sender, EventArgs e)
         {
-            openChildForm(new UserForm());
+            openChildForm(new VendorBillForm());
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)

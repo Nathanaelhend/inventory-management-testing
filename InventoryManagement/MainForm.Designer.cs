@@ -30,6 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label11 = new System.Windows.Forms.Label();
+            this.customerButton1 = new InventoryManagement.CustomerButton();
             this.label10 = new System.Windows.Forms.Label();
             this.btnReceipt = new InventoryManagement.CustomerButton();
             this.label9 = new System.Windows.Forms.Label();
@@ -49,9 +51,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panelMain = new System.Windows.Forms.Panel();
-            this.label11 = new System.Windows.Forms.Label();
-            this.customerButton1 = new InventoryManagement.CustomerButton();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.customerButton1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnReceipt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnCOA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnOrders)).BeginInit();
@@ -59,7 +60,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.btnCategories)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnCustomer)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnProduct)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.customerButton1)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -91,12 +91,33 @@
             this.panel1.Size = new System.Drawing.Size(984, 108);
             this.panel1.TabIndex = 0;
             // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(803, 76);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(78, 20);
+            this.label11.TabIndex = 22;
+            this.label11.Text = "Delivery";
+            // 
+            // customerButton1
+            // 
+            this.customerButton1.Image = ((System.Drawing.Image)(resources.GetObject("customerButton1.Image")));
+            this.customerButton1.ImageHover = ((System.Drawing.Image)(resources.GetObject("customerButton1.ImageHover")));
+            this.customerButton1.ImageNormal = ((System.Drawing.Image)(resources.GetObject("customerButton1.ImageNormal")));
+            this.customerButton1.Location = new System.Drawing.Point(809, 25);
+            this.customerButton1.Name = "customerButton1";
+            this.customerButton1.Size = new System.Drawing.Size(55, 48);
+            this.customerButton1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.customerButton1.TabIndex = 23;
+            this.customerButton1.TabStop = false;
+            // 
             // label10
             // 
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(738, 75);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(61, 16);
+            this.label10.Size = new System.Drawing.Size(73, 20);
             this.label10.TabIndex = 20;
             this.label10.Text = "Receipt";
             // 
@@ -118,7 +139,7 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(661, 75);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(72, 16);
+            this.label9.Size = new System.Drawing.Size(88, 20);
             this.label9.TabIndex = 18;
             this.label9.Text = "Purchase";
             // 
@@ -140,7 +161,7 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(599, 75);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(54, 16);
+            this.label8.Size = new System.Drawing.Size(67, 20);
             this.label8.TabIndex = 16;
             this.label8.Text = "Orders";
             // 
@@ -162,16 +183,16 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(521, 74);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(48, 16);
+            this.label7.Size = new System.Drawing.Size(37, 20);
             this.label7.TabIndex = 1;
-            this.label7.Text = "Users";
+            this.label7.Text = "Bill";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(418, 73);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(83, 16);
+            this.label6.Size = new System.Drawing.Size(100, 20);
             this.label6.TabIndex = 15;
             this.label6.Text = "Categories";
             // 
@@ -180,7 +201,7 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(335, 73);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(57, 16);
+            this.label5.Size = new System.Drawing.Size(71, 20);
             this.label5.TabIndex = 14;
             this.label5.Text = "Partner";
             // 
@@ -189,7 +210,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(245, 72);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(60, 16);
+            this.label4.Size = new System.Drawing.Size(74, 20);
             this.label4.TabIndex = 0;
             this.label4.Text = "Product";
             // 
@@ -251,7 +272,7 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(44, 13);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(111, 31);
+            this.label2.Size = new System.Drawing.Size(135, 39);
             this.label2.TabIndex = 10;
             this.label2.Text = "ventory";
             // 
@@ -261,7 +282,7 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(4, 2);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(70, 42);
+            this.label1.Size = new System.Drawing.Size(88, 54);
             this.label1.TabIndex = 9;
             this.label1.Text = "My";
             // 
@@ -271,7 +292,7 @@
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(7, 43);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(238, 18);
+            this.label3.Size = new System.Drawing.Size(295, 24);
             this.label3.TabIndex = 8;
             this.label3.Text = "Inventory Management System";
             // 
@@ -294,30 +315,9 @@
             this.panelMain.Size = new System.Drawing.Size(984, 487);
             this.panelMain.TabIndex = 2;
             // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(803, 76);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(65, 16);
-            this.label11.TabIndex = 22;
-            this.label11.Text = "Delivery";
-            // 
-            // customerButton1
-            // 
-            this.customerButton1.Image = ((System.Drawing.Image)(resources.GetObject("customerButton1.Image")));
-            this.customerButton1.ImageHover = ((System.Drawing.Image)(resources.GetObject("customerButton1.ImageHover")));
-            this.customerButton1.ImageNormal = ((System.Drawing.Image)(resources.GetObject("customerButton1.ImageNormal")));
-            this.customerButton1.Location = new System.Drawing.Point(809, 25);
-            this.customerButton1.Name = "customerButton1";
-            this.customerButton1.Size = new System.Drawing.Size(55, 48);
-            this.customerButton1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.customerButton1.TabIndex = 23;
-            this.customerButton1.TabStop = false;
-            // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(984, 611);
             this.Controls.Add(this.panelMain);
@@ -332,6 +332,7 @@
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.customerButton1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnReceipt)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnCOA)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnOrders)).EndInit();
@@ -339,7 +340,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.btnCategories)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnCustomer)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnProduct)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.customerButton1)).EndInit();
             this.ResumeLayout(false);
 
         }
