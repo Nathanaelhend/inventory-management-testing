@@ -182,6 +182,7 @@
     <Compile Include="MasterCoaForm.Designer.cs">
       <DependentUpon>MasterCoaForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\BillDetailResponse.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Partner.cs" />
     <Compile Include="Models\Product.cs" />
@@ -192,6 +193,7 @@
     <Compile Include="Models\StockMove.cs" />
     <Compile Include="Models\StockMoveResponse.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Models\VendorBill.cs" />
     <Compile Include="PurchaseForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -236,6 +238,7 @@
     <Compile Include="ReceiptDetailForm.Designer.cs">
       <DependentUpon>ReceiptDetailForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Services\BillService.cs" />
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\PartnerService.cs" />
     <Compile Include="Services\ProductService.cs" />
