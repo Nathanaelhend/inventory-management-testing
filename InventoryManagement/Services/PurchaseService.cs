@@ -143,6 +143,16 @@ public class PurchaseService
         }
     }
 
+    public async Task ConfirmPurchase(string noOrder, Purchase purchase)
+    {
+        var response = await _http.PutAsync($"api/purchases/{Uri.EscapeDataString(noOrder)}/confirm", null);
+        var body = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Confirm failed: {(int)response.StatusCode} ({response.StatusCode})\n{body}");
+        }
+    }
+
     public async Task DeletePurchase(string noOrder)
     {
         var response = await _http.DeleteAsync($"api/purchases/{Uri.EscapeDataString(noOrder)}");

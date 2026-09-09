@@ -480,6 +480,9 @@
             this.dataGridPurchaseModule.Size = new System.Drawing.Size(608, 218);
             this.dataGridPurchaseModule.TabIndex = 78;
             this.dataGridPurchaseModule.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridPurchaseModule_CellClick);
+            this.dataGridPurchaseModule.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridPurchaseModule_CellValueChanged);
+            this.dataGridPurchaseModule.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridPurchaseModule_RowsAdded);
+            this.dataGridPurchaseModule.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridPurchaseModule_RowsRemoved);
             // 
             // pid
             // 
@@ -544,6 +547,7 @@
             this.btnClear.TabIndex = 2;
             this.btnClear.Text = "CLEAR";
             this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // btnCreate
             // 
@@ -656,7 +660,7 @@
             this.txtDiscDet.Location = new System.Drawing.Point(81, 116);
             this.txtDiscDet.Name = "txtDiscDet";
             this.txtDiscDet.Size = new System.Drawing.Size(44, 20);
-            this.txtDiscDet.TabIndex = 105;
+            this.txtDiscDet.TabIndex = 117;
             this.txtDiscDet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtDiscDet_KeyDown);
             // 
             // label10

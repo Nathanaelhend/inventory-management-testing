@@ -18,6 +18,18 @@ public class StockMoveService
         _http.BaseAddress = new Uri("http://localhost:3000/");
     }
 
+    public async Task<String> GenerateNumber()
+    {
+        var response = await _http.GetAsync("api/stock-move/number-movein");
+        var json = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Failed to generate stock move number: {(int)response.StatusCode} ({response.StatusCode})\n{json}");
+        }
+        var result = JsonConvert.DeserializeObject<dynamic>(json);
+        return result?.name?.ToString() ?? string.Empty;
+    }
+    
     public async Task<List<StockMove>> GetStockMove()
     {
         var response = await _http.GetAsync("api/stock-move");

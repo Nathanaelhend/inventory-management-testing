@@ -103,7 +103,7 @@ namespace InventoryManagement
             }
 
             else if (colName == "Confirm")
-            {
+            { 
                 try
                 {
                     Purchase po = await _purchaseService.GetPurchaseById(noOrder);
@@ -112,11 +112,12 @@ namespace InventoryManagement
                     {
                         if (po.lines != null && po.lines.Count > 0)
                         {
+                            string nameSM = await _stockMoveService.GenerateNumber();
                             foreach (var line in po.lines)
                             {
                                 var stockMove = new StockMove
                                 {
-                                    name = $"IN/{noOrder}",
+                                    name = nameSM,
                                     pcode = line.prCode,
                                     qty = line.qty,
                                     type = "IN",
@@ -131,7 +132,7 @@ namespace InventoryManagement
                         }
 
                         po.state = "CONFIRMED";
-                        await _purchaseService.UpdatePurchase(noOrder, po);
+                        await _purchaseService.ConfirmPurchase(noOrder, po);
 
                         await LoadPO();
                         MessageBox.Show($"Order {noOrder} confirmed successfully.", "Confirmed", MessageBoxButtons.OK, MessageBoxIcon.Information);

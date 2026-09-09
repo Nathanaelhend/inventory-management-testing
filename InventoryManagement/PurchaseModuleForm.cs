@@ -30,6 +30,7 @@ namespace InventoryManagement
         {
             InitializeComponent();
             LoadProduct();
+            PONumber();
             LoadVendor();
             isEditMode = false;
 
@@ -67,7 +68,7 @@ namespace InventoryManagement
         {
             if (keyData == Keys.Enter)
             {
-                if (this.ActiveControl is Button || this.ActiveControl is DataGridView || this.ActiveControl == txtPPn || this.ActiveControl == txtDiscPrs || this.ActiveControl == txtDiscDet || this.ActiveControl == txtQty)
+                if (this.ActiveControl is Button || this.ActiveControl is DataGridView || this.ActiveControl == txtPPn || this.ActiveControl == txtDiscPrs || this.ActiveControl == txtQty || this.ActiveControl == txtDiscDet)
                 {
                     return base.ProcessCmdKey(ref msg, keyData);
                 }
@@ -113,7 +114,7 @@ namespace InventoryManagement
 
                 foreach (var pr in product)
                 {
-                    dataGridProduct.Rows.Add(pr.pcode, pr.pName, pr.pPrice, pr.pQty, pr.pDescription, pr.catname);
+                    dataGridProduct.Rows.Add(pr.pcode, pr.pName, pr.pQty, pr.pPrice, pr.pDescription, pr.catname);
                 }
             }
             catch (Exception ex)
@@ -246,6 +247,36 @@ namespace InventoryManagement
             return valid;
         }
 
+        private void ClearAllFields()
+        {
+            dateTimePickerOrder.Value = DateTime.Now;
+            txtVendorId.Clear();
+            txtVendorName.Clear();
+            txtProductId.Clear();
+            txtProductName.Clear();
+            txtPrice.Clear();
+            txtQty.Clear();
+            txtDiscDet.Clear();
+            lblDiscDet.Text = "0";
+            txtTotalDet.Clear();
+            dataGridPurchaseModule.Rows.Clear();
+            txtDpp.Clear();
+            txtDiscPrs.Clear();
+            lblDisc.Text = "0";
+            txtPPn.Clear();
+            lblPPn.Text = "0";
+            txtFinalPrice.Clear();
+            selectedRowIndex = -1;
+            isEditMode = false;
+        }
+
+        private async void PONumber()
+        {
+            string generateNo = await purchaseService.GenerateNumber();
+            txtBoxNoOrder.Text = generateNo;
+            txtBoxNoOrder.ReadOnly = true;
+        }
+
         private void txtVendor_TextChanged(object sender, EventArgs e)
         {
             LoadVendor();
@@ -337,9 +368,7 @@ namespace InventoryManagement
             }
             else
             {
-                string generateNo = await purchaseService.GenerateNumber();
-                txtBoxNoOrder.Text = generateNo;
-                txtBoxNoOrder.ReadOnly = true;
+                PONumber();
             }
         }
 
@@ -392,7 +421,7 @@ namespace InventoryManagement
             {
                 txtProductId.Text = dataGridProduct.Rows[e.RowIndex].Cells[0].Value?.ToString() ?? "";
                 txtProductName.Text = dataGridProduct.Rows[e.RowIndex].Cells[1].Value?.ToString() ?? "";
-                txtPrice.Text = dataGridProduct.Rows[e.RowIndex].Cells[2].Value?.ToString() ?? ""; // Index disesuaikan dengan kolom pPrice
+                txtPrice.Text = dataGridProduct.Rows[e.RowIndex].Cells[3].Value?.ToString() ?? ""; // Index disesuaikan dengan kolom pPrice
                 popUpContainer?.Close();
             }
         }
@@ -544,6 +573,11 @@ namespace InventoryManagement
 
                 MessageBox.Show("Purchase berhasil disimpan!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 await LoadPurchaseLines();
+
+                ClearAllFields();
+                txtBoxNoOrder.Focus();
+                PONumber();
+
             }
             catch (Exception ex)
             {
@@ -752,7 +786,7 @@ namespace InventoryManagement
                 {
                     txtProductId.Text = dataGridProduct.CurrentRow.Cells[0].Value?.ToString() ?? "";
                     txtProductName.Text = dataGridProduct.CurrentRow.Cells[1].Value?.ToString() ?? "";
-                    txtPrice.Text = dataGridProduct.CurrentRow.Cells[2].Value?.ToString() ?? "";
+                    txtPrice.Text = dataGridProduct.CurrentRow.Cells[3].Value?.ToString() ?? "";
                 }
                 popUpContainer?.Close();
             }
@@ -829,6 +863,7 @@ namespace InventoryManagement
 
                 lblDiscDet.Text = discountRph.ToString("N0", new CultureInfo("id-ID"));
                 txtTotalDet.Text = totalAkhir.ToString("N0", new CultureInfo("id-ID"));
+                btnSaveDetail.Focus();
             }
         }
 
@@ -840,6 +875,8 @@ namespace InventoryManagement
                 float qty = float.Parse(txtQty.Text);
                 float total = price * qty;
                 txtTotalDet.Text = total.ToString("N0", new CultureInfo("id-ID"));
+
+                txtDiscDet.Focus();
             }
         }
     }
