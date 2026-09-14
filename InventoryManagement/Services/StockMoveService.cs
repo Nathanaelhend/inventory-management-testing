@@ -43,11 +43,11 @@ public class StockMoveService
             );
         }
 
-        return JsonConvert.DeserializeObject<List<StockMove>>(json)
-               ?? new List<StockMove>();
+        var result = JsonConvert.DeserializeObject<StockMoveResponse>(json);
+        return result?.data ?? new List<StockMove>();
     }
 
-    public async Task<StockMoveDetailResponse> GetStockMoveByName(string name)
+    public async Task<StockMove> GetStockMoveByName(string name)
     {
         var url = $"api/stock-move/{Uri.EscapeDataString(name)}";
         var response = await _http.GetAsync(url);
@@ -62,7 +62,13 @@ public class StockMoveService
             throw new Exception($"Failed to get stock move by name: {(int)response.StatusCode} ({response.StatusCode})\n{json}");
         }
 
-        return JsonConvert.DeserializeObject<StockMoveDetailResponse>(json);
+        var detail = JsonConvert.DeserializeObject<StockMoveDetailResponse>(json);
+
+        if (detail?.header == null) return null;
+
+        var sm = detail.header;
+        sm.lines = detail.lines ?? new List<StockMoveLine>();
+        return sm;
     }
 
     public async Task CreateStockMove(StockMove request) {

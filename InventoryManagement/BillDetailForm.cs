@@ -88,7 +88,7 @@ namespace InventoryManagement
 
                 var payload = new StockMoveDetailResponse
                 {
-                    header = new StockMoveHeader
+                    header = new StockMove
                     {
                         name = nameSM,
                     },
@@ -125,7 +125,7 @@ namespace InventoryManagement
 
                 var payload = new StockMoveDetailResponse
                 {
-                    header = new StockMoveHeader
+                    header = new StockMove
                     {
                         name = nameSM,
                     },

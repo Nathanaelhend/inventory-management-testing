@@ -145,7 +145,12 @@ public class PurchaseService
 
     public async Task ConfirmPurchase(string noOrder, Purchase purchase)
     {
-        var response = await _http.PutAsync($"api/purchases/{Uri.EscapeDataString(noOrder)}/confirm", null);
+        var content = new StringContent(
+            JsonConvert.SerializeObject(purchase),
+            Encoding.UTF8,
+            "application/json"
+        );
+        var response = await _http.PutAsync($"api/purchases/{Uri.EscapeDataString(noOrder)}/confirm", content);
         var body = await response.Content.ReadAsStringAsync();
         if (!response.IsSuccessStatusCode)
         {

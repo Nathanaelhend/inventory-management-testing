@@ -17,6 +17,18 @@ public class BillService
         _http.BaseAddress = new Uri("http://localhost:3000/");
     }
 
+    public async Task<String> GenerateNumber()
+    {
+        var response = await _http.GetAsync("api/vendor-bill/billno");
+        var json = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Failed to generate bill number: {(int)response.StatusCode} ({response.StatusCode})\n{json}");
+        }
+        var result = JsonConvert.DeserializeObject<dynamic>(json);
+        return result?.name?.ToString() ?? string.Empty;
+    }
+
     public async Task<List<VendorBill>> GetBill()
     {
         var response = await _http.GetAsync("api/vendor-bill");
@@ -52,7 +64,7 @@ public class BillService
         return JsonConvert.DeserializeObject<VendorBillResponse>(json);
     }
 
-    public async Task CreateBill(VendorBill request)
+    public async Task CreateBill(VendorBillDetailResponse request)
     {
         var content = new StringContent(
             JsonConvert.SerializeObject(request),

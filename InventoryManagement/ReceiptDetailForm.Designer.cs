@@ -35,8 +35,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.labelName = new System.Windows.Forms.Label();
             this.dataGridReceipt = new System.Windows.Forms.DataGridView();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.btnConfirm = new System.Windows.Forms.Button();
             this.pname = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.qty = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.qty_real = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -44,6 +42,11 @@
             this.pcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.state = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.line_type = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.btnConfirm = new System.Windows.Forms.Button();
+            this.btnCrtBill = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.labelState = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridReceipt)).BeginInit();
@@ -121,26 +124,6 @@
             this.dataGridReceipt.Size = new System.Drawing.Size(977, 299);
             this.dataGridReceipt.TabIndex = 20;
             // 
-            // btnSave
-            // 
-            this.btnSave.Location = new System.Drawing.Point(679, 422);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(121, 23);
-            this.btnSave.TabIndex = 39;
-            this.btnSave.Text = "Save Data";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
-            // btnConfirm
-            // 
-            this.btnConfirm.Location = new System.Drawing.Point(806, 422);
-            this.btnConfirm.Name = "btnConfirm";
-            this.btnConfirm.Size = new System.Drawing.Size(121, 23);
-            this.btnConfirm.TabIndex = 40;
-            this.btnConfirm.Text = "Confirm Receipt";
-            this.btnConfirm.UseVisualStyleBackColor = true;
-            this.btnConfirm.Click += new System.EventHandler(this.btnConfirm_Click);
-            // 
             // pname
             // 
             this.pname.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
@@ -192,11 +175,65 @@
             this.line_type.Name = "line_type";
             this.line_type.Visible = false;
             // 
+            // btnSave
+            // 
+            this.btnSave.Location = new System.Drawing.Point(679, 422);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(121, 23);
+            this.btnSave.TabIndex = 39;
+            this.btnSave.Text = "Save Data";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // btnConfirm
+            // 
+            this.btnConfirm.Location = new System.Drawing.Point(806, 422);
+            this.btnConfirm.Name = "btnConfirm";
+            this.btnConfirm.Size = new System.Drawing.Size(121, 23);
+            this.btnConfirm.TabIndex = 40;
+            this.btnConfirm.Text = "Confirm Receipt";
+            this.btnConfirm.UseVisualStyleBackColor = true;
+            this.btnConfirm.Click += new System.EventHandler(this.btnConfirm_Click);
+            // 
+            // btnCrtBill
+            // 
+            this.btnCrtBill.Location = new System.Drawing.Point(744, 451);
+            this.btnCrtBill.Name = "btnCrtBill";
+            this.btnCrtBill.Size = new System.Drawing.Size(121, 23);
+            this.btnCrtBill.TabIndex = 41;
+            this.btnCrtBill.Text = "Create Bill";
+            this.btnCrtBill.UseVisualStyleBackColor = true;
+            this.btnCrtBill.Visible = false;
+            this.btnCrtBill.Click += new System.EventHandler(this.btnCrtBill_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(815, 70);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(80, 20);
+            this.label2.TabIndex = 22;
+            this.label2.Text = "STATE : ";
+            // 
+            // labelState
+            // 
+            this.labelState.AutoSize = true;
+            this.labelState.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelState.Location = new System.Drawing.Point(897, 70);
+            this.labelState.Name = "labelState";
+            this.labelState.Size = new System.Drawing.Size(14, 20);
+            this.labelState.TabIndex = 42;
+            this.labelState.Text = ":";
+            // 
             // ReceiptDetailForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(977, 530);
+            this.ClientSize = new System.Drawing.Size(977, 493);
+            this.Controls.Add(this.labelState);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.btnCrtBill);
             this.Controls.Add(this.btnConfirm);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.dataGridReceipt);
@@ -232,5 +269,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn pcode;
         private System.Windows.Forms.DataGridViewTextBoxColumn state;
         private System.Windows.Forms.DataGridViewTextBoxColumn line_type;
+        public System.Windows.Forms.Button btnCrtBill;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelState;
     }
 }

@@ -6,14 +6,13 @@ namespace InventoryManagement.Models
     public class VendorBill
     {
         public int id { get; set; }
-        public string name { get; set; }
+        public string name { get; set; } // Nomor Bill (e.g., BILL/0912/001)
         public DateTime date { get; set; }
         public DateTime date_edit { get; set; }
-        public float ppn { get; set; }
-        public float discount { get; set; }
         public float total { get; set; }
         public string vendor_id { get; set; }
         public string state { get; set; }
+        public string move_id { get; set; } // Reference ke Stock Move (nameSM)
 
         public List<BillLine> lines { get; set; } = new List<BillLine>();
     }
@@ -29,9 +28,16 @@ namespace InventoryManagement.Models
         public int bill_id { get; set; }
     }
 
+    // Untuk response berisikan list (misal: Halaman Index Vendor Bill)
     public class VendorBillResponse
     {
         public string status { get; set; }
         public List<VendorBill> data { get; set; }
+    }
+
+    public class VendorBillDetailResponse
+    {
+        public VendorBill header { get; set; }
+        public List<BillLine> lines { get; set; }
     }
 }

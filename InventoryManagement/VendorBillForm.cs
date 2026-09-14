@@ -32,8 +32,6 @@ namespace InventoryManagement
                     dataGridBill.Rows.Add(
                         vbill.name,
                         vbill.date,
-                        vbill.ppn,
-                        vbill.discount,
                         vbill.total,
                         vbill.vendor_id,
                         vbill.state

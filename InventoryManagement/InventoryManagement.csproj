@@ -189,7 +189,6 @@
     <Compile Include="Models\Sale.cs" />
     <Compile Include="Models\SaleDetailResponse.cs" />
     <Compile Include="Models\StockMove.cs" />
-    <Compile Include="Models\StockMoveResponse.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\VendorBill.cs" />
     <Compile Include="PurchaseForm.cs">

@@ -131,7 +131,7 @@ namespace InventoryManagement
                             }
                         }
 
-                        po.state = "CONFIRMED";
+                        po.state = "CONFIRM";
                         await _purchaseService.ConfirmPurchase(noOrder, po);
 
                         await LoadPO();
