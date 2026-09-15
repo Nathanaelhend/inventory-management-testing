@@ -172,6 +172,8 @@ namespace InventoryManagement
                                 line.pName,
                                 line.pPrice,
                                 line.qty,
+                                line.discPrs,
+                                line.discRph,
                                 line.total
                             );
                         }
@@ -211,7 +213,7 @@ namespace InventoryManagement
                 {
                     foreach (var line in po.lines)
                     {
-                        dataGridPurchaseModule.Rows.Add(line.prCode, line.pName, line.qty, line.pPrice, line.total);
+                        dataGridPurchaseModule.Rows.Add(line.prCode, line.pName, line.pPrice, line.qty, line.total);
                     }
                 }
 
@@ -437,13 +439,16 @@ namespace InventoryManagement
             }
 
             float qtyInt = float.Parse(txtQty.Text);
-            float totalDecimal = priceDecimal * qtyInt;
+            float discRph = float.Parse(txtPrice.Text) * qtyInt * (float.Parse(txtDiscDet.Text) / 100);
+            float totalDecimal = (priceDecimal * qtyInt) - discRph;
 
             var detail = new PurchaseLineRequest
             {
                 prDate = dateTimePickerOrder.Value,
                 prCode = txtProductId.Text,
                 pPrice = priceDecimal,
+                discPrs = float.Parse(txtDiscDet.Text),
+                discRph = float.Parse(lblDiscDet.Text),
                 qty = qtyInt,
                 total = totalDecimal,
                 state = "DRAFT",
