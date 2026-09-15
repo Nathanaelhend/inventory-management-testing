@@ -8,9 +8,10 @@ namespace InventoryManagement.Models
         public string noOrder { get; set; }
         public DateTime odate { get; set; }
         public string vendor { get; set; }
-        public float dpp { get; set; }
+        public float jumlah { get; set; }
         public float discPrs { get; set; }
         public float discRph { get; set; }
+        public float dpp { get; set; }
         public float ppnPrs { get; set; }
         public float ppnRph { get; set; }
         public float netAmount { get; set; }
@@ -24,6 +25,7 @@ namespace InventoryManagement.Models
         public string prCode { get; set; }
         public string pName { get; set; }
         public float qty { get; set; }
+        public float jumlah { get; set; }
         public float pPrice { get; set; }
         public float discPrs { get; set; }
         public float discRph { get; set; }
@@ -36,6 +38,7 @@ namespace InventoryManagement.Models
         public string prCode { get; set; }
         public float pPrice { get; set; }
         public float qty { get; set; }
+        public float jumlah { get; set; }
         public float discPrs { get; set; }
         public float discRph { get; set; }
         public float total { get; set; }

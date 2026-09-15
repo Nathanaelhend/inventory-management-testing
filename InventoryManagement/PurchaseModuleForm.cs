@@ -22,6 +22,8 @@ namespace InventoryManagement
         bool headerCreated = false;
         private string existingOrderNo = null;
 
+        CultureInfo cultureId = new CultureInfo("id-ID");
+
         private readonly PurchaseService purchaseService = new PurchaseService();
         private readonly ProductService productService = new ProductService();
 
@@ -156,8 +158,9 @@ namespace InventoryManagement
                         txtVendorName.Text = po.vendor;
                     }
 
-                    txtDpp.Text = po.dpp.ToString("N0", new CultureInfo("id-ID"));
+                    txtJumlah.Text = po.jumlah.ToString("N0", new CultureInfo("id-ID"));
                     txtDiscPrs.Text = po.discPrs.ToString("N0", new CultureInfo("id-ID"));
+                    txtDpp.Text = po.dpp.ToString("N0", new CultureInfo("id-ID"));
                     txtPPn.Text = po.ppnPrs.ToString("N0", new CultureInfo("id-ID"));
                     txtFinalPrice.Text = po.netAmount.ToString("N0", new CultureInfo("id-ID"));
 
@@ -172,6 +175,7 @@ namespace InventoryManagement
                                 line.pName,
                                 line.pPrice,
                                 line.qty,
+                                line.jumlah,
                                 line.discPrs,
                                 line.discRph,
                                 line.total
@@ -194,7 +198,10 @@ namespace InventoryManagement
             txtProductId.Clear();
             txtProductName.Clear();
             txtPrice.Clear();
+            txtQty.Clear();
             txtTotalDet.Clear();
+            txtJumDet.Clear();
+            lblDiscDet.Text = "-";
         }
 
         private async Task LoadPurchaseLines()
@@ -213,7 +220,7 @@ namespace InventoryManagement
                 {
                     foreach (var line in po.lines)
                     {
-                        dataGridPurchaseModule.Rows.Add(line.prCode, line.pName, line.pPrice, line.qty, line.total);
+                        dataGridPurchaseModule.Rows.Add(line.prCode, line.pName, line.pPrice, line.qty, line.jumlah, line.discPrs, line.discRph, line.total);
                     }
                 }
 
@@ -259,14 +266,17 @@ namespace InventoryManagement
             txtPrice.Clear();
             txtQty.Clear();
             txtDiscDet.Clear();
-            lblDiscDet.Text = "0";
+            txtJumDet.Clear();
+            txtJumlah.Clear();
+            txtDpp.Clear();
+            lblDiscDet.Text = "-";
             txtTotalDet.Clear();
             dataGridPurchaseModule.Rows.Clear();
-            txtDpp.Clear();
+            txtJumlah.Clear();
             txtDiscPrs.Clear();
-            lblDisc.Text = "0";
+            lblDisc.Text = "-";
             txtPPn.Clear();
-            lblPPn.Text = "0";
+            lblPPn.Text = "-";
             txtFinalPrice.Clear();
             selectedRowIndex = -1;
             isEditMode = false;
@@ -302,9 +312,10 @@ namespace InventoryManagement
             txtProductName.Text = row.Cells[1].Value?.ToString();
             txtPrice.Text = row.Cells[3].Value?.ToString();
             txtQty.Text = row.Cells[2].Value.ToString();
-            txtDiscDet.Text = row.Cells[4].Value.ToString();
-            lblDiscDet.Text = row.Cells[5].Value.ToString();
-            txtTotalDet.Text = row.Cells[6].Value?.ToString();
+            txtJumDet.Text = row.Cells[4].Value.ToString();
+            txtDiscDet.Text = row.Cells[5].Value.ToString();
+            lblDiscDet.Text = row.Cells[6].Value.ToString();
+            txtTotalDet.Text = row.Cells[7].Value?.ToString();
 
             txtProductId.Focus();
         }
@@ -362,6 +373,8 @@ namespace InventoryManagement
                     txtPrice.ReadOnly = true;
                     txtDiscPrs.ReadOnly = true;
                     txtFinalPrice.ReadOnly = true;
+                    txtJumDet.ReadOnly = true;
+                    txtJumlah.ReadOnly = true;
                     txtPPn.ReadOnly = true;
                     txtQty.ReadOnly = true;
 
@@ -379,12 +392,12 @@ namespace InventoryManagement
             decimal total = 0;
             foreach (DataGridViewRow row in dataGridPurchaseModule.Rows)
             {
-                if (row.Cells[4].Value != null && row.Cells[4].Value.ToString() != "")
+                if (row.Cells[7].Value != null && row.Cells[7].Value.ToString() != "")
                 {
-                    total += Convert.ToDecimal(row.Cells[4].Value);
+                    total += Convert.ToDecimal(row.Cells[7].Value);
                 }
             }
-            txtDpp.Text = total.ToString();
+            txtJumlah.Text = total.ToString();
         }
 
         private void dataGridPurchaseModule_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
@@ -447,6 +460,7 @@ namespace InventoryManagement
                 prDate = dateTimePickerOrder.Value,
                 prCode = txtProductId.Text,
                 pPrice = priceDecimal,
+                jumlah = priceDecimal * qtyInt,
                 discPrs = float.Parse(txtDiscDet.Text),
                 discRph = float.Parse(lblDiscDet.Text),
                 qty = qtyInt,
@@ -514,17 +528,17 @@ namespace InventoryManagement
 
             HitungTotalGrid();
 
-            decimal dppDec = 0m, discPrsDec = 0m, discRphDec = 0m, ppnPrsDec = 0m, ppnRphDec = 0m, netAmountDec = 0m;
+            decimal jumlahDec = 0m, discPrsDec = 0m, discRphDec = 0m, ppnPrsDec = 0m, ppnRphDec = 0m, netAmountDec = 0m;
 
-            decimal.TryParse(txtDpp.Text.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out dppDec);
-            decimal.TryParse(txtDiscPrs.Text.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out discPrsDec);
+            decimal.TryParse(txtJumlah.Text, NumberStyles.Any, cultureId, out jumlahDec);
+            decimal.TryParse(txtDiscPrs.Text, NumberStyles.Any, cultureId, out discPrsDec);
 
-            discRphDec = (discPrsDec / 100m) * dppDec;
+            discRphDec = (discPrsDec / 100m) * jumlahDec;
             lblDisc.Text = discRphDec.ToString("0.##");
 
-            decimal priceAfterDisc = dppDec - discRphDec;
+            decimal priceAfterDisc = jumlahDec - discRphDec;
 
-            decimal.TryParse(txtPPn.Text.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out ppnPrsDec);
+            decimal.TryParse(txtPPn.Text, NumberStyles.Any, cultureId, out ppnPrsDec);
 
             ppnRphDec = (ppnPrsDec / 100m) * priceAfterDisc;
             lblPPn.Text = ppnRphDec.ToString("0.##");
@@ -537,9 +551,10 @@ namespace InventoryManagement
                 noOrder = noOrder,
                 odate = dateTimePickerOrder.Value,
                 vendor = txtVendorId.Text,
-                dpp = (float)dppDec,
+                jumlah = (float)jumlahDec,
                 discPrs = (float)discPrsDec,
                 discRph = (float)discRphDec,
+                dpp = (float)priceAfterDisc,
                 ppnPrs = (float)ppnPrsDec,
                 ppnRph = (float)ppnRphDec,
                 netAmount = (float)netAmountDec,
@@ -818,14 +833,13 @@ namespace InventoryManagement
                 e.Handled = true;
                 e.SuppressKeyPress = true;
 
-                decimal.TryParse(txtDpp.Text.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal dpp);
-                decimal.TryParse(txtDiscPrs.Text.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal discPrs);
-                decimal.TryParse(txtPPn.Text.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal ppnPrs);
+                decimal.TryParse(txtDpp.Text, NumberStyles.Any, cultureId, out decimal dpp);
+                decimal.TryParse(txtDiscPrs.Text, NumberStyles.Any, cultureId, out decimal discPrs);
+                decimal.TryParse(txtPPn.Text, NumberStyles.Any, cultureId, out decimal ppnPrs);
 
-                decimal discRph = (discPrs / 100m) * dpp;
-                decimal priceAfterDisc = dpp - discRph;
-                decimal ppnRph = (ppnPrs / 100m) * priceAfterDisc;
-                decimal finalPrice = priceAfterDisc + ppnRph;
+
+                decimal ppnRph = (ppnPrs / 100) * dpp;
+                decimal finalPrice = dpp + ppnRph;
 
                 lblPPn.Text = ppnRph.ToString("N0", new CultureInfo("id-ID"));
                 txtFinalPrice.Text = finalPrice.ToString("N0", new CultureInfo("id-ID"));
@@ -841,12 +855,13 @@ namespace InventoryManagement
                 e.Handled = true;
                 e.SuppressKeyPress = true;
 
-                decimal.TryParse(txtDpp.Text.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal dpp);
-                decimal.TryParse(txtDiscPrs.Text.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal discPrs);
+                decimal.TryParse(txtJumlah.Text, NumberStyles.Any, cultureId, out decimal jumlah);
+                decimal.TryParse(txtDiscPrs.Text, NumberStyles.Any, cultureId, out decimal discPrs);
 
-                decimal discRph = (discPrs / 100m) * dpp;
-                decimal priceAfterDisc = dpp - discRph;
+                decimal discRph = (discPrs / 100) * jumlah;
+                decimal priceAfterDisc = jumlah - discRph;
 
+                txtDpp.Text = priceAfterDisc.ToString("N0", new CultureInfo("id-ID"));
                 lblDisc.Text = discRph.ToString("N0", new CultureInfo("id-ID"));
                 txtFinalPrice.Text = priceAfterDisc.ToString("N0", new CultureInfo("id-ID"));
 
@@ -859,7 +874,7 @@ namespace InventoryManagement
         {
             if(e.KeyCode == Keys.Enter)
             {
-                float totalAwal = float.Parse(txtTotalDet.Text);
+                float totalAwal = float.Parse(txtJumDet.Text);
                 float persenDiskon = float.Parse(txtDiscDet.Text);
 
                 float discountRph = totalAwal * (persenDiskon / 100f);
@@ -879,7 +894,7 @@ namespace InventoryManagement
                 float price = float.Parse(txtPrice.Text);
                 float qty = float.Parse(txtQty.Text);
                 float total = price * qty;
-                txtTotalDet.Text = total.ToString("N0", new CultureInfo("id-ID"));
+                txtJumDet.Text = total.ToString("N0", new CultureInfo("id-ID"));
 
                 txtDiscDet.Focus();
             }

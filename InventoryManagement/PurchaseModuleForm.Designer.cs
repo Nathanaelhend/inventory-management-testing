@@ -63,17 +63,10 @@
             this.label16 = new System.Windows.Forms.Label();
             this.txtPPn = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
-            this.txtDpp = new System.Windows.Forms.TextBox();
+            this.txtJumlah = new System.Windows.Forms.TextBox();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnSaveDetail = new System.Windows.Forms.Button();
             this.dataGridPurchaseModule = new System.Windows.Forms.DataGridView();
-            this.pid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.pname = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.pprice = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.pqty = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.discPrs = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.disc = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.pTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnCreate = new System.Windows.Forms.Button();
             this.dateTimePickerOrder = new System.Windows.Forms.DateTimePicker();
@@ -96,6 +89,18 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.txtDpp = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.txtJumDet = new System.Windows.Forms.TextBox();
+            this.pid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pname = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pprice = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pqty = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.jumlah = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.discPrs = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.disc = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
@@ -114,7 +119,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(887, 55);
+            this.panel1.Size = new System.Drawing.Size(857, 55);
             this.panel1.TabIndex = 1;
             // 
             // pictureBox3
@@ -318,7 +323,7 @@
             // 
             this.lblDisc.AutoSize = true;
             this.lblDisc.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDisc.Location = new System.Drawing.Point(218, 108);
+            this.lblDisc.Location = new System.Drawing.Point(218, 82);
             this.lblDisc.Name = "lblDisc";
             this.lblDisc.Size = new System.Drawing.Size(12, 16);
             this.lblDisc.TabIndex = 4;
@@ -358,7 +363,7 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.Location = new System.Drawing.Point(202, 109);
+            this.label20.Location = new System.Drawing.Point(202, 83);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(0, 16);
             this.label20.TabIndex = 5;
@@ -367,7 +372,7 @@
             // 
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.Location = new System.Drawing.Point(138, 108);
+            this.label19.Location = new System.Drawing.Point(138, 82);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(78, 16);
             this.label19.TabIndex = 7;
@@ -377,7 +382,7 @@
             // 
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(117, 108);
+            this.label18.Location = new System.Drawing.Point(117, 82);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(20, 16);
             this.label18.TabIndex = 8;
@@ -387,7 +392,7 @@
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(19, 106);
+            this.label17.Location = new System.Drawing.Point(19, 80);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(42, 16);
             this.label17.TabIndex = 86;
@@ -395,7 +400,7 @@
             // 
             // txtDiscPrs
             // 
-            this.txtDiscPrs.Location = new System.Drawing.Point(67, 105);
+            this.txtDiscPrs.Location = new System.Drawing.Point(66, 79);
             this.txtDiscPrs.Name = "txtDiscPrs";
             this.txtDiscPrs.Size = new System.Drawing.Size(44, 20);
             this.txtDiscPrs.TabIndex = 1;
@@ -423,24 +428,24 @@
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(23, 79);
+            this.label15.Location = new System.Drawing.Point(14, 54);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(38, 16);
+            this.label15.Size = new System.Drawing.Size(46, 16);
             this.label15.TabIndex = 82;
-            this.label15.Text = "DPP";
+            this.label15.Text = "JMLH";
             // 
-            // txtDpp
+            // txtJumlah
             // 
-            this.txtDpp.Enabled = false;
-            this.txtDpp.Location = new System.Drawing.Point(66, 78);
-            this.txtDpp.Name = "txtDpp";
-            this.txtDpp.ReadOnly = true;
-            this.txtDpp.Size = new System.Drawing.Size(89, 20);
-            this.txtDpp.TabIndex = 0;
+            this.txtJumlah.Enabled = false;
+            this.txtJumlah.Location = new System.Drawing.Point(66, 52);
+            this.txtJumlah.Name = "txtJumlah";
+            this.txtJumlah.ReadOnly = true;
+            this.txtJumlah.Size = new System.Drawing.Size(89, 20);
+            this.txtJumlah.TabIndex = 0;
             // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(350, 180);
+            this.btnDelete.Location = new System.Drawing.Point(344, 193);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(63, 23);
             this.btnDelete.TabIndex = 80;
@@ -450,7 +455,7 @@
             // 
             // btnSaveDetail
             // 
-            this.btnSaveDetail.Location = new System.Drawing.Point(289, 180);
+            this.btnSaveDetail.Location = new System.Drawing.Point(283, 193);
             this.btnSaveDetail.Name = "btnSaveDetail";
             this.btnSaveDetail.Size = new System.Drawing.Size(55, 23);
             this.btnSaveDetail.TabIndex = 6;
@@ -467,6 +472,7 @@
             this.pname,
             this.pprice,
             this.pqty,
+            this.jumlah,
             this.discPrs,
             this.disc,
             this.pTotal});
@@ -477,67 +483,12 @@
             this.dataGridPurchaseModule.RowHeadersVisible = false;
             this.dataGridPurchaseModule.RowHeadersWidth = 51;
             this.dataGridPurchaseModule.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.dataGridPurchaseModule.Size = new System.Drawing.Size(608, 218);
+            this.dataGridPurchaseModule.Size = new System.Drawing.Size(794, 218);
             this.dataGridPurchaseModule.TabIndex = 78;
             this.dataGridPurchaseModule.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridPurchaseModule_CellClick);
             this.dataGridPurchaseModule.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridPurchaseModule_CellValueChanged);
             this.dataGridPurchaseModule.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridPurchaseModule_RowsAdded);
             this.dataGridPurchaseModule.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridPurchaseModule_RowsRemoved);
-            // 
-            // pid
-            // 
-            this.pid.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.pid.HeaderText = "Product Id";
-            this.pid.MinimumWidth = 6;
-            this.pid.Name = "pid";
-            this.pid.ReadOnly = true;
-            this.pid.Width = 81;
-            // 
-            // pname
-            // 
-            this.pname.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.pname.HeaderText = "Name";
-            this.pname.MinimumWidth = 6;
-            this.pname.Name = "pname";
-            this.pname.ReadOnly = true;
-            // 
-            // pprice
-            // 
-            this.pprice.HeaderText = "Price";
-            this.pprice.MinimumWidth = 6;
-            this.pprice.Name = "pprice";
-            this.pprice.ReadOnly = true;
-            this.pprice.Width = 125;
-            // 
-            // pqty
-            // 
-            this.pqty.HeaderText = "Qty";
-            this.pqty.MinimumWidth = 6;
-            this.pqty.Name = "pqty";
-            this.pqty.ReadOnly = true;
-            this.pqty.Width = 125;
-            // 
-            // discPrs
-            // 
-            this.discPrs.HeaderText = "Disc %";
-            this.discPrs.Name = "discPrs";
-            this.discPrs.ReadOnly = true;
-            this.discPrs.Visible = false;
-            // 
-            // disc
-            // 
-            this.disc.HeaderText = "Disc";
-            this.disc.Name = "disc";
-            this.disc.ReadOnly = true;
-            this.disc.Visible = false;
-            // 
-            // pTotal
-            // 
-            this.pTotal.HeaderText = "Total";
-            this.pTotal.MinimumWidth = 6;
-            this.pTotal.Name = "pTotal";
-            this.pTotal.ReadOnly = true;
-            this.pTotal.Width = 125;
             // 
             // btnClear
             // 
@@ -579,7 +530,7 @@
             // txtTotalDet
             // 
             this.txtTotalDet.Enabled = false;
-            this.txtTotalDet.Location = new System.Drawing.Point(80, 142);
+            this.txtTotalDet.Location = new System.Drawing.Point(80, 164);
             this.txtTotalDet.Name = "txtTotalDet";
             this.txtTotalDet.Size = new System.Drawing.Size(94, 20);
             this.txtTotalDet.TabIndex = 4;
@@ -624,6 +575,8 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.SystemColors.InactiveCaption;
+            this.panel2.Controls.Add(this.label9);
+            this.panel2.Controls.Add(this.txtJumDet);
             this.panel2.Controls.Add(this.txtQty);
             this.panel2.Controls.Add(this.txtDiscDet);
             this.panel2.Controls.Add(this.label10);
@@ -657,7 +610,7 @@
             // 
             // txtDiscDet
             // 
-            this.txtDiscDet.Location = new System.Drawing.Point(81, 116);
+            this.txtDiscDet.Location = new System.Drawing.Point(81, 138);
             this.txtDiscDet.Name = "txtDiscDet";
             this.txtDiscDet.Size = new System.Drawing.Size(44, 20);
             this.txtDiscDet.TabIndex = 117;
@@ -667,7 +620,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(33, 117);
+            this.label10.Location = new System.Drawing.Point(33, 139);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(42, 16);
             this.label10.TabIndex = 115;
@@ -677,7 +630,7 @@
             // 
             this.lblDiscDet.AutoSize = true;
             this.lblDiscDet.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDiscDet.Location = new System.Drawing.Point(232, 119);
+            this.lblDiscDet.Location = new System.Drawing.Point(232, 141);
             this.lblDiscDet.Name = "lblDiscDet";
             this.lblDiscDet.Size = new System.Drawing.Size(12, 16);
             this.lblDiscDet.TabIndex = 108;
@@ -687,7 +640,7 @@
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(131, 119);
+            this.label12.Location = new System.Drawing.Point(131, 141);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(20, 16);
             this.label12.TabIndex = 112;
@@ -697,7 +650,7 @@
             // 
             this.label21.AutoSize = true;
             this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(152, 119);
+            this.label21.Location = new System.Drawing.Point(152, 141);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(78, 16);
             this.label21.TabIndex = 111;
@@ -707,7 +660,7 @@
             // 
             this.label25.AutoSize = true;
             this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label25.Location = new System.Drawing.Point(216, 120);
+            this.label25.Location = new System.Drawing.Point(216, 142);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(0, 16);
             this.label25.TabIndex = 109;
@@ -716,7 +669,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(18, 143);
+            this.label7.Location = new System.Drawing.Point(18, 165);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(59, 16);
             this.label7.TabIndex = 103;
@@ -755,8 +708,10 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.SystemColors.InactiveCaption;
-            this.panel3.Controls.Add(this.txtFinalPrice);
             this.panel3.Controls.Add(this.txtDpp);
+            this.panel3.Controls.Add(this.label8);
+            this.panel3.Controls.Add(this.txtFinalPrice);
+            this.panel3.Controls.Add(this.txtJumlah);
             this.panel3.Controls.Add(this.label15);
             this.panel3.Controls.Add(this.txtPPn);
             this.panel3.Controls.Add(this.btnConfirm);
@@ -778,12 +733,112 @@
             this.panel3.Size = new System.Drawing.Size(372, 230);
             this.panel3.TabIndex = 100;
             // 
+            // txtDpp
+            // 
+            this.txtDpp.Enabled = false;
+            this.txtDpp.Location = new System.Drawing.Point(65, 104);
+            this.txtDpp.Name = "txtDpp";
+            this.txtDpp.ReadOnly = true;
+            this.txtDpp.Size = new System.Drawing.Size(89, 20);
+            this.txtDpp.TabIndex = 97;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(22, 105);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(38, 16);
+            this.label8.TabIndex = 98;
+            this.label8.Text = "DPP";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(30, 113);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(46, 16);
+            this.label9.TabIndex = 119;
+            this.label9.Text = "JMLH";
+            // 
+            // txtJumDet
+            // 
+            this.txtJumDet.Enabled = false;
+            this.txtJumDet.Location = new System.Drawing.Point(80, 111);
+            this.txtJumDet.Margin = new System.Windows.Forms.Padding(2);
+            this.txtJumDet.Name = "txtJumDet";
+            this.txtJumDet.ReadOnly = true;
+            this.txtJumDet.Size = new System.Drawing.Size(94, 20);
+            this.txtJumDet.TabIndex = 118;
+            // 
+            // pid
+            // 
+            this.pid.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.pid.HeaderText = "Product Id";
+            this.pid.MinimumWidth = 6;
+            this.pid.Name = "pid";
+            this.pid.ReadOnly = true;
+            this.pid.Width = 81;
+            // 
+            // pname
+            // 
+            this.pname.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.pname.HeaderText = "Name";
+            this.pname.MinimumWidth = 6;
+            this.pname.Name = "pname";
+            this.pname.ReadOnly = true;
+            // 
+            // pprice
+            // 
+            this.pprice.HeaderText = "Price";
+            this.pprice.MinimumWidth = 6;
+            this.pprice.Name = "pprice";
+            this.pprice.ReadOnly = true;
+            this.pprice.Width = 125;
+            // 
+            // pqty
+            // 
+            this.pqty.HeaderText = "Qty";
+            this.pqty.MinimumWidth = 6;
+            this.pqty.Name = "pqty";
+            this.pqty.ReadOnly = true;
+            this.pqty.Width = 125;
+            // 
+            // jumlah
+            // 
+            this.jumlah.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.jumlah.HeaderText = "Jumlah";
+            this.jumlah.Name = "jumlah";
+            this.jumlah.ReadOnly = true;
+            this.jumlah.Width = 65;
+            // 
+            // discPrs
+            // 
+            this.discPrs.HeaderText = "Disc %";
+            this.discPrs.Name = "discPrs";
+            this.discPrs.ReadOnly = true;
+            // 
+            // disc
+            // 
+            this.disc.HeaderText = "Disc";
+            this.disc.Name = "disc";
+            this.disc.ReadOnly = true;
+            // 
+            // pTotal
+            // 
+            this.pTotal.HeaderText = "Total";
+            this.pTotal.MinimumWidth = 6;
+            this.pTotal.Name = "pTotal";
+            this.pTotal.ReadOnly = true;
+            this.pTotal.Width = 125;
+            // 
             // PurchaseModuleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(887, 619);
+            this.ClientSize = new System.Drawing.Size(857, 619);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.label6);
@@ -842,7 +897,7 @@
         private System.Windows.Forms.Label label16;
         public System.Windows.Forms.TextBox txtPPn;
         private System.Windows.Forms.Label label15;
-        public System.Windows.Forms.TextBox txtDpp;
+        public System.Windows.Forms.TextBox txtJumlah;
         public System.Windows.Forms.Button btnDelete;
         public System.Windows.Forms.Button btnSaveDetail;
         private System.Windows.Forms.DataGridView dataGridPurchaseModule;
@@ -876,13 +931,18 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Label label25;
+        public System.Windows.Forms.TextBox txtQty;
+        public System.Windows.Forms.TextBox txtDpp;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
+        public System.Windows.Forms.TextBox txtJumDet;
         private System.Windows.Forms.DataGridViewTextBoxColumn pid;
         private System.Windows.Forms.DataGridViewTextBoxColumn pname;
         private System.Windows.Forms.DataGridViewTextBoxColumn pprice;
         private System.Windows.Forms.DataGridViewTextBoxColumn pqty;
+        private System.Windows.Forms.DataGridViewTextBoxColumn jumlah;
         private System.Windows.Forms.DataGridViewTextBoxColumn discPrs;
         private System.Windows.Forms.DataGridViewTextBoxColumn disc;
         private System.Windows.Forms.DataGridViewTextBoxColumn pTotal;
-        public System.Windows.Forms.TextBox txtQty;
     }
 }
