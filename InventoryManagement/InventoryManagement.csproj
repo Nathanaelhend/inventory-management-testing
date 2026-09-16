@@ -285,6 +285,12 @@
     <Compile Include="UserModuleForm.Designer.cs">
       <DependentUpon>UserModuleForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="VendorPaymentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VendorPaymentForm.Designer.cs">
+      <DependentUpon>VendorPaymentForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="CategoryForm.resx">
       <DependentUpon>CategoryForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -359,6 +365,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserModuleForm.resx">
       <DependentUpon>UserModuleForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VendorPaymentForm.resx">
+      <DependentUpon>VendorPaymentForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
