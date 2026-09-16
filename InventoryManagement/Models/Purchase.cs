@@ -30,6 +30,7 @@ namespace InventoryManagement.Models
         public float discPrs { get; set; }
         public float discRph { get; set; }
         public float total { get; set; }
+        public string purchaseNo { get; set; }
     }
 
     public class PurchaseLineRequest

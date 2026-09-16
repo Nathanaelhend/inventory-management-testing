@@ -8,14 +8,11 @@ namespace InventoryManagement.Models
 {
     public class StockMove
     {
-        public string pcode { get; set; }
         public string name { get; set; }
-        public float qty { get; set; }
         public string mref { get; set; }
         public string @ref { get; set; }
         public string state { get; set; }
         public string type { get; set; }
-        public string type_line { get; set; }
 
         public List<StockMoveLine> lines { get; set; } = new List<StockMoveLine>();
     }
@@ -25,8 +22,8 @@ namespace InventoryManagement.Models
         public int id { get; set; }
         public string pcode { get; set; }
         public string pName { get; set; }
-        public int qty { get; set; }
-        public int qty_real { get; set; }
+        public float qty { get; set; }
+        public float qty_real { get; set; }
         public string @ref { get; set; }
         public string type_line { get; set; }
         public int move_id { get; set; }
@@ -36,12 +33,12 @@ namespace InventoryManagement.Models
     public class StockMoveResponse
     {
         public string status { get; set; }
-        public List<StockMove> data { get; set; }
+        public List<StockMove> data { get; set; } = new List<StockMove>();
     }
 
     public class StockMoveDetailResponse
     {
         public StockMove header { get; set; }
-        public List<StockMoveLine> lines { get; set; }
+        public List<StockMoveLine> lines { get; set; } = new List<StockMoveLine>();
     }
 }

@@ -30,10 +30,12 @@ namespace InventoryManagement
                 foreach (var vbill in vb)
                 {
                     dataGridBill.Rows.Add(
+                        vbill.id,
                         vbill.name,
                         vbill.date,
                         vbill.vendor_id,
                         vbill.move_id,
+                        vbill.po_id,
                         vbill.total,
                         vbill.state
                     );
@@ -51,13 +53,13 @@ namespace InventoryManagement
             if (e.RowIndex < 0) return;
 
             string colName = dataGridBill.Columns[e.ColumnIndex].Name;
-            string name = dataGridBill.Rows[e.RowIndex].Cells[0].Value?.ToString();
+            int id = Convert.ToInt32(dataGridBill.Rows[e.RowIndex].Cells[0].Value ?? 0);
 
-            //if(colName == "Edit")
-            //{
-            //    ReceiptDetailForm receiptDetail = new ReceiptDetailForm(name);
-            //    receiptDetail.ShowDialog();
-            //}
+            if (colName == "Edit")
+            {
+                BillDetailForm detail = new BillDetailForm(id);
+                detail.ShowDialog();
+            }
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using InventoryManagement.Models;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Shapes;
 
 namespace InventoryManagement
 {
@@ -113,22 +115,31 @@ namespace InventoryManagement
                         if (po.lines != null && po.lines.Count > 0)
                         {
                             string nameSM = await _stockMoveService.GenerateNumber();
+
+                            var lineList = new List<StockMoveLine>();
                             foreach (var line in po.lines)
                             {
-                                var stockMove = new StockMove
+                                lineList.Add(new StockMoveLine
                                 {
-                                    name = nameSM,
                                     pcode = line.prCode,
+                                    pName = line.pName,
                                     qty = line.qty,
-                                    type = "IN",
-                                    mref = noOrder,
-                                    @ref = noOrder,
+                                    @ref = line.purchaseNo,
                                     type_line = "IN",
-                                    state = "DRAFT"
-                                };
-
-                                await _stockMoveService.CreateStockMove(stockMove);
+                                });
                             }
+
+                            var stockMove = new StockMove
+                            {
+                                name = nameSM,
+                                type = "IN",
+                                mref = noOrder,
+                                @ref = noOrder,
+                                state = "DRAFT",
+                                lines = lineList,
+                            };
+
+                            await _stockMoveService.CreateStockMove(stockMove);
                         }
 
                         po.state = "CONFIRM";

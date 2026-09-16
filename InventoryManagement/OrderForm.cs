@@ -81,12 +81,9 @@ namespace InventoryManagement
                             var stockMove = new StockMove
                             {
                                 name = $"OUT/{noOrder}",
-                                pcode = line.pcode,
-                                qty = line.qty,
                                 type = "OUT",
                                 mref = noOrder,
                                 @ref = noOrder,
-                                type_line = "OUT",
                                 state = "DRAFT"
                             };
 

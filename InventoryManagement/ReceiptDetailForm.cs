@@ -175,7 +175,6 @@ namespace InventoryManagement
                     {
                         product_id = row.Cells["pcode"].Value?.ToString(),
                         qty = Convert.ToInt32(row.Cells["qty_real"].Value ?? 0),
-                        state = "DRAFT",
                         bill_id = 0,
                     });
                 }

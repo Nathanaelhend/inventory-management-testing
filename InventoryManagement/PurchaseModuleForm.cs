@@ -200,6 +200,7 @@ namespace InventoryManagement
             txtPrice.Clear();
             txtQty.Clear();
             txtTotalDet.Clear();
+            txtDiscDet.Clear();
             txtJumDet.Clear();
             lblDiscDet.Text = "-";
         }

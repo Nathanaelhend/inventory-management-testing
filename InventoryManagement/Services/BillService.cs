@@ -46,22 +46,17 @@ public class BillService
         return result?.data ?? new List<VendorBill>();
     }
 
-    public async Task<VendorBillResponse> GetBillById(int id)
+    public async Task<VendorBillDetailResponse> GetBillById(int id)
     {
-        var url = $"api/vendor-bill/{id}";
-        var response = await _http.GetAsync(url);
+        var response = await _http.GetAsync($"api/vendor-bill/{id}");
         var json = await response.Content.ReadAsStringAsync();
 
-        if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
-        {
-            return null;
-        }
         if(!response.IsSuccessStatusCode)
         {
-            throw new Exception($"Failed to get vendor bill: {(int)response.StatusCode} ({response.StatusCode})\n{json}");
+            throw new Exception($"Get Bill failed: {json}");
         }
 
-        return JsonConvert.DeserializeObject<VendorBillResponse>(json);
+        return JsonConvert.DeserializeObject<VendorBillDetailResponse>(json);
     }
 
     public async Task CreateBill(VendorBillDetailResponse request)
@@ -103,6 +98,24 @@ public class BillService
         {
             throw new Exception(
                 $"Failed to update Bill id: {id}: {(int)response.StatusCode} ({response.StatusCode})\n{body}");
+        }
+    }
+
+    public async Task ConfirmBill(int id, VendorBill bill)
+    {
+        var content = new StringContent(
+            JsonConvert.SerializeObject(bill),
+            Encoding.UTF8,
+            "application/json"
+        );
+
+        var response = await _http.PutAsync($"api/vendor-bill/{id}/confirm", content);
+        var body = await response.Content.ReadAsStringAsync();
+
+        if(!response.IsSuccessStatusCode)
+        {
+            throw new Exception(
+                $"Failed to Confirm Vendor Bill id: {id} {(int)response.StatusCode} {body}");
         }
     }
 }
