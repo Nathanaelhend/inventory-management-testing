@@ -8,35 +8,32 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    
+    permissions:
+      contents: write
 
     steps:
-    # 1. Checkout repository
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # 2. Setup MSBuild & NuGet
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
 
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v2
 
-    # 3. Restore NuGet Packages
     - name: Restore Packages
       run: nuget restore InventoryManagement.sln
 
-    # 4. Compile project dengan spesifikasi path output yang tepat
     - name: Build Application
       run: |
         msbuild InventoryManagement.sln /p:Configuration=Release /p:Platform="Any CPU" /p:OutputPath="${{ github.workspace }}\build_output"
 
-    # 5. Kompres folder output menjadi Zip
     - name: Create Zip Package
       shell: powershell
       run: |
         Compress-Archive -Path "${{ github.workspace }}\build_output\*" -DestinationPath AppRelease.zip
 
-    # 6. Upload ke GitHub Releases
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
