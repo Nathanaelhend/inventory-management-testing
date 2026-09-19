@@ -1,9 +1,9 @@
 {
-    "version": "1.0.6",
+    "version": "1.0.7",
     "url": "https://github.com/Nathanaelhend/inventory-management-testing/releases/latest/download/AppRelease.zip",
     "changelog": "https://github.com/Nathanaelhend/inventory-management-testing/releases",
     "mandatory": {
-      "desc": "1.0.6",
+      "desc": "1.0.7",
       "minVersion": "1.0.0"
     }
   }
