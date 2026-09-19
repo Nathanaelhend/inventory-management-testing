@@ -1,0 +1,49 @@
+name: Build and Release WinForms
+
+on:
+  push:
+    tags:
+      - 'v*' # Mengubah tag versi (seperti v1.0.0, v1.0.1) menjadi pemicu build
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    # 1. Ambil source code dari repository release
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 2. Setup Compiler MSBuild (Visual Studio)
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    # 3. Setup Package Manager NuGet
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.2.0
+
+    # 4. Download/Restore seluruh dependensi library NuGet
+    - name: Restore Packages
+      run: nuget restore InventoryManagement.sln # <--- SESUAIKAN dengan nama file .sln kamu
+
+    # 5. Compile C# WinForms ke mode Release
+    - name: Build Application
+      run: |
+        msbuild InventoryManagement.sln /p:Configuration=Release /p:Platform="Any CPU" /p:OutputPath=../build_output/
+
+    # 6. Kompres folder hasil compile menjadi AppRelease.zip
+    - name: Create Zip Package
+      shell: powershell
+      run: |
+        Compress-Archive -Path build_output\* -DestinationPath AppRelease.zip
+
+    # 7. Upload zip ke GitHub Releases
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: AppRelease.zip
+        name: Release ${{ github.ref_name }}
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

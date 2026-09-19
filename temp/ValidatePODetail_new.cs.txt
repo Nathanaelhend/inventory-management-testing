@@ -1,0 +1,55 @@
+private bool ValidatePODetail()
+{
+	bool valid = true;
+
+	// No Order
+	errorProvider1.SetError(
+		txtBoxNoOrder,
+		string.IsNullOrWhiteSpace(txtBoxNoOrder.Text)
+			? "Order number is required"
+			: ""
+	);
+
+	// Customer
+	errorProvider1.SetError(
+		txtVendorId,
+		string.IsNullOrWhiteSpace(txtVendorId.Text)
+			? "Vendor is required"
+			: ""
+	);
+
+	// Product
+	errorProvider1.SetError(
+		txtProductId,
+		string.IsNullOrWhiteSpace(txtProductId.Text)
+			? "Product is required"
+			: ""
+	);
+
+	// Qty
+	errorProvider1.SetError(
+		numericQty,
+		numericQty.Value <= 0
+			? "Quantity must be greater than 0"
+			: ""
+	);
+
+	// Price - use TryParse to avoid FormatException
+	decimal price;
+	var priceValid = decimal.TryParse(txtPrice.Text, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture, out price) && price > 0m;
+	errorProvider1.SetError(
+		txtPrice,
+		!priceValid ? "Price must be a positive number" : ""
+	);
+
+	if (
+		string.IsNullOrWhiteSpace(txtBoxNoOrder.Text) ||
+		string.IsNullOrWhiteSpace(txtVendorId.Text) ||
+		string.IsNullOrWhiteSpace(txtProductId.Text) ||
+		numericQty.Value <= 0 ||
+		!priceValid
+	)
+		valid = false;
+
+	return valid;
+}
