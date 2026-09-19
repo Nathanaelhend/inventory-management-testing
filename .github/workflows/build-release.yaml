@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    
+
     permissions:
       contents: write
 
@@ -27,12 +27,12 @@ jobs:
 
     - name: Build Application
       run: |
-        msbuild InventoryManagement.sln /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU"
+        msbuild InventoryManagement.sln /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /p:OutputPath="${{ github.workspace }}\build_output"
 
     - name: Create Zip Package
       shell: powershell
       run: |
-        Compress-Archive -Path "InventoryManagement\bin\Release\*" -DestinationPath AppRelease.zip
+        Compress-Archive -Path "${{ github.workspace }}\build_output\*" -DestinationPath AppRelease.zip
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
