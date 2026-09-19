@@ -3,43 +3,42 @@ name: Build and Release WinForms
 on:
   push:
     tags:
-      - 'v*' # Mengubah tag versi (seperti v1.0.0, v1.0.1) menjadi pemicu build
+      - 'v*'
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    # 1. Ambil source code dari repository release
+    # 1. Checkout repository
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # 2. Setup Compiler MSBuild (Visual Studio)
+    # 2. Setup MSBuild & NuGet
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
 
-    # 3. Setup Package Manager NuGet
     - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.2.0
+      uses: NuGet/setup-nuget@v2
 
-    # 4. Download/Restore seluruh dependensi library NuGet
+    # 3. Restore NuGet Packages
     - name: Restore Packages
-      run: nuget restore InventoryManagement.sln # <--- SESUAIKAN dengan nama file .sln kamu
+      run: nuget restore InventoryManagement.sln
 
-    # 5. Compile C# WinForms ke mode Release
+    # 4. Compile project dengan spesifikasi path output yang tepat
     - name: Build Application
       run: |
-        msbuild InventoryManagement.sln /p:Configuration=Release /p:Platform="Any CPU" /p:OutputPath=../build_output/
+        msbuild InventoryManagement.sln /p:Configuration=Release /p:Platform="Any CPU" /p:OutputPath="${{ github.workspace }}\build_output"
 
-    # 6. Kompres folder hasil compile menjadi AppRelease.zip
+    # 5. Kompres folder output menjadi Zip
     - name: Create Zip Package
       shell: powershell
       run: |
-        Compress-Archive -Path build_output\* -DestinationPath AppRelease.zip
+        Compress-Archive -Path "${{ github.workspace }}\build_output\*" -DestinationPath AppRelease.zip
 
-    # 7. Upload zip ke GitHub Releases
+    # 6. Upload ke GitHub Releases
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         files: AppRelease.zip
         name: Release ${{ github.ref_name }}
