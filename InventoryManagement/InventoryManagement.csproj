@@ -191,6 +191,7 @@
     <Compile Include="Models\StockMove.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\VendorBill.cs" />
+    <Compile Include="Models\VendorPayment.cs" />
     <Compile Include="PurchaseForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -261,6 +262,7 @@
     <Compile Include="DeliveryForm.Designer.cs">
       <DependentUpon>DeliveryForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Services\VendorPaymentService.cs" />
     <Compile Include="VendorBillForm.cs">
       <SubType>Form</SubType>
     </Compile>

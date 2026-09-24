@@ -37,7 +37,7 @@
             this.label9 = new System.Windows.Forms.Label();
             this.btnCOA = new InventoryManagement.CustomerButton();
             this.label8 = new System.Windows.Forms.Label();
-            this.btnOrders = new InventoryManagement.CustomerButton();
+            this.btnPayment = new InventoryManagement.CustomerButton();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -55,7 +55,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.customerButton1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnReceipt)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnCOA)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btnOrders)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btnPayment)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnUser)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnCategories)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnCustomer)).BeginInit();
@@ -72,7 +72,7 @@
             this.panel1.Controls.Add(this.label9);
             this.panel1.Controls.Add(this.btnCOA);
             this.panel1.Controls.Add(this.label8);
-            this.panel1.Controls.Add(this.btnOrders);
+            this.panel1.Controls.Add(this.btnPayment);
             this.panel1.Controls.Add(this.label7);
             this.panel1.Controls.Add(this.label6);
             this.panel1.Controls.Add(this.label5);
@@ -96,7 +96,7 @@
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(803, 76);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(78, 20);
+            this.label11.Size = new System.Drawing.Size(65, 16);
             this.label11.TabIndex = 22;
             this.label11.Text = "Delivery";
             // 
@@ -117,7 +117,7 @@
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(738, 75);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(73, 20);
+            this.label10.Size = new System.Drawing.Size(61, 16);
             this.label10.TabIndex = 20;
             this.label10.Text = "Receipt";
             // 
@@ -139,7 +139,7 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(661, 75);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(88, 20);
+            this.label9.Size = new System.Drawing.Size(72, 16);
             this.label9.TabIndex = 18;
             this.label9.Text = "Purchase";
             // 
@@ -159,31 +159,31 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(599, 75);
+            this.label8.Location = new System.Drawing.Point(593, 75);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(67, 20);
+            this.label8.Size = new System.Drawing.Size(67, 16);
             this.label8.TabIndex = 16;
-            this.label8.Text = "Orders";
+            this.label8.Text = "Payment";
             // 
-            // btnOrders
+            // btnPayment
             // 
-            this.btnOrders.Image = ((System.Drawing.Image)(resources.GetObject("btnOrders.Image")));
-            this.btnOrders.ImageHover = ((System.Drawing.Image)(resources.GetObject("btnOrders.ImageHover")));
-            this.btnOrders.ImageNormal = ((System.Drawing.Image)(resources.GetObject("btnOrders.ImageNormal")));
-            this.btnOrders.Location = new System.Drawing.Point(599, 22);
-            this.btnOrders.Name = "btnOrders";
-            this.btnOrders.Size = new System.Drawing.Size(55, 48);
-            this.btnOrders.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.btnOrders.TabIndex = 17;
-            this.btnOrders.TabStop = false;
-            this.btnOrders.Click += new System.EventHandler(this.btnOrders_Click);
+            this.btnPayment.Image = ((System.Drawing.Image)(resources.GetObject("btnPayment.Image")));
+            this.btnPayment.ImageHover = ((System.Drawing.Image)(resources.GetObject("btnPayment.ImageHover")));
+            this.btnPayment.ImageNormal = ((System.Drawing.Image)(resources.GetObject("btnPayment.ImageNormal")));
+            this.btnPayment.Location = new System.Drawing.Point(599, 22);
+            this.btnPayment.Name = "btnPayment";
+            this.btnPayment.Size = new System.Drawing.Size(55, 48);
+            this.btnPayment.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.btnPayment.TabIndex = 17;
+            this.btnPayment.TabStop = false;
+            this.btnPayment.Click += new System.EventHandler(this.btnOrders_Click);
             // 
             // label7
             // 
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(521, 74);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(37, 20);
+            this.label7.Size = new System.Drawing.Size(29, 16);
             this.label7.TabIndex = 1;
             this.label7.Text = "Bill";
             // 
@@ -192,7 +192,7 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(418, 73);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(100, 20);
+            this.label6.Size = new System.Drawing.Size(83, 16);
             this.label6.TabIndex = 15;
             this.label6.Text = "Categories";
             // 
@@ -201,7 +201,7 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(335, 73);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(71, 20);
+            this.label5.Size = new System.Drawing.Size(57, 16);
             this.label5.TabIndex = 14;
             this.label5.Text = "Partner";
             // 
@@ -210,7 +210,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(245, 72);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(74, 20);
+            this.label4.Size = new System.Drawing.Size(60, 16);
             this.label4.TabIndex = 0;
             this.label4.Text = "Product";
             // 
@@ -272,7 +272,7 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(44, 13);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(135, 39);
+            this.label2.Size = new System.Drawing.Size(111, 31);
             this.label2.TabIndex = 10;
             this.label2.Text = "ventory";
             // 
@@ -282,7 +282,7 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(4, 2);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(88, 54);
+            this.label1.Size = new System.Drawing.Size(70, 42);
             this.label1.TabIndex = 9;
             this.label1.Text = "My";
             // 
@@ -292,7 +292,7 @@
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(7, 43);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(295, 24);
+            this.label3.Size = new System.Drawing.Size(238, 18);
             this.label3.TabIndex = 8;
             this.label3.Text = "Inventory Management System";
             // 
@@ -317,7 +317,7 @@
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(984, 611);
             this.Controls.Add(this.panelMain);
@@ -335,7 +335,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.customerButton1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnReceipt)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnCOA)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btnOrders)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btnPayment)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnUser)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnCategories)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnCustomer)).EndInit();
@@ -359,7 +359,7 @@
         private CustomerButton btnCustomer;
         private CustomerButton btnProduct;
         private System.Windows.Forms.Label label8;
-        private CustomerButton btnOrders;
+        private CustomerButton btnPayment;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label9;

@@ -67,7 +67,7 @@ namespace InventoryManagement
 
         private void btnOrders_Click(object sender, EventArgs e)
         {
-            openChildForm(new OrderForm());
+            openChildForm(new VendorPaymentForm());
         }
 
         private void btnCOA_Click(object sender, EventArgs e)

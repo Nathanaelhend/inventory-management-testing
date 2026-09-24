@@ -59,6 +59,21 @@ public class BillService
         return JsonConvert.DeserializeObject<VendorBillDetailResponse>(json);
     }
 
+    public async Task<List<VendorBill>> GetBillByVendorId(string vendor_id)
+    {
+        var response = await _http.GetAsync($"api/vendor-bill/vendor/{vendor_id}");
+        var json = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Get Vendor bill failed ({(int)response.StatusCode}): {json}");
+        }
+
+        // Direct deserialize ke wrapper class
+        var result = JsonConvert.DeserializeObject<VendorBillResponse>(json);
+        return result?.data ?? new List<VendorBill>();
+    }
+
     public async Task CreateBill(VendorBillDetailResponse request)
     {
         var content = new StringContent(
