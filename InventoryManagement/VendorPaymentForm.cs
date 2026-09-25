@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InventoryManagement.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,15 +13,51 @@ namespace InventoryManagement
 {
     public partial class VendorPaymentForm : Form
     {
+        private int _selectedBillId = 0;
+        private int _selectedVendorId = 0;
 
         VendorPaymentService vps = new VendorPaymentService();
         BillService billService = new BillService();
 
         private ToolStripDropDown popUpContainer;
 
+        int selectedRowIndex = -1;
+        bool isEditMode = false;
+        bool headerCreated = false;
+
         public VendorPaymentForm()
         {
             InitializeComponent();
+        }
+
+        private async Task LoadPaymentLines()
+        {
+            dataGridListBill.Rows.Clear();
+
+            var name = txtNoBukti.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(name))
+                return;
+
+            try
+            {
+                VendorPaymentDetailResponse response = await vps.GetPaymentById(name);
+
+                var lines = response?.data?.lines ?? new List<PaymentLine>();
+
+                foreach(var line in lines)
+                {
+                    dataGridListBill.Rows.Add
+                    (
+                        line.bill_name,
+                        line.date_payment,
+                        line.amount.ToString("N0"),
+                        line.total_paid_akumulasi.ToString("N0")
+                    );
+                }
+            }catch(Exception ex)
+            {
+                MessageBox.Show("Failed to load payment line " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -70,7 +107,7 @@ namespace InventoryManagement
                 {
                     if (v.cType == "Vendor")
                     {
-                        dataGridVendor.Rows.Add(v.ccode, v.cname);
+                        dataGridVendor.Rows.Add(v.sequence,v.ccode, v.cname);
                     }
                 }
             }
@@ -90,8 +127,9 @@ namespace InventoryManagement
                 foreach (var vb in vendorBill)
                 {
                     dataGridBill.Rows.Add(
+                        vb.id,
+                        vb.date,
                         vb.name,
-                        vb.date.ToShortDateString(),
                         vb.total.ToString("N0")
                     );
                 }
@@ -210,8 +248,8 @@ namespace InventoryManagement
 
                 if (dataGridVendor.CurrentRow != null && dataGridVendor.CurrentRow.Index >= 0)
                 {
-                    txtVendorId.Text = dataGridVendor.CurrentRow.Cells[0].Value?.ToString() ?? "";
-                    txtVendorName.Text = dataGridVendor.CurrentRow.Cells[1].Value?.ToString() ?? "";
+                    txtVendorId.Text = dataGridVendor.CurrentRow.Cells[1].Value?.ToString() ?? "";
+                    txtVendorName.Text = dataGridVendor.CurrentRow.Cells[2].Value?.ToString() ?? "";
                 }
                 popUpContainer?.Close();
             }
@@ -249,13 +287,14 @@ namespace InventoryManagement
             var numberPayment = await vps.GeneratePaymentNumber();
             txtNoBukti.Text = numberPayment;
 
-            datePickerPayment.Focus();
+            comboType.Focus();
         }
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
             txtNoBukti.Focus();
             txtNoBukti.ReadOnly = false;
+            isEditMode = true;
         }
 
         private void dataGridBill_KeyDown(object sender, KeyEventArgs e)
@@ -264,14 +303,101 @@ namespace InventoryManagement
             {
                 if(dataGridVendor.CurrentRow != null && dataGridVendor.CurrentRow.Index >= 0)
                 {
-                    txtNoNota.Text = dataGridBill.CurrentRow.Cells[0].Value?.ToString();
+                    _selectedBillId = Convert.ToInt32(dataGridBill.CurrentRow.Cells[0].Value?.ToString());
+                    txtNoNota.Text = dataGridBill.CurrentRow.Cells[2].Value?.ToString();
                     dateTimeNota.Text = dataGridBill.CurrentRow.Cells[1].Value?.ToString();
-                    txtTotalNota.Text = dataGridBill.CurrentRow?.Cells[2].Value?.ToString();
-                    txtJumBayar.Text = dataGridBill.CurrentRow?.Cells[2].Value?.ToString();
+                    txtTotalNota.Text = dataGridBill.CurrentRow?.Cells[3].Value?.ToString();
+                    txtJumBayar.Text = dataGridBill.CurrentRow?.Cells[3].Value?.ToString();
                 }
 
                 popUpContainer?.Close();
                 txtJumBayar.Focus();
+            }
+        }
+
+        private async void btnSaveDetail_Click(object sender, EventArgs e)
+        {
+            string noBukti = txtNoBukti.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(noBukti))
+            {
+                MessageBox.Show("Nomor bukti tidak boleh kosong!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+           
+            if (_selectedBillId <= 0)
+            {
+                MessageBox.Show("Silakan pilih Nota Tagihan (Bill) terlebih dahulu!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Bersihkan format ribuan/titik/koma sebelum parse
+            string rawAmount = txtJumBayar.Text.Replace(".", "").Replace(",", "").Replace("Rp", "").Trim();
+            if (!float.TryParse(rawAmount, out float amount) || amount <= 0)
+            {
+                MessageBox.Show("Nominal pembayaran tidak valid!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var detail = new PaymentLineRequest
+            {
+                vendor_payment_id = noBukti,
+                date_payment = datePickerPayment.Value,
+                vendor_id = txtVendorId.Text,
+                bill_id = _selectedBillId,
+                amount = amount,
+                type_payment = comboType.SelectedItem?.ToString(),
+            };
+
+            try
+            {
+                btnSaveDetail.Enabled = false;
+
+                if (isEditMode && selectedRowIndex >= 0)
+                {
+                    var row = dataGridListBill.Rows[selectedRowIndex];
+                    string oldBill = row.Cells[0].Value.ToString();
+                    await vps.UpdateLine(noBukti, oldBill, detail);
+                    MessageBox.Show("Line berhasil diupdate!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    await vps.AddLine(noBukti, detail);
+                    MessageBox.Show("Payment successfully created!", "Infor", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                isEditMode = false;
+                headerCreated = true;
+
+                // Reset input form detail
+                txtJumBayar.Clear();
+                _selectedBillId = 0;
+
+                // Reload data lines dari backend (sekarang aman karena backend mengembalikan 200 OK)
+                await LoadPaymentLines();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                btnSaveDetail.Enabled = true;
+            }
+        }
+
+        private void comboType_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                datePickerPayment.Focus();
+            }
+        }
+
+        private void datePickerPayment_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                txtVendorId.Focus();
             }
         }
     }

@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label1 = new System.Windows.Forms.Label();
             this.txtNoBukti = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -50,11 +50,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.txtNoNota = new System.Windows.Forms.TextBox();
             this.dataGridListBill = new System.Windows.Forms.DataGridView();
-            this.noPO = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tanggal = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.total = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.akBayar = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.jmlBayar = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label10 = new System.Windows.Forms.Label();
             this.txtTotalPembayaran = new System.Windows.Forms.TextBox();
@@ -64,12 +59,19 @@
             this.btnLoad = new System.Windows.Forms.Button();
             this.btnNew = new System.Windows.Forms.Button();
             this.dataGridVendor = new System.Windows.Forms.DataGridView();
-            this.vendorId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridBill = new System.Windows.Forms.DataGridView();
             this.btnSaveDetail = new System.Windows.Forms.Button();
-            this.noNota = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.noBill = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tanggal = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.total = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.akBayar = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.jmlBayar = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.sequence = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.vendorId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dateNota = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.noNota = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.amountNota = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridListBill)).BeginInit();
@@ -118,6 +120,7 @@
             this.comboType.Name = "comboType";
             this.comboType.Size = new System.Drawing.Size(64, 21);
             this.comboType.TabIndex = 4;
+            this.comboType.KeyDown += new System.Windows.Forms.KeyEventHandler(this.comboType_KeyDown);
             // 
             // datePickerPayment
             // 
@@ -127,6 +130,7 @@
             this.datePickerPayment.Size = new System.Drawing.Size(97, 20);
             this.datePickerPayment.TabIndex = 5;
             this.datePickerPayment.Value = new System.DateTime(2026, 9, 19, 0, 0, 0, 0);
+            this.datePickerPayment.KeyDown += new System.Windows.Forms.KeyEventHandler(this.datePickerPayment_KeyDown);
             // 
             // label3
             // 
@@ -190,7 +194,7 @@
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label9.ForeColor = System.Drawing.Color.Black;
-            this.label9.Location = new System.Drawing.Point(7, 117);
+            this.label9.Location = new System.Drawing.Point(24, 117);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(85, 13);
             this.label9.TabIndex = 20;
@@ -208,7 +212,7 @@
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.ForeColor = System.Drawing.Color.Black;
-            this.label8.Location = new System.Drawing.Point(14, 91);
+            this.label8.Location = new System.Drawing.Point(31, 91);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(78, 13);
             this.label8.TabIndex = 18;
@@ -227,7 +231,7 @@
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.Color.Black;
-            this.label7.Location = new System.Drawing.Point(24, 65);
+            this.label7.Location = new System.Drawing.Point(41, 65);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(68, 13);
             this.label7.TabIndex = 16;
@@ -256,7 +260,7 @@
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.Color.Black;
-            this.label6.Location = new System.Drawing.Point(27, 40);
+            this.label6.Location = new System.Drawing.Point(44, 40);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(65, 13);
             this.label6.TabIndex = 14;
@@ -267,7 +271,7 @@
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.Black;
-            this.label5.Location = new System.Drawing.Point(29, 13);
+            this.label5.Location = new System.Drawing.Point(46, 13);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(63, 13);
             this.label5.TabIndex = 13;
@@ -284,14 +288,14 @@
             // dataGridListBill
             // 
             this.dataGridListBill.AllowUserToAddRows = false;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridListBill.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridListBill.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle6;
             this.dataGridListBill.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader;
             this.dataGridListBill.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataGridListBill.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Raised;
             this.dataGridListBill.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridListBill.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.noPO,
+            this.noBill,
             this.tanggal,
             this.total,
             this.akBayar,
@@ -302,41 +306,6 @@
             this.dataGridListBill.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dataGridListBill.Size = new System.Drawing.Size(414, 294);
             this.dataGridListBill.TabIndex = 11;
-            // 
-            // noPO
-            // 
-            this.noPO.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.noPO.HeaderText = "NO PO";
-            this.noPO.Name = "noPO";
-            this.noPO.ReadOnly = true;
-            // 
-            // tanggal
-            // 
-            this.tanggal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.tanggal.HeaderText = "TANGGAL";
-            this.tanggal.Name = "tanggal";
-            this.tanggal.ReadOnly = true;
-            // 
-            // total
-            // 
-            this.total.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.total.HeaderText = "TAGIHAN";
-            this.total.Name = "total";
-            this.total.ReadOnly = true;
-            // 
-            // akBayar
-            // 
-            this.akBayar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.akBayar.HeaderText = "AK. PEMBY";
-            this.akBayar.Name = "akBayar";
-            this.akBayar.ReadOnly = true;
-            // 
-            // jmlBayar
-            // 
-            this.jmlBayar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.jmlBayar.HeaderText = "JML. PEMBY";
-            this.jmlBayar.Name = "jmlBayar";
-            this.jmlBayar.ReadOnly = true;
             // 
             // panel2
             // 
@@ -355,7 +324,7 @@
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label10.ForeColor = System.Drawing.Color.Black;
-            this.label10.Location = new System.Drawing.Point(17, 36);
+            this.label10.Location = new System.Drawing.Point(24, 36);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(85, 13);
             this.label10.TabIndex = 20;
@@ -374,7 +343,7 @@
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label14.ForeColor = System.Drawing.Color.Black;
-            this.label14.Location = new System.Drawing.Point(-1, 12);
+            this.label14.Location = new System.Drawing.Point(7, 12);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(102, 13);
             this.label14.TabIndex = 13;
@@ -426,6 +395,7 @@
             this.dataGridVendor.BackgroundColor = System.Drawing.Color.White;
             this.dataGridVendor.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridVendor.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.sequence,
             this.vendorId,
             this.name});
             this.dataGridVendor.EnableHeadersVisualStyles = false;
@@ -440,30 +410,15 @@
             this.dataGridVendor.Visible = false;
             this.dataGridVendor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridVendor_KeyDown);
             // 
-            // vendorId
-            // 
-            this.vendorId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.vendorId.HeaderText = "Vendor Id";
-            this.vendorId.MinimumWidth = 6;
-            this.vendorId.Name = "vendorId";
-            this.vendorId.ReadOnly = true;
-            // 
-            // name
-            // 
-            this.name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.name.HeaderText = "Name";
-            this.name.MinimumWidth = 6;
-            this.name.Name = "name";
-            this.name.ReadOnly = true;
-            // 
             // dataGridBill
             // 
             this.dataGridBill.AllowUserToAddRows = false;
             this.dataGridBill.BackgroundColor = System.Drawing.Color.White;
             this.dataGridBill.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridBill.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.noNota,
+            this.id,
             this.dateNota,
+            this.noNota,
             this.amountNota});
             this.dataGridBill.EnableHeadersVisualStyles = false;
             this.dataGridBill.Location = new System.Drawing.Point(336, 124);
@@ -486,6 +441,79 @@
             this.btnSaveDetail.TabIndex = 27;
             this.btnSaveDetail.Text = "SAVE";
             this.btnSaveDetail.UseVisualStyleBackColor = true;
+            this.btnSaveDetail.Click += new System.EventHandler(this.btnSaveDetail_Click);
+            // 
+            // noBill
+            // 
+            this.noBill.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.noBill.HeaderText = "NO Bill";
+            this.noBill.Name = "noBill";
+            this.noBill.ReadOnly = true;
+            // 
+            // tanggal
+            // 
+            this.tanggal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.tanggal.HeaderText = "TANGGAL";
+            this.tanggal.Name = "tanggal";
+            this.tanggal.ReadOnly = true;
+            // 
+            // total
+            // 
+            this.total.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.total.HeaderText = "TAGIHAN";
+            this.total.Name = "total";
+            this.total.ReadOnly = true;
+            // 
+            // akBayar
+            // 
+            this.akBayar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.akBayar.HeaderText = "AK. PEMBY";
+            this.akBayar.Name = "akBayar";
+            this.akBayar.ReadOnly = true;
+            // 
+            // jmlBayar
+            // 
+            this.jmlBayar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.jmlBayar.HeaderText = "JML. PEMBY";
+            this.jmlBayar.Name = "jmlBayar";
+            this.jmlBayar.ReadOnly = true;
+            // 
+            // sequence
+            // 
+            this.sequence.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.sequence.HeaderText = "Column1";
+            this.sequence.Name = "sequence";
+            this.sequence.ReadOnly = true;
+            this.sequence.Visible = false;
+            // 
+            // vendorId
+            // 
+            this.vendorId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.vendorId.HeaderText = "Vendor Id";
+            this.vendorId.MinimumWidth = 6;
+            this.vendorId.Name = "vendorId";
+            this.vendorId.ReadOnly = true;
+            // 
+            // name
+            // 
+            this.name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.name.HeaderText = "Name";
+            this.name.MinimumWidth = 6;
+            this.name.Name = "name";
+            this.name.ReadOnly = true;
+            // 
+            // id
+            // 
+            this.id.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.id.HeaderText = "Column1";
+            this.id.Name = "id";
+            this.id.Visible = false;
+            // 
+            // dateNota
+            // 
+            this.dateNota.HeaderText = "Column1";
+            this.dateNota.Name = "dateNota";
+            this.dateNota.Visible = false;
             // 
             // noNota
             // 
@@ -494,13 +522,6 @@
             this.noNota.MinimumWidth = 6;
             this.noNota.Name = "noNota";
             this.noNota.ReadOnly = true;
-            // 
-            // dateNota
-            // 
-            this.dateNota.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dateNota.HeaderText = "Column1";
-            this.dateNota.Name = "dateNota";
-            this.dateNota.Visible = false;
             // 
             // amountNota
             // 
@@ -574,11 +595,6 @@
         private System.Windows.Forms.TextBox txtJumBayar;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txtTotalBayar;
-        private System.Windows.Forms.DataGridViewTextBoxColumn noPO;
-        private System.Windows.Forms.DataGridViewTextBoxColumn tanggal;
-        private System.Windows.Forms.DataGridViewTextBoxColumn total;
-        private System.Windows.Forms.DataGridViewTextBoxColumn akBayar;
-        private System.Windows.Forms.DataGridViewTextBoxColumn jmlBayar;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox txtTotalPembayaran;
@@ -592,8 +608,15 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn name;
         private System.Windows.Forms.DataGridView dataGridBill;
         private System.Windows.Forms.Button btnSaveDetail;
-        private System.Windows.Forms.DataGridViewTextBoxColumn noNota;
+        private System.Windows.Forms.DataGridViewTextBoxColumn noBill;
+        private System.Windows.Forms.DataGridViewTextBoxColumn tanggal;
+        private System.Windows.Forms.DataGridViewTextBoxColumn total;
+        private System.Windows.Forms.DataGridViewTextBoxColumn akBayar;
+        private System.Windows.Forms.DataGridViewTextBoxColumn jmlBayar;
+        private System.Windows.Forms.DataGridViewTextBoxColumn sequence;
+        private System.Windows.Forms.DataGridViewTextBoxColumn id;
         private System.Windows.Forms.DataGridViewTextBoxColumn dateNota;
+        private System.Windows.Forms.DataGridViewTextBoxColumn noNota;
         private System.Windows.Forms.DataGridViewTextBoxColumn amountNota;
     }
 }

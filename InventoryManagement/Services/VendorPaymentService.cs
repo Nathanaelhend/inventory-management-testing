@@ -41,27 +41,78 @@ public class VendorPaymentService
         return result?.data ?? new List<VendorPayment>();
     }
 
-    public async Task<VendorPaymentlDetailResponse> GetPaymentById(int id)
+    public async Task<VendorPaymentDetailResponse> GetPaymentById(string name)
     {
-        var response = await _http.GetAsync($"api/vendor-payment/{id}");
+        var encodedName = Uri.EscapeDataString(name);
+        var response = await _http.GetAsync($"api/vendor-payment/{encodedName}");
         var json = await response.Content.ReadAsStringAsync();
         if (!response.IsSuccessStatusCode)
         {
             throw new Exception($"Get Vendor payment by ID failed {(int)response.StatusCode} ({response.StatusCode})\n{json}");
         }
-        return JsonConvert.DeserializeObject<VendorPaymentlDetailResponse>(json);
+        return JsonConvert.DeserializeObject<VendorPaymentDetailResponse>(json);
     }
 
-    public async Task<VendorPayment> CreatePayment(VendorPayment payment)
+    public async Task CreatePayment(string name, VendorPayment payment)
     {
-        var jsonContent = JsonConvert.SerializeObject(payment);
-        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-        var response = await _http.PostAsync("api/vendor-payment", content);
-        var jsonResponse = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode)
+        await UpdatePayment(name, payment);
+    }
+
+    public async Task AddLine(string name, PaymentLineRequest detail)
+    {
+        if(string.IsNullOrWhiteSpace(name))
         {
-            throw new Exception($"Create Vendor payment failed {(int)response.StatusCode} ({response.StatusCode})\n{jsonResponse}");
+            throw new Exception("No Nota cannot be empty!");
         }
-        return JsonConvert.DeserializeObject<VendorPayment>(jsonResponse);
+
+        var content = new StringContent(
+            JsonConvert.SerializeObject(detail),
+            Encoding.UTF8,
+            "application/json"
+        );
+
+        var url = $"api/vendor-payment/{Uri.EscapeDataString(name)}/lines";
+        var response = await _http.PostAsync(url, content);
+
+        if(!response.IsSuccessStatusCode)
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to add vendor payment line");
+        }
+    }
+
+    public async Task UpdateLine(string name, string bill_id, PaymentLineRequest detail)
+    {
+        var content = new StringContent(
+            JsonConvert.SerializeObject(detail),
+            Encoding.UTF8,
+            "application/json"
+        );
+
+        var url = $"api/vendor-payment/{Uri.EscapeDataString(name)}/lines/{Uri.EscapeDataString(bill_id)}";
+        var response = await _http.PutAsync(url, content);
+
+        if(!response.IsSuccessStatusCode)
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to update payment line: {err}");
+        }
+    }
+
+    public async Task UpdatePayment(string name, VendorPayment payment)
+    {
+        var content = new StringContent(
+            JsonConvert.SerializeObject(payment),
+            Encoding.UTF8,
+            "application/json"
+        );
+
+        var response = await _http.PutAsync($"api/vendor-payment/{Uri.EscapeDataString(name)}", content);
+        var body = await response.Content.ReadAsStringAsync();
+
+        if(!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Response status code does not indicate success: {(int)response.StatusCode} ({response.StatusCode})\n{body}");
+        }
     }
 }
