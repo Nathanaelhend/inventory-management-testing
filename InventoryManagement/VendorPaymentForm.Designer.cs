@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label1 = new System.Windows.Forms.Label();
             this.txtNoBukti = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -49,7 +49,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.txtNoNota = new System.Windows.Forms.TextBox();
-            this.dataGridListBill = new System.Windows.Forms.DataGridView();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label10 = new System.Windows.Forms.Label();
             this.txtTotalPembayaran = new System.Windows.Forms.TextBox();
@@ -59,25 +58,34 @@
             this.btnLoad = new System.Windows.Forms.Button();
             this.btnNew = new System.Windows.Forms.Button();
             this.dataGridVendor = new System.Windows.Forms.DataGridView();
-            this.dataGridBill = new System.Windows.Forms.DataGridView();
-            this.btnSaveDetail = new System.Windows.Forms.Button();
-            this.noBill = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tanggal = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.total = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.akBayar = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.jmlBayar = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.sequence = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.vendorId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridBill = new System.Windows.Forms.DataGridView();
             this.id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dateNota = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.noNota = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.amountNota = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnSaveDetail = new System.Windows.Forms.Button();
+            this.dataGridPayment = new System.Windows.Forms.DataGridView();
+            this.noBukti = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.date = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.kode = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.nama = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.jumlah = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.type_payment = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridListBill = new System.Windows.Forms.DataGridView();
+            this.noBukt = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.date_pay = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.amount_due = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.total_ak_bayar = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.jml_bayar = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridListBill)).BeginInit();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridVendor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridBill)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridPayment)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridListBill)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -98,6 +106,7 @@
             this.txtNoBukti.ReadOnly = true;
             this.txtNoBukti.Size = new System.Drawing.Size(97, 20);
             this.txtNoBukti.TabIndex = 1;
+            this.txtNoBukti.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtNoBukti_KeyDown);
             // 
             // label2
             // 
@@ -206,6 +215,7 @@
             this.txtJumBayar.Name = "txtJumBayar";
             this.txtJumBayar.Size = new System.Drawing.Size(97, 20);
             this.txtJumBayar.TabIndex = 19;
+            this.txtJumBayar.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtJumBayar_KeyDown);
             // 
             // label8
             // 
@@ -284,28 +294,6 @@
             this.txtNoNota.Size = new System.Drawing.Size(97, 20);
             this.txtNoNota.TabIndex = 12;
             this.txtNoNota.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtNoNota_KeyDown);
-            // 
-            // dataGridListBill
-            // 
-            this.dataGridListBill.AllowUserToAddRows = false;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridListBill.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle6;
-            this.dataGridListBill.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader;
-            this.dataGridListBill.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.dataGridListBill.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Raised;
-            this.dataGridListBill.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridListBill.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.noBill,
-            this.tanggal,
-            this.total,
-            this.akBayar,
-            this.jmlBayar});
-            this.dataGridListBill.Location = new System.Drawing.Point(249, 97);
-            this.dataGridListBill.Name = "dataGridListBill";
-            this.dataGridListBill.RowHeadersWidth = 51;
-            this.dataGridListBill.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.dataGridListBill.Size = new System.Drawing.Size(414, 294);
-            this.dataGridListBill.TabIndex = 11;
             // 
             // panel2
             // 
@@ -410,74 +398,6 @@
             this.dataGridVendor.Visible = false;
             this.dataGridVendor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridVendor_KeyDown);
             // 
-            // dataGridBill
-            // 
-            this.dataGridBill.AllowUserToAddRows = false;
-            this.dataGridBill.BackgroundColor = System.Drawing.Color.White;
-            this.dataGridBill.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridBill.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.id,
-            this.dateNota,
-            this.noNota,
-            this.amountNota});
-            this.dataGridBill.EnableHeadersVisualStyles = false;
-            this.dataGridBill.Location = new System.Drawing.Point(336, 124);
-            this.dataGridBill.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.dataGridBill.Name = "dataGridBill";
-            this.dataGridBill.RowHeadersVisible = false;
-            this.dataGridBill.RowHeadersWidth = 51;
-            this.dataGridBill.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.dataGridBill.Size = new System.Drawing.Size(301, 203);
-            this.dataGridBill.TabIndex = 26;
-            this.dataGridBill.Visible = false;
-            this.dataGridBill.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridBill_KeyDown);
-            // 
-            // btnSaveDetail
-            // 
-            this.btnSaveDetail.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnSaveDetail.Location = new System.Drawing.Point(74, 247);
-            this.btnSaveDetail.Name = "btnSaveDetail";
-            this.btnSaveDetail.Size = new System.Drawing.Size(75, 23);
-            this.btnSaveDetail.TabIndex = 27;
-            this.btnSaveDetail.Text = "SAVE";
-            this.btnSaveDetail.UseVisualStyleBackColor = true;
-            this.btnSaveDetail.Click += new System.EventHandler(this.btnSaveDetail_Click);
-            // 
-            // noBill
-            // 
-            this.noBill.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.noBill.HeaderText = "NO Bill";
-            this.noBill.Name = "noBill";
-            this.noBill.ReadOnly = true;
-            // 
-            // tanggal
-            // 
-            this.tanggal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.tanggal.HeaderText = "TANGGAL";
-            this.tanggal.Name = "tanggal";
-            this.tanggal.ReadOnly = true;
-            // 
-            // total
-            // 
-            this.total.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.total.HeaderText = "TAGIHAN";
-            this.total.Name = "total";
-            this.total.ReadOnly = true;
-            // 
-            // akBayar
-            // 
-            this.akBayar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.akBayar.HeaderText = "AK. PEMBY";
-            this.akBayar.Name = "akBayar";
-            this.akBayar.ReadOnly = true;
-            // 
-            // jmlBayar
-            // 
-            this.jmlBayar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.jmlBayar.HeaderText = "JML. PEMBY";
-            this.jmlBayar.Name = "jmlBayar";
-            this.jmlBayar.ReadOnly = true;
-            // 
             // sequence
             // 
             this.sequence.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
@@ -501,6 +421,28 @@
             this.name.MinimumWidth = 6;
             this.name.Name = "name";
             this.name.ReadOnly = true;
+            // 
+            // dataGridBill
+            // 
+            this.dataGridBill.AllowUserToAddRows = false;
+            this.dataGridBill.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridBill.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridBill.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.id,
+            this.dateNota,
+            this.noNota,
+            this.amountNota});
+            this.dataGridBill.EnableHeadersVisualStyles = false;
+            this.dataGridBill.Location = new System.Drawing.Point(336, 124);
+            this.dataGridBill.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.dataGridBill.Name = "dataGridBill";
+            this.dataGridBill.RowHeadersVisible = false;
+            this.dataGridBill.RowHeadersWidth = 51;
+            this.dataGridBill.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.dataGridBill.Size = new System.Drawing.Size(301, 203);
+            this.dataGridBill.TabIndex = 26;
+            this.dataGridBill.Visible = false;
+            this.dataGridBill.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridBill_KeyDown);
             // 
             // id
             // 
@@ -531,12 +473,154 @@
             this.amountNota.Name = "amountNota";
             this.amountNota.ReadOnly = true;
             // 
+            // btnSaveDetail
+            // 
+            this.btnSaveDetail.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnSaveDetail.Location = new System.Drawing.Point(74, 247);
+            this.btnSaveDetail.Name = "btnSaveDetail";
+            this.btnSaveDetail.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveDetail.TabIndex = 27;
+            this.btnSaveDetail.Text = "SAVE";
+            this.btnSaveDetail.UseVisualStyleBackColor = true;
+            this.btnSaveDetail.Click += new System.EventHandler(this.btnSaveDetail_Click);
+            // 
+            // dataGridPayment
+            // 
+            this.dataGridPayment.AllowUserToAddRows = false;
+            this.dataGridPayment.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridPayment.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridPayment.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.noBukti,
+            this.date,
+            this.kode,
+            this.nama,
+            this.jumlah,
+            this.type_payment});
+            this.dataGridPayment.EnableHeadersVisualStyles = false;
+            this.dataGridPayment.Location = new System.Drawing.Point(327, 213);
+            this.dataGridPayment.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.dataGridPayment.Name = "dataGridPayment";
+            this.dataGridPayment.RowHeadersVisible = false;
+            this.dataGridPayment.RowHeadersWidth = 51;
+            this.dataGridPayment.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.dataGridPayment.Size = new System.Drawing.Size(301, 203);
+            this.dataGridPayment.TabIndex = 28;
+            this.dataGridPayment.Visible = false;
+            this.dataGridPayment.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridPayment_KeyDown);
+            // 
+            // noBukti
+            // 
+            this.noBukti.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.noBukti.HeaderText = "No. BUKTI";
+            this.noBukti.Name = "noBukti";
+            this.noBukti.ReadOnly = true;
+            // 
+            // date
+            // 
+            this.date.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.date.HeaderText = "TANGGAL";
+            this.date.Name = "date";
+            this.date.ReadOnly = true;
+            // 
+            // kode
+            // 
+            this.kode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.kode.HeaderText = "KODE";
+            this.kode.Name = "kode";
+            this.kode.ReadOnly = true;
+            // 
+            // nama
+            // 
+            this.nama.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.nama.HeaderText = "NAMA";
+            this.nama.Name = "nama";
+            this.nama.ReadOnly = true;
+            // 
+            // jumlah
+            // 
+            this.jumlah.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.jumlah.HeaderText = "JUMLAH";
+            this.jumlah.Name = "jumlah";
+            this.jumlah.ReadOnly = true;
+            // 
+            // type_payment
+            // 
+            this.type_payment.HeaderText = "Type Payment";
+            this.type_payment.Name = "type_payment";
+            this.type_payment.ReadOnly = true;
+            this.type_payment.Visible = false;
+            // 
+            // dataGridListBill
+            // 
+            this.dataGridListBill.AllowUserToAddRows = false;
+            this.dataGridListBill.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridListBill.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridListBill.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.noBukt,
+            this.date_pay,
+            this.amount_due,
+            this.total_ak_bayar,
+            this.jml_bayar});
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridListBill.DefaultCellStyle = dataGridViewCellStyle1;
+            this.dataGridListBill.EnableHeadersVisualStyles = false;
+            this.dataGridListBill.Location = new System.Drawing.Point(249, 97);
+            this.dataGridListBill.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.dataGridListBill.Name = "dataGridListBill";
+            this.dataGridListBill.RowHeadersVisible = false;
+            this.dataGridListBill.RowHeadersWidth = 51;
+            this.dataGridListBill.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.dataGridListBill.Size = new System.Drawing.Size(414, 296);
+            this.dataGridListBill.TabIndex = 29;
+            // 
+            // noBukt
+            // 
+            this.noBukt.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.noBukt.HeaderText = "NO. Bukti";
+            this.noBukt.Name = "noBukt";
+            this.noBukt.ReadOnly = true;
+            // 
+            // date_pay
+            // 
+            this.date_pay.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.date_pay.HeaderText = "TANGGAL";
+            this.date_pay.Name = "date_pay";
+            this.date_pay.ReadOnly = true;
+            // 
+            // amount_due
+            // 
+            this.amount_due.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.amount_due.HeaderText = "TAGIHAN";
+            this.amount_due.Name = "amount_due";
+            this.amount_due.ReadOnly = true;
+            // 
+            // total_ak_bayar
+            // 
+            this.total_ak_bayar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.total_ak_bayar.HeaderText = "AK. PEMBY";
+            this.total_ak_bayar.Name = "total_ak_bayar";
+            this.total_ak_bayar.ReadOnly = true;
+            // 
+            // jml_bayar
+            // 
+            this.jml_bayar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.jml_bayar.HeaderText = "JML. PEMBY";
+            this.jml_bayar.Name = "jml_bayar";
+            this.jml_bayar.ReadOnly = true;
+            // 
             // VendorPaymentForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(675, 464);
+            this.Controls.Add(this.dataGridPayment);
             this.Controls.Add(this.btnSaveDetail);
             this.Controls.Add(this.dataGridBill);
             this.Controls.Add(this.dataGridVendor);
@@ -544,7 +628,6 @@
             this.Controls.Add(this.btnLoad);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.panel2);
-            this.Controls.Add(this.dataGridListBill);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.txtVendorName);
             this.Controls.Add(this.label4);
@@ -555,6 +638,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtNoBukti);
             this.Controls.Add(this.label1);
+            this.Controls.Add(this.dataGridListBill);
             this.ForeColor = System.Drawing.Color.Transparent;
             this.Name = "VendorPaymentForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -562,11 +646,12 @@
             this.Load += new System.EventHandler(this.VendorPaymentForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridListBill)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridVendor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridBill)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridPayment)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridListBill)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -590,7 +675,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox txtNoNota;
-        private System.Windows.Forms.DataGridView dataGridListBill;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox txtJumBayar;
         private System.Windows.Forms.Label label8;
@@ -608,15 +692,23 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn name;
         private System.Windows.Forms.DataGridView dataGridBill;
         private System.Windows.Forms.Button btnSaveDetail;
-        private System.Windows.Forms.DataGridViewTextBoxColumn noBill;
-        private System.Windows.Forms.DataGridViewTextBoxColumn tanggal;
-        private System.Windows.Forms.DataGridViewTextBoxColumn total;
-        private System.Windows.Forms.DataGridViewTextBoxColumn akBayar;
-        private System.Windows.Forms.DataGridViewTextBoxColumn jmlBayar;
         private System.Windows.Forms.DataGridViewTextBoxColumn sequence;
         private System.Windows.Forms.DataGridViewTextBoxColumn id;
         private System.Windows.Forms.DataGridViewTextBoxColumn dateNota;
         private System.Windows.Forms.DataGridViewTextBoxColumn noNota;
         private System.Windows.Forms.DataGridViewTextBoxColumn amountNota;
+        private System.Windows.Forms.DataGridView dataGridPayment;
+        private System.Windows.Forms.DataGridViewTextBoxColumn noBukti;
+        private System.Windows.Forms.DataGridViewTextBoxColumn date;
+        private System.Windows.Forms.DataGridViewTextBoxColumn kode;
+        private System.Windows.Forms.DataGridViewTextBoxColumn nama;
+        private System.Windows.Forms.DataGridViewTextBoxColumn jumlah;
+        private System.Windows.Forms.DataGridViewTextBoxColumn type_payment;
+        private System.Windows.Forms.DataGridView dataGridListBill;
+        private System.Windows.Forms.DataGridViewTextBoxColumn noBukt;
+        private System.Windows.Forms.DataGridViewTextBoxColumn date_pay;
+        private System.Windows.Forms.DataGridViewTextBoxColumn amount_due;
+        private System.Windows.Forms.DataGridViewTextBoxColumn total_ak_bayar;
+        private System.Windows.Forms.DataGridViewTextBoxColumn jml_bayar;
     }
 }

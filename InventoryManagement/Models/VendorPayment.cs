@@ -10,6 +10,7 @@ namespace InventoryManagement.Models
         public DateTime date_payment { get; set; }
         public string type_payment { get; set; }
         public string vendor_id { get; set; }
+        public string vendor_name { get; set; }
         public string total_amount { get; set; }
 
         public List<PaymentLine> lines { get; set; } = new List<PaymentLine>();
@@ -24,7 +25,7 @@ namespace InventoryManagement.Models
         public string bill_name { get; set; }
         public DateTime date_payment { get; set; }
         public float amount { get; set; }
-        public float total_paid_akumulasi { get; set; } 
+        public float bill_total_amount { get; set; } 
     }
 
     public class PaymentLineRequest
