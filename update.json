@@ -1,0 +1,8 @@
+{
+  "version": "1.0.8",
+  "url": "https://github.com/Nathanaelhend/inventory-management-testing/releases/latest/download/AppRelease.zip",
+  "changelog": "",
+  "mandatory": {
+    "value": true
+  }
+}
