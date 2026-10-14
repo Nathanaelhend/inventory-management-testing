@@ -47,6 +47,7 @@ namespace InventoryManagement.Models
 
     public class VendorBillDetailResponse
     {
+        public string status { get; set; }
         public VendorBill header { get; set; }
         public List<BillLine> lines { get; set; } = new List<BillLine>();
     }

@@ -825,6 +825,10 @@ namespace InventoryManagement
             {
                 txtDiscPrs.Focus();
             }
+            else if(e.KeyCode == Keys.F1)
+            {
+                this.Dispose();
+            }
         }
 
         private void txtPPn_KeyDown(object sender, KeyEventArgs e)

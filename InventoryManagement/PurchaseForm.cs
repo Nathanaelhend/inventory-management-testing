@@ -142,7 +142,7 @@ namespace InventoryManagement
                             await _stockMoveService.CreateStockMove(stockMove);
                         }
 
-                        po.state = "CONFIRM";
+                        po.state = "CONFIRMED";
                         await _purchaseService.ConfirmPurchase(noOrder, po);
 
                         await LoadPO();

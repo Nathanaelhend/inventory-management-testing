@@ -48,12 +48,26 @@ public class BillService
 
     public async Task<VendorBillDetailResponse> GetBillById(int id)
     {
-        var response = await _http.GetAsync($"api/vendor-bill/{id}");
+        var response = await _http.GetAsync($"api/vendor-bill/id/{id}");
         var json = await response.Content.ReadAsStringAsync();
 
         if(!response.IsSuccessStatusCode)
         {
             throw new Exception($"Get Bill failed: {json}");
+        }
+
+        return JsonConvert.DeserializeObject<VendorBillDetailResponse>(json);
+    }
+
+    public async Task<VendorBillDetailResponse> GetBillByName(string name)
+    {
+        string encodedName = Uri.EscapeDataString(name);
+        var response = await _http.GetAsync($"api/vendor-bill/name/{encodedName}");
+        var json = await response.Content.ReadAsStringAsync();
+
+        if(!response.IsSuccessStatusCode)
+        {
+            return null;
         }
 
         return JsonConvert.DeserializeObject<VendorBillDetailResponse>(json);

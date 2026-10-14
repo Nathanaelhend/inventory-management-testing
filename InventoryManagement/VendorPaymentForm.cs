@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Shapes;
 
 namespace InventoryManagement
 {
@@ -107,7 +108,7 @@ namespace InventoryManagement
         {
             if (keyData == Keys.Enter)
             {
-                if (this.ActiveControl is Button || this.ActiveControl is DataGridView || this.ActiveControl == txtNoNota || this.ActiveControl == txtNoBukti)
+                if (this.ActiveControl is Button || this.ActiveControl is DataGridView || this.ActiveControl == txtNoNota || this.ActiveControl == txtNoBukti || this.ActiveControl == txtJumBayar)
                 {
                     return base.ProcessCmdKey(ref msg, keyData);
                 }
@@ -315,17 +316,65 @@ namespace InventoryManagement
 
         private async void txtNoNota_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Enter)
+            if (e.KeyCode == Keys.Enter)
             {
                 e.Handled = true;
                 e.SuppressKeyPress = true;
 
-                txtJumBayar.Focus();
+                var noNota = txtNoNota.Text.Trim();
 
+                if (string.IsNullOrWhiteSpace(noNota))
+                {
+                    MessageBox.Show("Harap isi nomor bill!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    txtNoNota.Focus();
+                    return;
+                }
+
+                try
+                {
+                    // 1. Cari data Bill berdasarkan Nomor Nota
+                    var bill = await billService.GetBillByName(noNota);
+
+                    // 2. Validasi apakah Bill ditemukan
+                    if (bill == null || bill.status != "success" || bill.header == null)
+                    {
+                        MessageBox.Show("Bill tidak ditemukan!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        txtNoNota.Focus();
+                        txtNoNota.SelectAll();
+                        return;
+                    }
+
+                    // 3. Set data Bill ke UI Form
+                    dateTimeNota.Value = bill.header.date;
+                    txtTotalNota.Text = bill.header.total.ToString("N0");
+
+                    // 4. Ambil akumulasi pembayaran jika nomor bukti pembayaran ada
+                    var noBukti = txtNoBukti.Text.Trim();
+                    if (!string.IsNullOrWhiteSpace(noBukti))
+                    {
+                        VendorPaymentDetailResponse response = await vps.GetPaymentById(noBukti);
+                        var lines = response?.data?.lines ?? new List<PaymentLine>();
+
+                        foreach (var line in lines)
+                        {
+                            if (line.bill_name == noNota)
+                            {
+                                txtTotalBayar.Text = line.bill_total_amount.ToString("N0");
+                                break;
+                            }
+                        }
+                    }
+
+                    txtJumBayar.Focus();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Terjadi kesalahan: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            else if(e.KeyCode == Keys.F5)
+            else if (e.KeyCode == Keys.F5)
             {
-                if(txtVendorId.Text == null)
+                if (txtVendorId.Text == null)
                 {
                     MessageBox.Show("Silahkan pilih Vendor terlebih dahulu!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -378,6 +427,12 @@ namespace InventoryManagement
             if (string.IsNullOrWhiteSpace(noBukti))
             {
                 MessageBox.Show("Nomor bukti tidak boleh kosong!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if(txtTotalNota.Text == txtTotalBayar.Text)
+            {
+                MessageBox.Show("Pembayaran Nota tersebut sudah selesai. Silahkan Pilih Nota lain!", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -508,6 +563,19 @@ namespace InventoryManagement
 
                 popUpContainer?.Close();
             }
+        }
+
+        private void dataGridListBill_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if(dataGridListBill.CurrentRow != null && dataGridListBill.CurrentRow.Index >= 0)
+            {
+                txtNoNota.Text = dataGridListBill.CurrentRow.Cells[0].Value?.ToString();
+                dateTimeNota.Text = dataGridListBill.CurrentRow.Cells[1].Value?.ToString();
+                txtTotalNota.Text = dataGridListBill.CurrentRow.Cells[2].Value?.ToString();
+                txtTotalBayar.Text = dataGridListBill.CurrentRow.Cells[3].Value?.ToString();
+            }
+
+            txtJumBayar.Focus();
         }
     }
 }
