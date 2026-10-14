@@ -467,7 +467,7 @@ namespace InventoryManagement
 
             try
             {
-                btnSaveDetail.Enabled = false;
+                //btnSaveDetail.Enabled = false;
 
                 if (isEditMode && selectedRowIndex >= 0)
                 {
@@ -479,6 +479,7 @@ namespace InventoryManagement
                 else
                 {
                     await vps.AddLine(noBukti, detail);
+                    dataGridListBill.Rows.Add(txtNoNota.Text, dateTimeNota.Value, txtTotalNota.Text, txtTotalBayar.Text, txtJumBayar.Text);
                     MessageBox.Show("Payment successfully created!", "Infor", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 

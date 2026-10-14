@@ -879,12 +879,12 @@ namespace InventoryManagement
         {
             if(e.KeyCode == Keys.Enter)
             {
-                float totalAwal = float.Parse(txtJumDet.Text);
+                float totalAwal = float.Parse(txtJumDet.Text, cultureId);
                 float persenDiskon = float.Parse(txtDiscDet.Text);
 
                 float discountRph = totalAwal * (persenDiskon / 100f);
 
-                float totalAkhir = totalAwal - discountRph;
+                 float totalAkhir = totalAwal - discountRph;
 
                 lblDiscDet.Text = discountRph.ToString("N0", new CultureInfo("id-ID"));
                 txtTotalDet.Text = totalAkhir.ToString("N0", new CultureInfo("id-ID"));
