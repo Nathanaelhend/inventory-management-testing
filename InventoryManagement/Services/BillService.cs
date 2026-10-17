@@ -1,4 +1,4 @@
-﻿using InventoryManagement.Models;
+using InventoryManagement.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -75,7 +75,12 @@ public class BillService
 
     public async Task<List<VendorBill>> GetBillByVendorId(string vendor_id)
     {
-        var response = await _http.GetAsync($"api/vendor-bill/vendor/{vendor_id}");
+        if (string.IsNullOrWhiteSpace(vendor_id))
+        {
+            return new List<VendorBill>();
+        }
+
+        var response = await _http.GetAsync($"api/vendor-bill/vendor/{Uri.EscapeDataString(vendor_id)}");
         var json = await response.Content.ReadAsStringAsync();
 
         if (!response.IsSuccessStatusCode)

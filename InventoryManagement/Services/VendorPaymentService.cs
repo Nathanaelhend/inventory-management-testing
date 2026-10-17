@@ -1,4 +1,4 @@
-﻿using InventoryManagement.Models;
+using InventoryManagement.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,10 @@ public class VendorPaymentService
     {
         _http = new HttpClient();
         _http.BaseAddress = new Uri("https://uptight-amendment-ocean.ngrok-free.dev/");
+        if (!_http.DefaultRequestHeaders.Contains("ngrok-skip-browser-warning"))
+        {
+            _http.DefaultRequestHeaders.Add("ngrok-skip-browser-warning", "true");
+        }
     }
 
     public async Task<string> GeneratePaymentNumber()
@@ -96,6 +100,18 @@ public class VendorPaymentService
         {
             var err = await response.Content.ReadAsStringAsync();
             throw new Exception($"Failed to update payment line: {err}");
+        }
+    }
+
+    public async Task DeleteLine(string name, string bill_name)
+    {
+        var url = $"api/vendor-payment/{Uri.EscapeDataString(name)}/lines/{Uri.EscapeDataString(bill_name)}";
+        var response = await _http.DeleteAsync(url);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to delete payment line: {err}");
         }
     }
 

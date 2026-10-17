@@ -1,4 +1,4 @@
-﻿namespace InventoryManagement
+namespace InventoryManagement
 {
     partial class VendorPaymentForm
     {
@@ -67,6 +67,8 @@
             this.noNota = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.amountNota = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnSaveDetail = new System.Windows.Forms.Button();
+            this.btnDeleteDetail = new System.Windows.Forms.Button();
+            this.btnClearDetail = new System.Windows.Forms.Button();
             this.dataGridPayment = new System.Windows.Forms.DataGridView();
             this.noBukti = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.date = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -354,6 +356,7 @@
             this.btnSave.TabIndex = 22;
             this.btnSave.Text = "SAVE";
             this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // btnLoad
             // 
@@ -397,6 +400,7 @@
             this.dataGridVendor.TabIndex = 25;
             this.dataGridVendor.Visible = false;
             this.dataGridVendor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridVendor_KeyDown);
+            this.dataGridVendor.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridVendor_CellClick);
             // 
             // sequence
             // 
@@ -443,6 +447,7 @@
             this.dataGridBill.TabIndex = 26;
             this.dataGridBill.Visible = false;
             this.dataGridBill.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridBill_KeyDown);
+            this.dataGridBill.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridBill_CellClick);
             // 
             // id
             // 
@@ -476,13 +481,35 @@
             // btnSaveDetail
             // 
             this.btnSaveDetail.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnSaveDetail.Location = new System.Drawing.Point(74, 247);
+            this.btnSaveDetail.Location = new System.Drawing.Point(5, 247);
             this.btnSaveDetail.Name = "btnSaveDetail";
-            this.btnSaveDetail.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveDetail.Size = new System.Drawing.Size(70, 25);
             this.btnSaveDetail.TabIndex = 27;
             this.btnSaveDetail.Text = "SAVE";
             this.btnSaveDetail.UseVisualStyleBackColor = true;
             this.btnSaveDetail.Click += new System.EventHandler(this.btnSaveDetail_Click);
+            // 
+            // btnDeleteDetail
+            // 
+            this.btnDeleteDetail.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnDeleteDetail.Location = new System.Drawing.Point(82, 247);
+            this.btnDeleteDetail.Name = "btnDeleteDetail";
+            this.btnDeleteDetail.Size = new System.Drawing.Size(70, 25);
+            this.btnDeleteDetail.TabIndex = 30;
+            this.btnDeleteDetail.Text = "DELETE";
+            this.btnDeleteDetail.UseVisualStyleBackColor = true;
+            this.btnDeleteDetail.Click += new System.EventHandler(this.btnDeleteDetail_Click);
+            // 
+            // btnClearDetail
+            // 
+            this.btnClearDetail.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnClearDetail.Location = new System.Drawing.Point(159, 247);
+            this.btnClearDetail.Name = "btnClearDetail";
+            this.btnClearDetail.Size = new System.Drawing.Size(73, 25);
+            this.btnClearDetail.TabIndex = 31;
+            this.btnClearDetail.Text = "CLEAR";
+            this.btnClearDetail.UseVisualStyleBackColor = true;
+            this.btnClearDetail.Click += new System.EventHandler(this.btnClearDetail_Click);
             // 
             // dataGridPayment
             // 
@@ -507,6 +534,7 @@
             this.dataGridPayment.TabIndex = 28;
             this.dataGridPayment.Visible = false;
             this.dataGridPayment.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridPayment_KeyDown);
+            this.dataGridPayment.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridPayment_CellClick);
             // 
             // noBukti
             // 
@@ -577,8 +605,8 @@
             this.dataGridListBill.RowHeadersWidth = 51;
             this.dataGridListBill.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dataGridListBill.Size = new System.Drawing.Size(414, 296);
-            this.dataGridListBill.TabIndex = 29;
-            this.dataGridListBill.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridListBill_CellContentClick);
+            this.dataGridListBill.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridListBill_CellClick);
+            this.dataGridListBill.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridListBill_KeyDown);
             // 
             // noBukt
             // 
@@ -623,6 +651,8 @@
             this.ClientSize = new System.Drawing.Size(675, 464);
             this.Controls.Add(this.dataGridPayment);
             this.Controls.Add(this.btnSaveDetail);
+            this.Controls.Add(this.btnDeleteDetail);
+            this.Controls.Add(this.btnClearDetail);
             this.Controls.Add(this.dataGridBill);
             this.Controls.Add(this.dataGridVendor);
             this.Controls.Add(this.btnNew);
@@ -693,6 +723,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn name;
         private System.Windows.Forms.DataGridView dataGridBill;
         private System.Windows.Forms.Button btnSaveDetail;
+        private System.Windows.Forms.Button btnDeleteDetail;
+        private System.Windows.Forms.Button btnClearDetail;
         private System.Windows.Forms.DataGridViewTextBoxColumn sequence;
         private System.Windows.Forms.DataGridViewTextBoxColumn id;
         private System.Windows.Forms.DataGridViewTextBoxColumn dateNota;

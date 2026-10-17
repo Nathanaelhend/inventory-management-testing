@@ -1,4 +1,4 @@
-﻿using InventoryManagement.Models;
+using InventoryManagement.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -234,6 +234,33 @@ namespace InventoryManagement
             }
         }
 
+        private float ParseFloatSafe(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return 0f;
+            string cleaned = text.Replace("Rp", "").Replace("rp", "").Replace("%", "").Replace(" ", "").Trim();
+            if (cleaned == "-" || cleaned == "") return 0f;
+
+            if (cleaned.Contains(".") && cleaned.Contains(","))
+            {
+                string norm = cleaned.Replace(".", "").Replace(",", ".");
+                if (float.TryParse(norm, NumberStyles.Any, CultureInfo.InvariantCulture, out float v))
+                    return v;
+            }
+
+            if (float.TryParse(cleaned, NumberStyles.Any, cultureId, out float valId))
+                return valId;
+            if (float.TryParse(cleaned, NumberStyles.Any, CultureInfo.InvariantCulture, out float valInv))
+                return valInv;
+            if (float.TryParse(cleaned, NumberStyles.Any, CultureInfo.CurrentCulture, out float valCur))
+                return valCur;
+
+            string noDots = cleaned.Replace(".", "");
+            if (float.TryParse(noDots, NumberStyles.Any, CultureInfo.InvariantCulture, out float valNoDot))
+                return valNoDot;
+
+            return 0f;
+        }
+
         private bool ValidatePODetail()
         {
             bool valid = true;
@@ -241,18 +268,23 @@ namespace InventoryManagement
             errorProvider1.SetError(txtBoxNoOrder, string.IsNullOrWhiteSpace(txtBoxNoOrder.Text) ? "Order number is required" : "");
             errorProvider1.SetError(txtVendorId, string.IsNullOrWhiteSpace(txtVendorId.Text) ? "Vendor is required" : "");
             errorProvider1.SetError(txtProductId, string.IsNullOrWhiteSpace(txtProductId.Text) ? "Product is required" : "");
-            errorProvider1.SetError(txtQty, string.IsNullOrWhiteSpace(txtQty.Text) ? "Quantity must be greater than zero" : "");
 
-            decimal price;
-            var priceValid = decimal.TryParse(txtPrice.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out price) && price > 0m;
+            float qty = ParseFloatSafe(txtQty.Text);
+            bool qtyValid = qty > 0f;
+            errorProvider1.SetError(txtQty, !qtyValid ? "Quantity must be greater than zero" : "");
+
+            float price = ParseFloatSafe(txtPrice.Text);
+            bool priceValid = price > 0f;
             errorProvider1.SetError(txtPrice, !priceValid ? "Price must be a positive number" : "");
 
             if (string.IsNullOrWhiteSpace(txtBoxNoOrder.Text) ||
                 string.IsNullOrWhiteSpace(txtVendorId.Text) ||
                 string.IsNullOrWhiteSpace(txtProductId.Text) ||
-                string.IsNullOrWhiteSpace(txtQty.Text) ||
+                !qtyValid ||
                 !priceValid)
+            {
                 valid = false;
+            }
 
             return valid;
         }
@@ -311,11 +343,11 @@ namespace InventoryManagement
 
             txtProductId.Text = row.Cells[0].Value?.ToString();
             txtProductName.Text = row.Cells[1].Value?.ToString();
-            txtPrice.Text = row.Cells[3].Value?.ToString();
-            txtQty.Text = row.Cells[2].Value.ToString();
-            txtJumDet.Text = row.Cells[4].Value.ToString();
-            txtDiscDet.Text = row.Cells[5].Value.ToString();
-            lblDiscDet.Text = row.Cells[6].Value.ToString();
+            txtPrice.Text = row.Cells[2].Value?.ToString();
+            txtQty.Text = row.Cells[3].Value?.ToString();
+            txtJumDet.Text = row.Cells[4].Value?.ToString();
+            txtDiscDet.Text = row.Cells[5].Value?.ToString();
+            lblDiscDet.Text = row.Cells[6].Value?.ToString();
             txtTotalDet.Text = row.Cells[7].Value?.ToString();
 
             txtProductId.Focus();
@@ -393,12 +425,21 @@ namespace InventoryManagement
             decimal total = 0;
             foreach (DataGridViewRow row in dataGridPurchaseModule.Rows)
             {
-                if (row.Cells[7].Value != null && row.Cells[7].Value.ToString() != "")
+                if (row.Cells[7].Value != null)
                 {
-                    total += Convert.ToDecimal(row.Cells[7].Value);
+                    string valStr = row.Cells[7].Value.ToString();
+                    if (!string.IsNullOrWhiteSpace(valStr))
+                    {
+                        if (decimal.TryParse(valStr, NumberStyles.Any, cultureId, out decimal d))
+                            total += d;
+                        else if (decimal.TryParse(valStr, NumberStyles.Any, CultureInfo.InvariantCulture, out d))
+                            total += d;
+                        else if (decimal.TryParse(valStr.Replace(".", "").Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out d))
+                            total += d;
+                    }
                 }
             }
-            txtJumlah.Text = total.ToString();
+            txtJumlah.Text = total.ToString("N0", cultureId);
         }
 
         private void dataGridPurchaseModule_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
@@ -446,26 +487,35 @@ namespace InventoryManagement
         {
             if (!ValidatePODetail()) return;
 
-            if (!float.TryParse(txtPrice.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out float priceDecimal))
+            float priceVal = ParseFloatSafe(txtPrice.Text);
+            if (priceVal <= 0f)
             {
-                MessageBox.Show("Invalid price format.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Price must be greater than zero.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            float qtyInt = float.Parse(txtQty.Text);
-            float discRph = float.Parse(txtPrice.Text) * qtyInt * (float.Parse(txtDiscDet.Text) / 100);
-            float totalDecimal = (priceDecimal * qtyInt) - discRph;
+            float qtyVal = ParseFloatSafe(txtQty.Text);
+            if (qtyVal <= 0f)
+            {
+                MessageBox.Show("Quantity must be greater than zero.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            float discPrs = ParseFloatSafe(txtDiscDet.Text);
+            float jumlahVal = priceVal * qtyVal;
+            float discRph = jumlahVal * (discPrs / 100f);
+            float totalVal = jumlahVal - discRph;
 
             var detail = new PurchaseLineRequest
             {
                 prDate = dateTimePickerOrder.Value,
                 prCode = txtProductId.Text,
-                pPrice = priceDecimal,
-                jumlah = priceDecimal * qtyInt,
-                discPrs = float.Parse(txtDiscDet.Text),
-                discRph = float.Parse(lblDiscDet.Text),
-                qty = qtyInt,
-                total = totalDecimal,
+                pPrice = priceVal,
+                jumlah = jumlahVal,
+                discPrs = discPrs,
+                discRph = discRph,
+                qty = qtyVal,
+                total = totalVal,
                 state = "DRAFT",
                 vendor = txtVendorId.Text
             };
@@ -879,15 +929,20 @@ namespace InventoryManagement
         {
             if(e.KeyCode == Keys.Enter)
             {
-                float totalAwal = float.Parse(txtJumDet.Text, cultureId);
-                float persenDiskon = float.Parse(txtDiscDet.Text);
+                float price = ParseFloatSafe(txtPrice.Text);
+                float qty = ParseFloatSafe(txtQty.Text);
+                float totalAwal = price * qty;
+                if (totalAwal <= 0f)
+                {
+                    totalAwal = ParseFloatSafe(txtJumDet.Text);
+                }
+                float persenDiskon = ParseFloatSafe(txtDiscDet.Text);
 
                 float discountRph = totalAwal * (persenDiskon / 100f);
+                float totalAkhir = totalAwal - discountRph;
 
-                 float totalAkhir = totalAwal - discountRph;
-
-                lblDiscDet.Text = discountRph.ToString("N0", new CultureInfo("id-ID"));
-                txtTotalDet.Text = totalAkhir.ToString("N0", new CultureInfo("id-ID"));
+                lblDiscDet.Text = discountRph.ToString("N0", cultureId);
+                txtTotalDet.Text = totalAkhir.ToString("N0", cultureId);
                 btnSaveDetail.Focus();
             }
         }
@@ -896,10 +951,10 @@ namespace InventoryManagement
         {
             if(e.KeyCode == Keys.Enter)
             {
-                float price = float.Parse(txtPrice.Text);
-                float qty = float.Parse(txtQty.Text);
+                float price = ParseFloatSafe(txtPrice.Text);
+                float qty = ParseFloatSafe(txtQty.Text);
                 float total = price * qty;
-                txtJumDet.Text = total.ToString("N0", new CultureInfo("id-ID"));
+                txtJumDet.Text = total.ToString("N0", cultureId);
 
                 txtDiscDet.Focus();
             }
