@@ -81,7 +81,7 @@ public class VendorPaymentService
         if(!response.IsSuccessStatusCode)
         {
             var err = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Failed to add vendor payment line");
+            throw new Exception($"Failed to add vendor payment line {err}");
         }
     }
 
