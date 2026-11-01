@@ -1,10 +1,11 @@
-﻿using InventoryManagement.Models;
+using InventoryManagement.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,6 +14,14 @@ namespace InventoryManagement
 {
     public partial class ReceiptDetailForm : Form
     {
+        [DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+
+        private const int WM_NCLBUTTONDOWN = 0xA1;
+        private const int HT_CAPTION = 0x2;
+
         private readonly StockMoveService stockMoveService = new StockMoveService();
         private readonly BillService bilService = new BillService();
 
@@ -26,15 +35,45 @@ namespace InventoryManagement
 
             nameSM = name;
             labelName.Text = nameSM;
+
+            UITheme.ApplyGridStyle(dataGridReceipt);
+            UITheme.StylePrimaryButton(btnConfirm);
+            UITheme.StyleSecondaryButton(btnSave);
+            UITheme.StyleSuccessButton(btnCrtBill);
+
+            dataGridReceipt.Columns["qty"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            dataGridReceipt.Columns["qty_real"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+
+            this.Paint += (s, ev) =>
+            {
+                using (Pen pen = new Pen(UITheme.BorderDark, 1))
+                {
+                    ev.Graphics.DrawRectangle(pen, 0, 0, this.Width - 1, this.Height - 1);
+                }
+            };
+
+            panel1.MouseDown += (s, ev) =>
+            {
+                if (ev.Button == MouseButtons.Left)
+                {
+                    ReleaseCapture();
+                    SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+                }
+            };
         }
 
         private async void ReceiptDetailForm_Load(object sender, EventArgs e)
         {
             await LoadExisting();
 
-            if(labelState.Text == "DONE")
+            if (labelState.Text == "DONE")
             {
                 btnCrtBill.Visible = true;
+                labelState.ForeColor = UITheme.Success;
+            }
+            else
+            {
+                labelState.ForeColor = UITheme.Primary;
             }
         }
 
@@ -100,6 +139,22 @@ namespace InventoryManagement
                             type_line = row.Cells["line_type"].Value?.ToString()
                         });
                     }
+
+                    if (row.Cells["qty_real"].Value == null)
+                    {
+                        MessageBox.Show("Qty Real cannot be null", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    else if(Convert.ToInt32(row.Cells["qty_real"].Value) < 0)
+                    {
+                        MessageBox.Show("Qty Real cannot be negative", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    else if (Convert.ToInt32(row.Cells["qty_real"].Value) > Convert.ToInt32(row.Cells["qty"].Value))
+                    {
+                        MessageBox.Show("Qty Real cannot be greater than Qty", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
                 }
 
                 var payload = new StockMoveDetailResponse
@@ -139,6 +194,22 @@ namespace InventoryManagement
                         state = "DONE",
                         type_line = row.Cells["line_type"].Value?.ToString()
                     });
+
+                    if (row.Cells["qty_real"].Value == null)
+                    {
+                        MessageBox.Show("Qty Real cannot be null", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    else if (Convert.ToInt32(row.Cells["qty_real"].Value) < 0)
+                    {
+                        MessageBox.Show("Qty Real cannot be negative", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    else if (Convert.ToInt32(row.Cells["qty_real"].Value) > Convert.ToInt32(row.Cells["qty"].Value))
+                    {
+                        MessageBox.Show("Qty Real cannot be greater than Qty", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
                 }
 
                 var payload = new StockMoveDetailResponse

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -18,7 +18,17 @@ namespace InventoryManagement
         public ProductForm()
         {
             InitializeComponent();
+            UITheme.ApplyGridStyle(dataGridProduct);
+            UITheme.StylePrimaryButton(btnAddCustomer);
             LoadProduct();
+        }
+
+        private void panelTopBar_Paint(object sender, PaintEventArgs e)
+        {
+            using (Pen pen = new Pen(UITheme.Border, 1))
+            {
+                e.Graphics.DrawLine(pen, 0, panelTopBar.Height - 1, panelTopBar.Width, panelTopBar.Height - 1);
+            }
         }
 
         private void btnAddCustomer_Click(object sender, EventArgs e)

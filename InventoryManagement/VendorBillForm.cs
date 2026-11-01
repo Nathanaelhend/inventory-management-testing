@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,7 +17,14 @@ namespace InventoryManagement
         public VendorBillForm()
         {
             InitializeComponent();
+            UITheme.ApplyGridStyle(dataGridBill);
+            UITheme.StyleSecondaryButton(btnRefresh);
             LoadVendorBill();
+        }
+
+        private async void btnRefresh_Click(object sender, EventArgs e)
+        {
+            await LoadVendorBill();
         }
 
         private async Task LoadVendorBill()
@@ -48,7 +55,7 @@ namespace InventoryManagement
             }
         }
 
-        private void dataGridBill_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private async void dataGridBill_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
 
@@ -59,6 +66,7 @@ namespace InventoryManagement
             {
                 BillDetailForm detail = new BillDetailForm(id);
                 detail.ShowDialog();
+                await LoadVendorBill();
             }
         }
     }

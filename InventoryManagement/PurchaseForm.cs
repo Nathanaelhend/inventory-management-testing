@@ -1,4 +1,4 @@
-﻿using InventoryManagement.Models;
+using InventoryManagement.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -16,6 +16,16 @@ namespace InventoryManagement
         public PurchaseForm()
         {
             InitializeComponent();
+            UITheme.ApplyGridStyle(dataGridOrder);
+            UITheme.StylePrimaryButton(btnAdd);
+        }
+
+        private void panelTopBar_Paint(object sender, PaintEventArgs e)
+        {
+            using (System.Drawing.Pen pen = new System.Drawing.Pen(UITheme.Border, 1))
+            {
+                e.Graphics.DrawLine(pen, 0, panelTopBar.Height - 1, panelTopBar.Width, panelTopBar.Height - 1);
+            }
         }
 
         private async void PurchaseForm_Load(object sender, EventArgs e)

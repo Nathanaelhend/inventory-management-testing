@@ -1,4 +1,4 @@
-﻿namespace InventoryManagement
+namespace InventoryManagement
 {
     partial class ReceiptDetailForm
     {
@@ -33,7 +33,11 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.panelDocHeader = new System.Windows.Forms.Panel();
             this.labelName = new System.Windows.Forms.Label();
+            this.lblDocTitle = new System.Windows.Forms.Label();
+            this.labelState = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.dataGridReceipt = new System.Windows.Forms.DataGridView();
             this.pname = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.qty = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -42,33 +46,36 @@
             this.pcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.state = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.line_type = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.panelFooter = new System.Windows.Forms.Panel();
+            this.btnCrtBill = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnConfirm = new System.Windows.Forms.Button();
-            this.btnCrtBill = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.labelState = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
+            this.panelDocHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridReceipt)).BeginInit();
+            this.panelFooter.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
-            this.panel1.BackColor = System.Drawing.Color.MediumSpringGreen;
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.panel1.Controls.Add(this.pictureBox3);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(977, 55);
-            this.panel1.TabIndex = 19;
+            this.panel1.Size = new System.Drawing.Size(920, 50);
+            this.panel1.TabIndex = 0;
             // 
             // pictureBox3
             // 
+            this.pictureBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox3.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
-            this.pictureBox3.Location = new System.Drawing.Point(952, 0);
+            this.pictureBox3.Location = new System.Drawing.Point(882, 13);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(29, 24);
+            this.pictureBox3.Size = new System.Drawing.Size(24, 24);
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox3.TabIndex = 21;
             this.pictureBox3.TabStop = false;
@@ -77,35 +84,79 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(375, 10);
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.White;
+            this.label1.Location = new System.Drawing.Point(16, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(197, 29);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Receipt Module";
+            this.label1.Size = new System.Drawing.Size(288, 20);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Detail Penerimaan Barang (Goods Receipt)";
+            // 
+            // panelDocHeader
+            // 
+            this.panelDocHeader.BackColor = System.Drawing.Color.White;
+            this.panelDocHeader.Controls.Add(this.labelName);
+            this.panelDocHeader.Controls.Add(this.lblDocTitle);
+            this.panelDocHeader.Controls.Add(this.labelState);
+            this.panelDocHeader.Controls.Add(this.label2);
+            this.panelDocHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelDocHeader.Location = new System.Drawing.Point(0, 50);
+            this.panelDocHeader.Name = "panelDocHeader";
+            this.panelDocHeader.Size = new System.Drawing.Size(920, 64);
+            this.panelDocHeader.TabIndex = 1;
             // 
             // labelName
             // 
             this.labelName.AutoSize = true;
-            this.labelName.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelName.Location = new System.Drawing.Point(10, 70);
+            this.labelName.Font = new System.Drawing.Font("Segoe UI", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            this.labelName.Location = new System.Drawing.Point(18, 30);
             this.labelName.Name = "labelName";
-            this.labelName.Size = new System.Drawing.Size(197, 29);
-            this.labelName.TabIndex = 2;
-            this.labelName.Text = "Receipt Module";
+            this.labelName.Size = new System.Drawing.Size(126, 25);
+            this.labelName.TabIndex = 1;
+            this.labelName.Text = "WH/IN/00000";
+            // 
+            // lblDocTitle
+            // 
+            this.lblDocTitle.AutoSize = true;
+            this.lblDocTitle.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDocTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this.lblDocTitle.Location = new System.Drawing.Point(20, 11);
+            this.lblDocTitle.Name = "lblDocTitle";
+            this.lblDocTitle.Size = new System.Drawing.Size(110, 13);
+            this.lblDocTitle.TabIndex = 0;
+            this.lblDocTitle.Text = "NOMOR PENERIMAAN";
+            // 
+            // labelState
+            // 
+            this.labelState.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelState.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this.labelState.Location = new System.Drawing.Point(750, 28);
+            this.labelState.Name = "labelState";
+            this.labelState.Size = new System.Drawing.Size(150, 25);
+            this.labelState.TabIndex = 3;
+            this.labelState.Text = "DRAFT";
+            this.labelState.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this.label2.Location = new System.Drawing.Point(857, 11);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(43, 13);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "STATUS";
             // 
             // dataGridReceipt
             // 
             this.dataGridReceipt.AllowUserToAddRows = false;
+            this.dataGridReceipt.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridReceipt.BackgroundColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(70)))), ((int)(((byte)(160)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridReceipt.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            this.dataGridReceipt.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridReceipt.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridReceipt.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.pname,
@@ -115,129 +166,118 @@
             this.pcode,
             this.state,
             this.line_type});
-            this.dataGridReceipt.EnableHeadersVisualStyles = false;
-            this.dataGridReceipt.Location = new System.Drawing.Point(0, 118);
-            this.dataGridReceipt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.dataGridReceipt.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridReceipt.Location = new System.Drawing.Point(0, 114);
             this.dataGridReceipt.Name = "dataGridReceipt";
-            this.dataGridReceipt.RowHeadersWidth = 51;
+            this.dataGridReceipt.RowHeadersWidth = 30;
             this.dataGridReceipt.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.dataGridReceipt.Size = new System.Drawing.Size(977, 299);
-            this.dataGridReceipt.TabIndex = 20;
+            this.dataGridReceipt.Size = new System.Drawing.Size(920, 370);
+            this.dataGridReceipt.TabIndex = 2;
             // 
             // pname
             // 
             this.pname.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.pname.HeaderText = "Product Name";
+            this.pname.HeaderText = "Nama Barang";
             this.pname.MinimumWidth = 6;
             this.pname.Name = "pname";
             this.pname.ReadOnly = true;
             // 
             // qty
             // 
-            this.qty.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.qty.HeaderText = "Qty";
+            this.qty.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.qty.HeaderText = "Qty Rencana";
             this.qty.MinimumWidth = 6;
             this.qty.Name = "qty";
             this.qty.ReadOnly = true;
             // 
             // qty_real
             // 
-            this.qty_real.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.qty_real.HeaderText = "Qty Real";
+            this.qty_real.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.qty_real.HeaderText = "Qty Realisasi";
             this.qty_real.MinimumWidth = 6;
             this.qty_real.Name = "qty_real";
             // 
             // Ref
             // 
             this.Ref.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Ref.HeaderText = "Ref";
+            this.Ref.HeaderText = "No Referensi";
             this.Ref.MinimumWidth = 6;
             this.Ref.Name = "Ref";
             this.Ref.ReadOnly = true;
             // 
             // pcode
             // 
-            this.pcode.HeaderText = "Column1";
-            this.pcode.MinimumWidth = 6;
+            this.pcode.HeaderText = "pcode";
             this.pcode.Name = "pcode";
             this.pcode.Visible = false;
-            this.pcode.Width = 125;
             // 
             // state
             // 
-            this.state.HeaderText = "Column1";
+            this.state.HeaderText = "state";
             this.state.Name = "state";
             this.state.Visible = false;
             // 
             // line_type
             // 
-            this.line_type.HeaderText = "Column1";
+            this.line_type.HeaderText = "line_type";
             this.line_type.Name = "line_type";
             this.line_type.Visible = false;
             // 
+            // panelFooter
+            // 
+            this.panelFooter.BackColor = System.Drawing.Color.White;
+            this.panelFooter.Controls.Add(this.btnCrtBill);
+            this.panelFooter.Controls.Add(this.btnSave);
+            this.panelFooter.Controls.Add(this.btnConfirm);
+            this.panelFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelFooter.Location = new System.Drawing.Point(0, 484);
+            this.panelFooter.Name = "panelFooter";
+            this.panelFooter.Size = new System.Drawing.Size(920, 56);
+            this.panelFooter.TabIndex = 3;
+            // 
+            // btnCrtBill
+            // 
+            this.btnCrtBill.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCrtBill.Location = new System.Drawing.Point(438, 10);
+            this.btnCrtBill.Name = "btnCrtBill";
+            this.btnCrtBill.Size = new System.Drawing.Size(150, 36);
+            this.btnCrtBill.TabIndex = 0;
+            this.btnCrtBill.Text = "Buat Tagihan (Bill)";
+            this.btnCrtBill.UseVisualStyleBackColor = true;
+            this.btnCrtBill.Visible = false;
+            this.btnCrtBill.Click += new System.EventHandler(this.btnCrtBill_Click);
+            // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(679, 422);
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSave.Location = new System.Drawing.Point(598, 10);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(121, 23);
-            this.btnSave.TabIndex = 39;
-            this.btnSave.Text = "Save Data";
+            this.btnSave.Size = new System.Drawing.Size(120, 36);
+            this.btnSave.TabIndex = 1;
+            this.btnSave.Text = "Simpan Data";
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // btnConfirm
             // 
-            this.btnConfirm.Location = new System.Drawing.Point(806, 422);
+            this.btnConfirm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnConfirm.Location = new System.Drawing.Point(728, 10);
             this.btnConfirm.Name = "btnConfirm";
-            this.btnConfirm.Size = new System.Drawing.Size(121, 23);
-            this.btnConfirm.TabIndex = 40;
-            this.btnConfirm.Text = "Confirm Receipt";
+            this.btnConfirm.Size = new System.Drawing.Size(176, 36);
+            this.btnConfirm.TabIndex = 2;
+            this.btnConfirm.Text = "Konfirmasi Penerimaan";
             this.btnConfirm.UseVisualStyleBackColor = true;
             this.btnConfirm.Click += new System.EventHandler(this.btnConfirm_Click);
-            // 
-            // btnCrtBill
-            // 
-            this.btnCrtBill.Location = new System.Drawing.Point(744, 451);
-            this.btnCrtBill.Name = "btnCrtBill";
-            this.btnCrtBill.Size = new System.Drawing.Size(121, 23);
-            this.btnCrtBill.TabIndex = 41;
-            this.btnCrtBill.Text = "Create Bill";
-            this.btnCrtBill.UseVisualStyleBackColor = true;
-            this.btnCrtBill.Visible = false;
-            this.btnCrtBill.Click += new System.EventHandler(this.btnCrtBill_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(815, 70);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(80, 20);
-            this.label2.TabIndex = 22;
-            this.label2.Text = "STATE : ";
-            // 
-            // labelState
-            // 
-            this.labelState.AutoSize = true;
-            this.labelState.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelState.Location = new System.Drawing.Point(897, 70);
-            this.labelState.Name = "labelState";
-            this.labelState.Size = new System.Drawing.Size(14, 20);
-            this.labelState.TabIndex = 42;
-            this.labelState.Text = ":";
             // 
             // ReceiptDetailForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(977, 493);
-            this.Controls.Add(this.labelState);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.btnCrtBill);
-            this.Controls.Add(this.btnConfirm);
-            this.Controls.Add(this.btnSave);
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            this.ClientSize = new System.Drawing.Size(920, 540);
             this.Controls.Add(this.dataGridReceipt);
-            this.Controls.Add(this.labelName);
+            this.Controls.Add(this.panelDocHeader);
+            this.Controls.Add(this.panelFooter);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "ReceiptDetailForm";
@@ -247,9 +287,11 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
+            this.panelDocHeader.ResumeLayout(false);
+            this.panelDocHeader.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridReceipt)).EndInit();
+            this.panelFooter.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -272,5 +314,8 @@
         public System.Windows.Forms.Button btnCrtBill;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label labelState;
+        private System.Windows.Forms.Panel panelDocHeader;
+        private System.Windows.Forms.Label lblDocTitle;
+        private System.Windows.Forms.Panel panelFooter;
     }
 }

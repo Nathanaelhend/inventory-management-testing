@@ -1,4 +1,4 @@
-﻿using InventoryManagement.models;
+using InventoryManagement.models;
 using InventoryManagement.Models;
 using MySql.Data.MySqlClient;
 using System;
@@ -27,10 +27,36 @@ namespace InventoryManagement
         private readonly SaleService saleService = new SaleService();
         private readonly ProductService productService = new ProductService();
 
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+
+        private void SetupModernUI()
+        {
+            UITheme.ApplyGridStyle(dataGridSaleModule);
+            UITheme.ApplyGridStyle(dataGridCustomer);
+            UITheme.ApplyGridStyle(dataGridProduct);
+
+            UITheme.StylePrimaryButton(btnCreate);
+            UITheme.StyleSuccessButton(btnConfirm);
+            UITheme.StyleSecondaryButton(btnClear);
+            UITheme.StylePrimaryButton(btnSaveDetail);
+            UITheme.StyleDangerButton(btnDelete);
+
+            panel1.MouseDown += (s, e) => { if (e.Button == MouseButtons.Left) { ReleaseCapture(); SendMessage(Handle, 0xA1, 0x2, 0); } };
+            label1.MouseDown += (s, e) => { if (e.Button == MouseButtons.Left) { ReleaseCapture(); SendMessage(Handle, 0xA1, 0x2, 0); } };
+
+            this.Paint += (s, e) => { using (var pen = new Pen(UITheme.Border, 1)) { e.Graphics.DrawRectangle(pen, 0, 0, Width - 1, Height - 1); } };
+            panel2.Paint += (s, e) => { using (var pen = new Pen(UITheme.Border, 1)) { e.Graphics.DrawRectangle(pen, 0, 0, panel2.Width - 1, panel2.Height - 1); } };
+            panel3.Paint += (s, e) => { using (var pen = new Pen(UITheme.Border, 1)) { e.Graphics.DrawRectangle(pen, 0, 0, panel3.Width - 1, panel3.Height - 1); } };
+        }
+
         // Constructor untuk mode CREATE
         public OrderModuleForm()
         {
             InitializeComponent();
+            SetupModernUI();
             LoadProduct();
             LoadCustomer();
             isEditMode = false;
@@ -71,6 +97,8 @@ namespace InventoryManagement
         public OrderModuleForm(string orderNo)
         {
             InitializeComponent();
+            SetupModernUI();
+            SetupPopUpContainer();
             LoadProduct();
             LoadCustomer();
 

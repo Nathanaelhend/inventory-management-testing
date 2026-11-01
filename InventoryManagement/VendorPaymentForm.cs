@@ -152,22 +152,47 @@ namespace InventoryManagement
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
+        private void SetupModernUI()
+        {
+            UITheme.ApplyGridStyle(dataGridListBill);
+            UITheme.ApplyGridStyle(dataGridVendor);
+            UITheme.ApplyGridStyle(dataGridBill);
+            UITheme.ApplyGridStyle(dataGridPayment);
+
+            UITheme.StylePrimaryButton(btnSave);
+            UITheme.StyleSecondaryButton(btnLoad);
+            UITheme.StyleSecondaryButton(btnNew);
+
+            UITheme.StylePrimaryButton(btnSaveDetail);
+            UITheme.StyleDangerButton(btnDeleteDetail);
+            UITheme.StyleSecondaryButton(btnClearDetail);
+
+            panel1.Paint += (s, e) =>
+            {
+                using (var pen = new Pen(UITheme.Border, 1))
+                {
+                    e.Graphics.DrawRectangle(pen, 0, 0, panel1.Width - 1, panel1.Height - 1);
+                }
+            };
+
+            panel2.Paint += (s, e) =>
+            {
+                using (var pen = new Pen(UITheme.Border, 1))
+                {
+                    e.Graphics.DrawRectangle(pen, 0, 0, panel2.Width - 1, panel2.Height - 1);
+                }
+            };
+        }
+
         private async void VendorPaymentForm_Load(object sender, EventArgs e)
         {
+            SetupModernUI();
             dateTimeNota.Value = DateTime.Today;
             datePickerPayment.Value = DateTime.Today;
 
             SetupPopUpContainer();
             await LoadVendor();
             await LoadPaymentList();
-
-            dataGridListBill.DefaultCellStyle.ForeColor = Color.Black;
-            dataGridListBill.DefaultCellStyle.BackColor = Color.White;
-            dataGridListBill.DefaultCellStyle.SelectionForeColor = Color.White;
-            dataGridListBill.DefaultCellStyle.SelectionBackColor = SystemColors.Highlight;
-
-            dataGridListBill.AlternatingRowsDefaultCellStyle.ForeColor = Color.Black;
-            dataGridListBill.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
         }
 
         private void SetupPopUpContainer()

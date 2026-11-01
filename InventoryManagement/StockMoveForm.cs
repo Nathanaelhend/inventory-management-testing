@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,7 +17,14 @@ namespace InventoryManagement
         public StockMoveForm()
         {
             InitializeComponent();
+            UITheme.ApplyGridStyle(dataGridSM);
+            UITheme.StyleSecondaryButton(btnRefresh);
             LoadStockMove();
+        }
+
+        private async void btnRefresh_Click(object sender, EventArgs e)
+        {
+            await LoadStockMove();
         }
 
         private async Task LoadStockMove()
@@ -44,17 +51,18 @@ namespace InventoryManagement
             }
         }
 
-        private void dataGridSM_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private async void dataGridSM_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
 
             string colName = dataGridSM.Columns[e.ColumnIndex].Name;
             string name = dataGridSM.Rows[e.RowIndex].Cells[0].Value?.ToString();
 
-            if(colName == "Edit")
+            if (colName == "Edit")
             {
                 ReceiptDetailForm receiptDetail = new ReceiptDetailForm(name);
                 receiptDetail.ShowDialog();
+                await LoadStockMove();
             }
         }
     }

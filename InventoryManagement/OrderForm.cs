@@ -1,4 +1,4 @@
-﻿using InventoryManagement.models;
+using InventoryManagement.models;
 using InventoryManagement.Models;
 using MySql.Data.MySqlClient;
 using System;
@@ -16,7 +16,17 @@ namespace InventoryManagement
         public OrderForm()
         {
             InitializeComponent();
+            UITheme.ApplyGridStyle(dataGridOrder);
+            UITheme.StylePrimaryButton(btnAdd);
             LoadOrder();
+        }
+
+        private void panelTopBar_Paint(object sender, PaintEventArgs e)
+        {
+            using (System.Drawing.Pen pen = new System.Drawing.Pen(UITheme.Border, 1))
+            {
+                e.Graphics.DrawLine(pen, 0, panelTopBar.Height - 1, panelTopBar.Width, panelTopBar.Height - 1);
+            }
         }
 
         public async Task LoadOrder()

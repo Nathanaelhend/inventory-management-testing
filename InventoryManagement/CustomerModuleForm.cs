@@ -1,16 +1,56 @@
-﻿using InventoryManagement.Models;
+using InventoryManagement.Models;
 using System;
 using System.Data;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using System.Drawing;
+using System.Runtime.InteropServices;
+
 namespace InventoryManagement
 {
     public partial class CustomerModuleForm : Form
     {
+        [DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+
+        private const int WM_NCLBUTTONDOWN = 0xA1;
+        private const int HT_CAPTION = 0x2;
+
         public CustomerModuleForm()
         {
             InitializeComponent();
+            UITheme.StylePrimaryButton(btnSave);
+            UITheme.StyleSecondaryButton(btnUpdate);
+            UITheme.StyleSecondaryButton(btnClear);
+        }
+
+        private void panel1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+            }
+        }
+
+        private void panelCard_Paint(object sender, PaintEventArgs e)
+        {
+            using (Pen pen = new Pen(UITheme.Border, 1))
+            {
+                e.Graphics.DrawRectangle(pen, 0, 0, panelCard.Width - 1, panelCard.Height - 1);
+            }
+        }
+
+        private void CustomerModuleForm_Paint(object sender, PaintEventArgs e)
+        {
+            using (Pen pen = new Pen(UITheme.BorderDark, 1))
+            {
+                e.Graphics.DrawRectangle(pen, 0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
+            }
         }
 
         private bool ValidateForm()

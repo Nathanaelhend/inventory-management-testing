@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using InventoryManagement.Models;
@@ -12,7 +12,17 @@ namespace InventoryManagement
         public UserForm()
         {
             InitializeComponent();
+            UITheme.ApplyGridStyle(dataGridUser);
+            UITheme.StylePrimaryButton(btnAdd);
             LoadUser();
+        }
+
+        private void panelTopBar_Paint(object sender, PaintEventArgs e)
+        {
+            using (System.Drawing.Pen pen = new System.Drawing.Pen(UITheme.Border, 1))
+            {
+                e.Graphics.DrawLine(pen, 0, panelTopBar.Height - 1, panelTopBar.Width, panelTopBar.Height - 1);
+            }
         }
 
         public async Task LoadUser()

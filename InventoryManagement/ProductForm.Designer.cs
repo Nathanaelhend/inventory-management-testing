@@ -1,4 +1,4 @@
-﻿namespace InventoryManagement
+namespace InventoryManagement
 {
     partial class ProductForm
     {
@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProductForm));
             this.dataGridProduct = new System.Windows.Forms.DataGridView();
             this.custId = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -39,29 +38,71 @@
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Edit = new System.Windows.Forms.DataGridViewImageColumn();
             this.Delete = new System.Windows.Forms.DataGridViewImageColumn();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.panelTopBar = new System.Windows.Forms.Panel();
+            this.btnAddCustomer = new System.Windows.Forms.Button();
             this.txtBoxSearch = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.btnAddCustomer = new InventoryManagement.CustomerButton();
-            this.label1 = new System.Windows.Forms.Label();
+            this.labelSearch = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridProduct)).BeginInit();
-            this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.btnAddCustomer)).BeginInit();
+            this.panelTopBar.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // panelTopBar
+            // 
+            this.panelTopBar.BackColor = System.Drawing.Color.White;
+            this.panelTopBar.Controls.Add(this.btnAddCustomer);
+            this.panelTopBar.Controls.Add(this.txtBoxSearch);
+            this.panelTopBar.Controls.Add(this.labelSearch);
+            this.panelTopBar.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelTopBar.Location = new System.Drawing.Point(0, 0);
+            this.panelTopBar.Name = "panelTopBar";
+            this.panelTopBar.Size = new System.Drawing.Size(976, 56);
+            this.panelTopBar.TabIndex = 0;
+            this.panelTopBar.Paint += new System.Windows.Forms.PaintEventHandler(this.panelTopBar_Paint);
+            // 
+            // btnAddCustomer
+            // 
+            this.btnAddCustomer.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAddCustomer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this.btnAddCustomer.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnAddCustomer.FlatAppearance.BorderSize = 0;
+            this.btnAddCustomer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAddCustomer.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAddCustomer.ForeColor = System.Drawing.Color.White;
+            this.btnAddCustomer.Location = new System.Drawing.Point(824, 12);
+            this.btnAddCustomer.Name = "btnAddCustomer";
+            this.btnAddCustomer.Size = new System.Drawing.Size(140, 32);
+            this.btnAddCustomer.TabIndex = 2;
+            this.btnAddCustomer.Text = "+ Tambah Produk";
+            this.btnAddCustomer.UseVisualStyleBackColor = false;
+            this.btnAddCustomer.Click += new System.EventHandler(this.btnAddCustomer_Click);
+            // 
+            // txtBoxSearch
+            // 
+            this.txtBoxSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtBoxSearch.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtBoxSearch.Location = new System.Drawing.Point(105, 16);
+            this.txtBoxSearch.Name = "txtBoxSearch";
+            this.txtBoxSearch.Size = new System.Drawing.Size(280, 24);
+            this.txtBoxSearch.TabIndex = 1;
+            this.txtBoxSearch.TextChanged += new System.EventHandler(this.txtBoxSearch_TextChanged);
+            // 
+            // labelSearch
+            // 
+            this.labelSearch.AutoSize = true;
+            this.labelSearch.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelSearch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
+            this.labelSearch.Location = new System.Drawing.Point(16, 20);
+            this.labelSearch.Name = "labelSearch";
+            this.labelSearch.Size = new System.Drawing.Size(81, 15);
+            this.labelSearch.TabIndex = 0;
+            this.labelSearch.Text = "Cari Produk :";
             // 
             // dataGridProduct
             // 
             this.dataGridProduct.AllowUserToAddRows = false;
             this.dataGridProduct.BackgroundColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(70)))), ((int)(((byte)(160)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridProduct.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
-            this.dataGridProduct.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridProduct.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dataGridProduct.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dataGridProduct.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.custId,
             this.Column1,
@@ -73,50 +114,56 @@
             this.Delete});
             this.dataGridProduct.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridProduct.EnableHeadersVisualStyles = false;
-            this.dataGridProduct.Location = new System.Drawing.Point(0, 0);
-            this.dataGridProduct.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.dataGridProduct.Location = new System.Drawing.Point(0, 56);
             this.dataGridProduct.Name = "dataGridProduct";
-            this.dataGridProduct.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.dataGridProduct.Size = new System.Drawing.Size(976, 412);
-            this.dataGridProduct.TabIndex = 5;
+            this.dataGridProduct.RowHeadersVisible = false;
+            this.dataGridProduct.Size = new System.Drawing.Size(976, 411);
+            this.dataGridProduct.TabIndex = 1;
             this.dataGridProduct.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridProduct_CellContentClick);
             // 
             // custId
             // 
             this.custId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.custId.HeaderText = "Product Code";
+            this.custId.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.custId.HeaderText = "Kode Produk";
             this.custId.Name = "custId";
-            this.custId.Width = 106;
+            this.custId.Width = 100;
             // 
             // Column1
             // 
-            this.Column1.HeaderText = "Name";
+            this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Column1.HeaderText = "Nama Produk";
             this.Column1.Name = "Column1";
             // 
             // Column4
             // 
             this.Column4.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Column4.HeaderText = "Qty";
+            this.Column4.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.Column4.HeaderText = "Stok";
             this.Column4.Name = "Column4";
-            this.Column4.Width = 49;
+            this.Column4.Width = 60;
             // 
             // Price
             // 
-            this.Price.HeaderText = "Price";
+            this.Price.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Price.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.Price.DefaultCellStyle.Format = "N0";
+            this.Price.HeaderText = "Harga (Rp)";
             this.Price.Name = "Price";
+            this.Price.Width = 95;
             // 
             // Description
             // 
             this.Description.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Description.HeaderText = "Description";
+            this.Description.HeaderText = "Deskripsi";
             this.Description.Name = "Description";
             // 
             // Column2
             // 
             this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Column2.HeaderText = "Category";
+            this.Column2.HeaderText = "Kategori";
             this.Column2.Name = "Column2";
-            this.Column2.Width = 80;
+            this.Column2.Width = 85;
             // 
             // Edit
             // 
@@ -124,7 +171,7 @@
             this.Edit.HeaderText = "";
             this.Edit.Image = ((System.Drawing.Image)(resources.GetObject("Edit.Image")));
             this.Edit.Name = "Edit";
-            this.Edit.Width = 5;
+            this.Edit.Width = 25;
             // 
             // Delete
             // 
@@ -132,83 +179,23 @@
             this.Delete.HeaderText = "";
             this.Delete.Image = ((System.Drawing.Image)(resources.GetObject("Delete.Image")));
             this.Delete.Name = "Delete";
-            this.Delete.Width = 5;
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.Blue;
-            this.panel1.Controls.Add(this.txtBoxSearch);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.btnAddCustomer);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 412);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(976, 55);
-            this.panel1.TabIndex = 4;
-            // 
-            // txtBoxSearch
-            // 
-            this.txtBoxSearch.Location = new System.Drawing.Point(458, 15);
-            this.txtBoxSearch.Name = "txtBoxSearch";
-            this.txtBoxSearch.Size = new System.Drawing.Size(292, 21);
-            this.txtBoxSearch.TabIndex = 6;
-            this.txtBoxSearch.TextChanged += new System.EventHandler(this.txtBoxSearch_TextChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(370, 18);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(82, 16);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Search Box :";
-            // 
-            // btnAddCustomer
-            // 
-            this.btnAddCustomer.Image = ((System.Drawing.Image)(resources.GetObject("btnAddCustomer.Image")));
-            this.btnAddCustomer.ImageHover = ((System.Drawing.Image)(resources.GetObject("btnAddCustomer.ImageHover")));
-            this.btnAddCustomer.ImageNormal = ((System.Drawing.Image)(resources.GetObject("btnAddCustomer.ImageNormal")));
-            this.btnAddCustomer.Location = new System.Drawing.Point(874, 6);
-            this.btnAddCustomer.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnAddCustomer.Name = "btnAddCustomer";
-            this.btnAddCustomer.Size = new System.Drawing.Size(59, 45);
-            this.btnAddCustomer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.btnAddCustomer.TabIndex = 4;
-            this.btnAddCustomer.TabStop = false;
-            this.btnAddCustomer.Click += new System.EventHandler(this.btnAddCustomer_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(4, 14);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(140, 20);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Manage Product";
+            this.Delete.Width = 25;
             // 
             // ProductForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this.ClientSize = new System.Drawing.Size(976, 467);
             this.Controls.Add(this.dataGridProduct);
-            this.Controls.Add(this.panel1);
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Controls.Add(this.panelTopBar);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "ProductForm";
             this.Text = "ProductForm";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridProduct)).EndInit();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.btnAddCustomer)).EndInit();
+            this.panelTopBar.ResumeLayout(false);
+            this.panelTopBar.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -216,11 +203,10 @@
         #endregion
 
         private System.Windows.Forms.DataGridView dataGridProduct;
-        private System.Windows.Forms.Panel panel1;
-        private CustomerButton btnAddCustomer;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Panel panelTopBar;
+        private System.Windows.Forms.Button btnAddCustomer;
         private System.Windows.Forms.TextBox txtBoxSearch;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelSearch;
         private System.Windows.Forms.DataGridViewTextBoxColumn custId;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
