@@ -12,7 +12,7 @@ public class UserService
     public UserService()
     {
         _http = new HttpClient();
-        _http.BaseAddress = new Uri("http://localhost:3000/");
+        _http.BaseAddress = new Uri("https://uptight-amendment-ocean.ngrok-free.dev/");
     }
     public async Task<List<User>> GetUsers()
     {
