@@ -9,7 +9,6 @@ namespace InventoryManagement
 {
     public partial class MainForm : Form
     {
-        private readonly string githubToken = "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";
         private Form activeForm = null;
         private Button currentNavButton = null;
 
@@ -164,8 +163,6 @@ namespace InventoryManagement
             try
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                AutoUpdater.BasicAuthXML = new BasicAuthentication("", githubToken);
-                AutoUpdater.BasicAuthDownload = new BasicAuthentication("", githubToken);
                 AutoUpdater.ParseUpdateInfoEvent += AutoUpdaterOnParseUpdateInfoEvent;
                 string jsonUrl = "https://raw.githubusercontent.com/Nathanaelhend/inventory-management-testing/main/update.json";
                 AutoUpdater.Start(jsonUrl);
@@ -184,11 +181,16 @@ namespace InventoryManagement
                 if (!string.IsNullOrEmpty(args.RemoteData))
                 {
                     dynamic json = Newtonsoft.Json.JsonConvert.DeserializeObject(args.RemoteData);
+                    bool isMandatory = json.mandatory != null && json.mandatory.value != null ? (bool)json.mandatory.value : false;
                     args.UpdateInfo = new UpdateInfoEventArgs
                     {
                         CurrentVersion = json.version,
                         DownloadURL = json.url,
-                        ChangelogURL = json.changelog
+                        ChangelogURL = json.changelog,
+                        Mandatory = new Mandatory
+                        {
+                            Value = isMandatory
+                        }
                     };
                 }
             }
