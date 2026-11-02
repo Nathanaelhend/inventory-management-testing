@@ -25,6 +25,17 @@ jobs:
     - name: Restore Packages
       run: nuget restore InventoryManagement.sln
 
+    - name: Update Assembly Version from Tag
+      shell: powershell
+      run: |
+        $tag = "${{ github.ref_name }}".TrimStart('v')
+        $parts = $tag.Split('.')
+        while ($parts.Count -lt 4) { $parts += '0' }
+        $fullVer = $parts -join '.'
+        $assemblyInfoPath = "InventoryManagement/Properties/AssemblyInfo.cs"
+        (Get-Content $assemblyInfoPath) -replace '\[assembly: AssemblyVersion\(.*\)\]', "[assembly: AssemblyVersion(`"$fullVer`")]" -replace '\[assembly: AssemblyFileVersion\(.*\)\]', "[assembly: AssemblyFileVersion(`"$fullVer`")]" | Set-Content $assemblyInfoPath
+        Write-Host "Updated AssemblyInfo.cs to $fullVer"
+
     - name: Build Application
       run: |
         msbuild InventoryManagement.sln /p:Configuration=Release /p:Platform="Any CPU" /p:OutputPath="${{ github.workspace }}\build_output"
