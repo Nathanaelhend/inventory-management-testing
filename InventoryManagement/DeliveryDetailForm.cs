@@ -58,13 +58,30 @@ namespace InventoryManagement
                     SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
                 }
             };
-
-            LoadExisting();
         }
 
-        private void ReceiptDetailForm_Load(object sender, EventArgs e)
+        private async void DeliveryDetailForm_Load(object sender, EventArgs e)
         {
-            
+            await LoadExisting();
+        }
+
+        private void ApplyStateUI(string state)
+        {
+            state = (state ?? "DRAFT").Trim().ToUpper();
+            labelState.Text = state;
+
+            if (state == "CONFIRM" || state == "DONE")
+            {
+                labelState.ForeColor = UITheme.Success;
+                btnConfirm.Visible = false;
+                btnSave.Visible = false;
+            }
+            else
+            {
+                labelState.ForeColor = UITheme.Primary;
+                btnConfirm.Visible = true;
+                btnSave.Visible = true;
+            }
         }
 
         public async Task LoadExisting()
@@ -90,6 +107,8 @@ namespace InventoryManagement
                         );
                     }
                 }
+
+                ApplyStateUI(detail?.state);
             }
             catch (Exception ex)
             {
@@ -106,6 +125,8 @@ namespace InventoryManagement
         {
             try
             {
+                ml.Clear();
+
                 foreach (DataGridViewRow row in dataGridDelivery.Rows)
                 {
                     ml.Add(new StockMoveLine
@@ -132,6 +153,7 @@ namespace InventoryManagement
                 await stockMoveService.UpdateReceipt(nameSM, payload);
 
                 MessageBox.Show($"Delivery {nameSM} updated successfully.");
+                await LoadExisting();
             }
             catch (Exception ex)
             {
@@ -143,6 +165,8 @@ namespace InventoryManagement
         {
             try
             {
+                ml.Clear();
+
                 foreach (DataGridViewRow row in dataGridDelivery.Rows)
                 {
                     ml.Add(new StockMoveLine
@@ -168,7 +192,8 @@ namespace InventoryManagement
 
                 await stockMoveService.ConfirmReceipt(nameSM, payload);
 
-                MessageBox.Show($"Receipt {nameSM} updated successfully.");
+                MessageBox.Show($"Delivery {nameSM} confirmed successfully.");
+                await LoadExisting();
             }
             catch (Exception ex)
             {

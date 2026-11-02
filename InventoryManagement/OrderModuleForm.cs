@@ -26,11 +26,59 @@ namespace InventoryManagement
 
         private readonly SaleService saleService = new SaleService();
         private readonly ProductService productService = new ProductService();
+        private readonly StockMoveService stockMoveService = new StockMoveService();
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern bool ReleaseCapture();
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+
+        public void ApplyStateUI(string state)
+        {
+            state = (state ?? "DRAFT").Trim().ToUpper();
+            lblState.Text = state;
+
+            if (state != "DRAFT")
+            {
+                lblState.ForeColor = System.Drawing.Color.FromArgb(110, 231, 183);
+                btnClear.Visible = false;
+                btnDelete.Visible = false;
+                btnCreate.Visible = false;
+                btnSaveDetail.Visible = false;
+                btnConfirm.Visible = false;
+
+                dateTimePickerOrder.Enabled = false;
+                txtCustomerId.ReadOnly = true;
+                txtProductId.ReadOnly = true;
+                txtPrice.ReadOnly = true;
+                txtDiscPrs.ReadOnly = true;
+                txtFinalPrice.ReadOnly = true;
+                txtPPn.ReadOnly = true;
+                numericQty.ReadOnly = true;
+                dataGridProduct.ReadOnly = true;
+                dataGridProduct.Enabled = false;
+            }
+            else
+            {
+                lblState.ForeColor = System.Drawing.Color.FromArgb(147, 197, 253);
+                btnClear.Visible = true;
+                btnDelete.Visible = true;
+                btnCreate.Visible = true;
+                btnSaveDetail.Visible = true;
+                btnConfirm.Visible = true;
+
+                dateTimePickerOrder.Enabled = true;
+                txtCustomerId.ReadOnly = false;
+                txtProductId.ReadOnly = false;
+                txtPrice.ReadOnly = false;
+                txtDiscPrs.ReadOnly = false;
+                txtFinalPrice.ReadOnly = false;
+                txtPPn.ReadOnly = false;
+                numericQty.ReadOnly = false;
+                dataGridProduct.ReadOnly = false;
+                dataGridProduct.Enabled = true;
+            }
+        }
 
         private void SetupModernUI()
         {
@@ -178,9 +226,9 @@ namespace InventoryManagement
                         PartnerService partnerService = new PartnerService();
                         var partners = await partnerService.GetPartner();
                         var customer = partners.FirstOrDefault(p => p.ccode == detail.header.customerId);
-                        if (customerId != null)
+                        if (customer != null)
                         {
-                            txtCustomerName.Text = customerId.Name;
+                            txtCustomerName.Text = customer.cname;
                         }
                     }
                     catch
@@ -192,6 +240,8 @@ namespace InventoryManagement
                     txtDiscPrs.Text = detail.header.discPrs.ToString("N0", new CultureInfo("id-ID"));
                     txtPPn.Text = detail.header.ppnPrs.ToString("N0", new CultureInfo("id-ID"));
                     txtFinalPrice.Text = detail.header.total.ToString("N0", new CultureInfo("id-ID"));
+
+                    ApplyStateUI(detail.header.state);
                 }
 
                 // Load lines data
@@ -379,27 +429,15 @@ namespace InventoryManagement
         {
             HitungTotalGrid();
 
-            var po = await saleService.GetSaleById(txtBoxNoOrder.Text?.Trim());
-
-            if(po.header.state != "DRAFT")
+            string orderNo = txtBoxNoOrder.Text?.Trim();
+            if (!string.IsNullOrWhiteSpace(orderNo))
             {
-                btnClear.Visible = false;
-                btnDelete.Visible = false;
-                btnCreate.Visible = false;
-                btnSaveDetail.Visible = false;
-                btnConfirm.Visible = false;
-
-                dateTimePickerOrder.Enabled = false;
-                txtCustomerId.ReadOnly = true;
-                txtProductId.ReadOnly = true;
-                txtPrice.ReadOnly = true;
-                txtDiscPrs.ReadOnly = true;
-                txtFinalPrice.ReadOnly = true;
-                txtPPn.ReadOnly = true;
-                numericQty.ReadOnly = true;
-                dataGridProduct.ReadOnly = true;
-
-                dataGridProduct.Enabled = false;
+                var po = await saleService.GetSaleById(orderNo);
+                ApplyStateUI(po?.header?.state ?? "DRAFT");
+            }
+            else
+            {
+                ApplyStateUI("DRAFT");
             }
         }
 
@@ -603,7 +641,7 @@ namespace InventoryManagement
                 ppnPrs = (float)ppnPrsDec,
                 ppnRph = (float)ppnRphDec,
                 total = (float)netAmountDec,
-                state = "CONFIRM"
+                state = "DRAFT"
             };
 
             try
@@ -639,11 +677,15 @@ namespace InventoryManagement
                     }
                 }
 
-                MessageBox.Show("Purchase berhasil disimpan!",
+                MessageBox.Show("Sales Order berhasil disimpan!",
                 "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                headerCreated = true;
+                existingOrderNo = noOrder;
+                isEditMode = true;
                 // reload purchase lines after saving header
                 await LoadOrderLines();
+                ApplyStateUI("DRAFT");
             }
             catch (Exception ex)
             {
@@ -652,7 +694,6 @@ namespace InventoryManagement
             }
             finally
             {
-                headerCreated = false;
                 btnCreate.Enabled = true;
             }
         }
@@ -694,9 +735,88 @@ namespace InventoryManagement
             }
         }
 
-        private void btnConfirm_Click(object sender, EventArgs e)
+        private async void btnConfirm_Click(object sender, EventArgs e)
         {
+            string noOrder = txtBoxNoOrder.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(noOrder))
+            {
+                MessageBox.Show("Nomor order tidak valid!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
+            if (dataGridSaleModule.Rows.Count == 0)
+            {
+                MessageBox.Show("Harap tambahkan minimal 1 item produk sebelum konfirmasi!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (MessageBox.Show($"Apakah Anda yakin ingin mengonfirmasi Sales Order {noOrder}?", "Konfirmasi SO", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            {
+                return;
+            }
+
+            try
+            {
+                btnConfirm.Enabled = false;
+                SaleDetailResponse detail = await saleService.GetSaleById(noOrder);
+
+                if (detail?.lines != null && detail.lines.Count > 0)
+                {
+                    var lineList = new List<StockMoveLine>();
+                    foreach (var line in detail.lines)
+                    {
+                        lineList.Add(new StockMoveLine
+                        {
+                            pcode = line.pcode,
+                            pName = line.pName,
+                            qty = line.qty,
+                            @ref = noOrder,
+                            type_line = "OUT",
+                        });
+                    }
+
+                    var stockMove = new StockMove
+                    {
+                        name = $"OUT/{noOrder}",
+                        type = "OUT",
+                        mref = noOrder,
+                        @ref = noOrder,
+                        state = "DRAFT",
+                        lines = lineList
+                    };
+
+                    await stockMoveService.CreateStockMove(stockMove);
+                }
+
+                if (detail?.header != null)
+                {
+                    var so = new Sale
+                    {
+                        noOrder = detail.header.noOrder,
+                        odate = detail.header.odate,
+                        customerId = detail.header.customerId,
+                        dpp = detail.header.dpp,
+                        discPrs = detail.header.discPrs,
+                        discRph = detail.header.discRph,
+                        ppnPrs = detail.header.ppnPrs,
+                        ppnRph = detail.header.ppnRph,
+                        total = detail.header.total,
+                        state = "CONFIRMED"
+                    };
+
+                    await saleService.UpdateSale(noOrder, so);
+                    ApplyStateUI("CONFIRMED");
+                    MessageBox.Show($"Order {noOrder} berhasil dikonfirmasi!", "Confirmed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Gagal konfirmasi order: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                btnConfirm.Enabled = true;
+            }
         }
 
         private void SetupPopUpContainer()

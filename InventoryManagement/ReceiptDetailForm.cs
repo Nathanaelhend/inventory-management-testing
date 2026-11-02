@@ -65,15 +65,26 @@ namespace InventoryManagement
         private async void ReceiptDetailForm_Load(object sender, EventArgs e)
         {
             await LoadExisting();
+        }
 
-            if (labelState.Text == "DONE")
+        private void ApplyStateUI(string state)
+        {
+            state = (state ?? "DRAFT").Trim().ToUpper();
+            labelState.Text = state;
+
+            if (state == "DONE")
             {
-                btnCrtBill.Visible = true;
                 labelState.ForeColor = UITheme.Success;
+                btnCrtBill.Visible = true;
+                btnConfirm.Visible = false;
+                btnSave.Visible = false;
             }
             else
             {
                 labelState.ForeColor = UITheme.Primary;
+                btnCrtBill.Visible = false;
+                btnConfirm.Visible = true;
+                btnSave.Visible = true;
             }
         }
 
@@ -102,8 +113,7 @@ namespace InventoryManagement
                     }
                 }
 
-                labelState.Text = detail?.state;
-
+                ApplyStateUI(detail?.state);
             }
             catch (Exception ex)
             {
@@ -171,6 +181,7 @@ namespace InventoryManagement
                 await stockMoveService.UpdateReceipt(nameSM, payload);
 
                 MessageBox.Show($"Receipt {nameSM} updated successfully.");
+                await LoadExisting();
             }
             catch (Exception ex)
             {
@@ -182,6 +193,8 @@ namespace InventoryManagement
         {
             try
             {
+                ml.Clear();
+
                 foreach (DataGridViewRow row in dataGridReceipt.Rows)
                 {
                     ml.Add(new StockMoveLine
@@ -225,6 +238,7 @@ namespace InventoryManagement
                 await stockMoveService.ConfirmReceipt(nameSM, payload);
 
                 MessageBox.Show($"Receipt {nameSM} Confirm successfully.");
+                await LoadExisting();
             }
             catch (Exception ex)
             {
@@ -264,6 +278,8 @@ namespace InventoryManagement
                 await bilService.CreateBill(payload);
 
                 MessageBox.Show($"Create Bill successfully.");
+                btnCrtBill.Enabled = false;
+                btnCrtBill.Text = "Tagihan Dibuat";
             }
             catch (Exception ex)
             {

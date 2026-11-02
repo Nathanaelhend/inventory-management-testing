@@ -91,6 +91,7 @@ namespace InventoryManagement
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.lblState = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
@@ -105,6 +106,7 @@ namespace InventoryManagement
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            this.panel1.Controls.Add(this.lblState);
             this.panel1.Controls.Add(this.pictureBox3);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -136,6 +138,18 @@ namespace InventoryManagement
             this.label1.Size = new System.Drawing.Size(186, 21);
             this.label1.TabIndex = 0;
             this.label1.Text = "DETAIL SALES ORDER";
+            // 
+            // lblState
+            // 
+            this.lblState.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblState.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(147)))), ((int)(((byte)(197)))), ((int)(((byte)(253)))));
+            this.lblState.Location = new System.Drawing.Point(770, 14);
+            this.lblState.Name = "lblState";
+            this.lblState.Size = new System.Drawing.Size(160, 23);
+            this.lblState.TabIndex = 13;
+            this.lblState.Text = "DRAFT";
+            this.lblState.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label14
             // 
@@ -838,5 +852,6 @@ namespace InventoryManagement
         private System.Windows.Forms.DataGridViewTextBoxColumn pTotal;
         private System.Windows.Forms.DataGridViewTextBoxColumn customerId;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        public System.Windows.Forms.Label lblState;
     }
 }

@@ -33,6 +33,7 @@ namespace InventoryManagement
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.lblState = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.txtBoxNoOrder = new System.Windows.Forms.TextBox();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
@@ -114,6 +115,7 @@ namespace InventoryManagement
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            this.panel1.Controls.Add(this.lblState);
             this.panel1.Controls.Add(this.pictureBox3);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -121,6 +123,18 @@ namespace InventoryManagement
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(980, 50);
             this.panel1.TabIndex = 1;
+            // 
+            // lblState
+            // 
+            this.lblState.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblState.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(147)))), ((int)(((byte)(197)))), ((int)(((byte)(253)))));
+            this.lblState.Location = new System.Drawing.Point(770, 14);
+            this.lblState.Name = "lblState";
+            this.lblState.Size = new System.Drawing.Size(160, 23);
+            this.lblState.TabIndex = 13;
+            this.lblState.Text = "DRAFT";
+            this.lblState.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // pictureBox3
             // 
@@ -972,6 +986,7 @@ namespace InventoryManagement
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Panel panel3;
+        public System.Windows.Forms.Label lblState;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.DataGridViewTextBoxColumn vendorId;

@@ -36,6 +36,7 @@ namespace InventoryManagement
             this.panelDocHeader = new System.Windows.Forms.Panel();
             this.labelName = new System.Windows.Forms.Label();
             this.lblDocTitle = new System.Windows.Forms.Label();
+            this.labelState = new System.Windows.Forms.Label();
             this.dataGridDelivery = new System.Windows.Forms.DataGridView();
             this.pname = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.qty = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -92,6 +93,7 @@ namespace InventoryManagement
             // panelDocHeader
             // 
             this.panelDocHeader.BackColor = System.Drawing.Color.White;
+            this.panelDocHeader.Controls.Add(this.labelState);
             this.panelDocHeader.Controls.Add(this.labelName);
             this.panelDocHeader.Controls.Add(this.lblDocTitle);
             this.panelDocHeader.Dock = System.Windows.Forms.DockStyle.Top;
@@ -99,6 +101,18 @@ namespace InventoryManagement
             this.panelDocHeader.Name = "panelDocHeader";
             this.panelDocHeader.Size = new System.Drawing.Size(920, 64);
             this.panelDocHeader.TabIndex = 1;
+            // 
+            // labelState
+            // 
+            this.labelState.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelState.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this.labelState.Location = new System.Drawing.Point(750, 28);
+            this.labelState.Name = "labelState";
+            this.labelState.Size = new System.Drawing.Size(150, 25);
+            this.labelState.TabIndex = 2;
+            this.labelState.Text = "DRAFT";
+            this.labelState.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // labelName
             // 
@@ -241,7 +255,7 @@ namespace InventoryManagement
             this.Name = "DeliveryDetailForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "DeliveryDetailForm";
-            this.Load += new System.EventHandler(this.ReceiptDetailForm_Load);
+            this.Load += new System.EventHandler(this.DeliveryDetailForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
@@ -258,6 +272,7 @@ namespace InventoryManagement
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
         public System.Windows.Forms.Label labelName;
+        public System.Windows.Forms.Label labelState;
         private System.Windows.Forms.DataGridView dataGridDelivery;
         private System.Windows.Forms.PictureBox pictureBox3;
         public System.Windows.Forms.Button btnSave;

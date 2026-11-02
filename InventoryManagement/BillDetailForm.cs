@@ -70,12 +70,29 @@ namespace InventoryManagement
                 }
             };
 
-            LoadExisting();
+            this.Load += BillDetailForm_Load;
         }
 
-        private void BillDetailForm_Load(object sender, EventArgs e)
+        private async void BillDetailForm_Load(object sender, EventArgs e)
         {
-            
+            await LoadExisting();
+        }
+
+        private void ApplyStateUI(string state)
+        {
+            state = (state ?? "DRAFT").Trim().ToUpper();
+            labelState.Text = state;
+
+            if (state == "DONE")
+            {
+                labelState.ForeColor = UITheme.Success;
+                btnConfirm.Visible = false;
+            }
+            else
+            {
+                labelState.ForeColor = UITheme.Primary;
+                btnConfirm.Visible = true;
+            }
         }
 
         public async Task LoadExisting()
@@ -89,15 +106,16 @@ namespace InventoryManagement
                 var vendor = partners.FirstOrDefault(p => p.ccode == detail?.header.vendor_id);
 
                 labelName.Text = detail?.header.name;
-                txtVendorName.Text = vendor.cname;
-                labelState.Text = detail?.header.state;
-                txtJumlah.Text = detail?.header.jumlah.ToString("N0", cultureInfo);
-                txtDiscPrs.Text = detail?.header.discPrs.ToString("N0", cultureInfo);
-                lblDisc.Text = detail?.header.discPrs.ToString("N0", cultureInfo);
-                txtDpp.Text = detail?.header.dpp.ToString("N0", cultureInfo);
-                txtPPn.Text = detail?.header.ppnPrs.ToString("N0", cultureInfo);
-                lblPPn.Text = detail?.header.ppnRph.ToString("N0", cultureInfo);
-                txtFinalPrice.Text = detail?.header.total.ToString("N0", cultureInfo);
+                txtVendorName.Text = vendor?.cname ?? "";
+                txtJumlah.Text = detail?.header.jumlah.ToString("N0", cultureInfo) ?? "0";
+                txtDiscPrs.Text = detail?.header.discPrs.ToString("N0", cultureInfo) ?? "0";
+                lblDisc.Text = detail?.header.discPrs.ToString("N0", cultureInfo) ?? "0";
+                txtDpp.Text = detail?.header.dpp.ToString("N0", cultureInfo) ?? "0";
+                txtPPn.Text = detail?.header.ppnPrs.ToString("N0", cultureInfo) ?? "0";
+                lblPPn.Text = detail?.header.ppnRph.ToString("N0", cultureInfo) ?? "0";
+                txtFinalPrice.Text = detail?.header.total.ToString("N0", cultureInfo) ?? "0";
+
+                ApplyStateUI(detail?.header?.state);
 
                 if (detail?.lines != null)
                 {
@@ -141,6 +159,7 @@ namespace InventoryManagement
                 await billService.ConfirmBill(billId, header);
 
                 MessageBox.Show($"Vendor Bill {billId} Confirmed");
+                await LoadExisting();
             }
             catch (Exception ex)
             {

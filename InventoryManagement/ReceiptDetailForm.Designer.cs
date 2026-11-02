@@ -29,7 +29,6 @@ namespace InventoryManagement
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ReceiptDetailForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -39,6 +38,10 @@ namespace InventoryManagement
             this.labelState = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.dataGridReceipt = new System.Windows.Forms.DataGridView();
+            this.panelFooter = new System.Windows.Forms.Panel();
+            this.btnCrtBill = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.btnConfirm = new System.Windows.Forms.Button();
             this.pname = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.qty = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.qty_real = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -46,10 +49,6 @@ namespace InventoryManagement
             this.pcode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.state = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.line_type = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.panelFooter = new System.Windows.Forms.Panel();
-            this.btnCrtBill = new System.Windows.Forms.Button();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.btnConfirm = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.panelDocHeader.SuspendLayout();
@@ -88,7 +87,7 @@ namespace InventoryManagement
             this.label1.ForeColor = System.Drawing.Color.White;
             this.label1.Location = new System.Drawing.Point(16, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(288, 20);
+            this.label1.Size = new System.Drawing.Size(308, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "Detail Penerimaan Barang (Goods Receipt)";
             // 
@@ -112,7 +111,7 @@ namespace InventoryManagement
             this.labelName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.labelName.Location = new System.Drawing.Point(18, 30);
             this.labelName.Name = "labelName";
-            this.labelName.Size = new System.Drawing.Size(126, 25);
+            this.labelName.Size = new System.Drawing.Size(130, 25);
             this.labelName.TabIndex = 1;
             this.labelName.Text = "WH/IN/00000";
             // 
@@ -123,7 +122,7 @@ namespace InventoryManagement
             this.lblDocTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this.lblDocTitle.Location = new System.Drawing.Point(20, 11);
             this.lblDocTitle.Name = "lblDocTitle";
-            this.lblDocTitle.Size = new System.Drawing.Size(110, 13);
+            this.lblDocTitle.Size = new System.Drawing.Size(121, 13);
             this.lblDocTitle.TabIndex = 0;
             this.lblDocTitle.Text = "NOMOR PENERIMAAN";
             // 
@@ -147,7 +146,7 @@ namespace InventoryManagement
             this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this.label2.Location = new System.Drawing.Point(857, 11);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(43, 13);
+            this.label2.Size = new System.Drawing.Size(42, 13);
             this.label2.TabIndex = 2;
             this.label2.Text = "STATUS";
             // 
@@ -173,55 +172,6 @@ namespace InventoryManagement
             this.dataGridReceipt.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dataGridReceipt.Size = new System.Drawing.Size(920, 370);
             this.dataGridReceipt.TabIndex = 2;
-            // 
-            // pname
-            // 
-            this.pname.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.pname.HeaderText = "Nama Barang";
-            this.pname.MinimumWidth = 6;
-            this.pname.Name = "pname";
-            this.pname.ReadOnly = true;
-            // 
-            // qty
-            // 
-            this.qty.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
-            this.qty.HeaderText = "Qty Rencana";
-            this.qty.MinimumWidth = 6;
-            this.qty.Name = "qty";
-            this.qty.ReadOnly = true;
-            // 
-            // qty_real
-            // 
-            this.qty_real.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
-            this.qty_real.HeaderText = "Qty Realisasi";
-            this.qty_real.MinimumWidth = 6;
-            this.qty_real.Name = "qty_real";
-            // 
-            // Ref
-            // 
-            this.Ref.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Ref.HeaderText = "No Referensi";
-            this.Ref.MinimumWidth = 6;
-            this.Ref.Name = "Ref";
-            this.Ref.ReadOnly = true;
-            // 
-            // pcode
-            // 
-            this.pcode.HeaderText = "pcode";
-            this.pcode.Name = "pcode";
-            this.pcode.Visible = false;
-            // 
-            // state
-            // 
-            this.state.HeaderText = "state";
-            this.state.Name = "state";
-            this.state.Visible = false;
-            // 
-            // line_type
-            // 
-            this.line_type.HeaderText = "line_type";
-            this.line_type.Name = "line_type";
-            this.line_type.Visible = false;
             // 
             // panelFooter
             // 
@@ -269,6 +219,57 @@ namespace InventoryManagement
             this.btnConfirm.UseVisualStyleBackColor = true;
             this.btnConfirm.Click += new System.EventHandler(this.btnConfirm_Click);
             // 
+            // pname
+            // 
+            this.pname.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.pname.HeaderText = "Nama Barang";
+            this.pname.MinimumWidth = 6;
+            this.pname.Name = "pname";
+            this.pname.ReadOnly = true;
+            // 
+            // qty
+            // 
+            this.qty.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.qty.HeaderText = "Qty Order";
+            this.qty.MinimumWidth = 6;
+            this.qty.Name = "qty";
+            this.qty.ReadOnly = true;
+            this.qty.Width = 77;
+            // 
+            // qty_real
+            // 
+            this.qty_real.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.qty_real.HeaderText = "Qty Real";
+            this.qty_real.MinimumWidth = 6;
+            this.qty_real.Name = "qty_real";
+            this.qty_real.Width = 73;
+            // 
+            // Ref
+            // 
+            this.Ref.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Ref.HeaderText = "No Referensi";
+            this.Ref.MinimumWidth = 6;
+            this.Ref.Name = "Ref";
+            this.Ref.ReadOnly = true;
+            // 
+            // pcode
+            // 
+            this.pcode.HeaderText = "pcode";
+            this.pcode.Name = "pcode";
+            this.pcode.Visible = false;
+            // 
+            // state
+            // 
+            this.state.HeaderText = "state";
+            this.state.Name = "state";
+            this.state.Visible = false;
+            // 
+            // line_type
+            // 
+            this.line_type.HeaderText = "line_type";
+            this.line_type.Name = "line_type";
+            this.line_type.Visible = false;
+            // 
             // ReceiptDetailForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -304,6 +305,12 @@ namespace InventoryManagement
         private System.Windows.Forms.PictureBox pictureBox3;
         public System.Windows.Forms.Button btnSave;
         public System.Windows.Forms.Button btnConfirm;
+        public System.Windows.Forms.Button btnCrtBill;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelState;
+        private System.Windows.Forms.Panel panelDocHeader;
+        private System.Windows.Forms.Label lblDocTitle;
+        private System.Windows.Forms.Panel panelFooter;
         private System.Windows.Forms.DataGridViewTextBoxColumn pname;
         private System.Windows.Forms.DataGridViewTextBoxColumn qty;
         private System.Windows.Forms.DataGridViewTextBoxColumn qty_real;
@@ -311,11 +318,5 @@ namespace InventoryManagement
         private System.Windows.Forms.DataGridViewTextBoxColumn pcode;
         private System.Windows.Forms.DataGridViewTextBoxColumn state;
         private System.Windows.Forms.DataGridViewTextBoxColumn line_type;
-        public System.Windows.Forms.Button btnCrtBill;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label labelState;
-        private System.Windows.Forms.Panel panelDocHeader;
-        private System.Windows.Forms.Label lblDocTitle;
-        private System.Windows.Forms.Panel panelFooter;
     }
 }

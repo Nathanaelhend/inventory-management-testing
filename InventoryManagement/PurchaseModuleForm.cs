@@ -26,6 +26,7 @@ namespace InventoryManagement
 
         private readonly PurchaseService purchaseService = new PurchaseService();
         private readonly ProductService productService = new ProductService();
+        private readonly StockMoveService stockMoveService = new StockMoveService();
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern bool ReleaseCapture();
@@ -409,6 +410,57 @@ namespace InventoryManagement
             await LoadPurchaseLines();
         }
 
+        public void ApplyStateUI(string state)
+        {
+            state = (state ?? "DRAFT").Trim().ToUpper();
+            lblState.Text = state;
+
+            if (state != "DRAFT")
+            {
+                lblState.ForeColor = System.Drawing.Color.FromArgb(110, 231, 183); // Emerald
+                btnClear.Visible = false;
+                btnDelete.Visible = false;
+                btnCreate.Visible = false;
+                btnSaveDetail.Visible = false;
+                btnConfirm.Visible = false;
+
+                dateTimePickerOrder.Enabled = false;
+                txtVendorId.ReadOnly = true;
+                txtProductId.ReadOnly = true;
+                txtPrice.ReadOnly = true;
+                txtDiscPrs.ReadOnly = true;
+                txtFinalPrice.ReadOnly = true;
+                txtJumDet.ReadOnly = true;
+                txtJumlah.ReadOnly = true;
+                txtPPn.ReadOnly = true;
+                txtQty.ReadOnly = true;
+
+                dataGridProduct.Enabled = false;
+            }
+            else
+            {
+                lblState.ForeColor = System.Drawing.Color.FromArgb(147, 197, 253); // Blue
+                btnClear.Visible = true;
+                btnDelete.Visible = true;
+                btnCreate.Visible = true;
+                btnSaveDetail.Visible = true;
+                btnConfirm.Visible = true;
+
+                dateTimePickerOrder.Enabled = true;
+                txtVendorId.ReadOnly = false;
+                txtProductId.ReadOnly = false;
+                txtPrice.ReadOnly = false;
+                txtDiscPrs.ReadOnly = false;
+                txtFinalPrice.ReadOnly = false;
+                txtJumDet.ReadOnly = false;
+                txtJumlah.ReadOnly = false;
+                txtPPn.ReadOnly = false;
+                txtQty.ReadOnly = false;
+
+                dataGridProduct.Enabled = true;
+            }
+        }
+
         private async void PurchaseModuleForm_Load(object sender, EventArgs e)
         {
             HitungTotalGrid();
@@ -417,33 +469,12 @@ namespace InventoryManagement
             if (!string.IsNullOrWhiteSpace(noOrder))
             {
                 var po = await purchaseService.GetPurchaseById(noOrder);
-
-                // Akses state langsung dari po (Purchase)
-                if (po != null && po.state != "DRAFT")
-                {
-                    btnClear.Visible = false;
-                    btnDelete.Visible = false;
-                    btnCreate.Visible = false;
-                    btnSaveDetail.Visible = false;
-                    btnConfirm.Visible = false;
-
-                    dateTimePickerOrder.Enabled = false;
-                    txtVendorId.ReadOnly = true;
-                    txtProductId.ReadOnly = true;
-                    txtPrice.ReadOnly = true;
-                    txtDiscPrs.ReadOnly = true;
-                    txtFinalPrice.ReadOnly = true;
-                    txtJumDet.ReadOnly = true;
-                    txtJumlah.ReadOnly = true;
-                    txtPPn.ReadOnly = true;
-                    txtQty.ReadOnly = true;
-
-                    dataGridProduct.Enabled = false;
-                }
+                ApplyStateUI(po?.state);
             }
             else
             {
                 PONumber();
+                ApplyStateUI("DRAFT");
             }
         }
 
@@ -670,12 +701,11 @@ namespace InventoryManagement
                 }
 
                 MessageBox.Show("Purchase berhasil disimpan!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                headerCreated = true;
+                existingOrderNo = noOrder;
+                isEditMode = true;
                 await LoadPurchaseLines();
-
-                ClearAllFields();
-                txtBoxNoOrder.Focus();
-                PONumber();
-
+                ApplyStateUI("DRAFT");
             }
             catch (Exception ex)
             {
@@ -683,7 +713,6 @@ namespace InventoryManagement
             }
             finally
             {
-                headerCreated = false;
                 btnCreate.Enabled = true;
             }
         }
@@ -748,7 +777,79 @@ namespace InventoryManagement
             }
         }
 
-        private void btnConfirm_Click(object sender, EventArgs e) { }
+        private async void btnConfirm_Click(object sender, EventArgs e)
+        {
+            string noOrder = txtBoxNoOrder.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(noOrder))
+            {
+                MessageBox.Show("Nomor order tidak valid!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (dataGridPurchaseModule.Rows.Count == 0)
+            {
+                MessageBox.Show("Harap tambahkan minimal 1 item produk sebelum konfirmasi!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (MessageBox.Show($"Apakah Anda yakin ingin mengonfirmasi Purchase Order {noOrder}?", "Konfirmasi PO", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            {
+                return;
+            }
+
+            try
+            {
+                btnConfirm.Enabled = false;
+                Purchase po = await purchaseService.GetPurchaseById(noOrder);
+
+                if (po != null)
+                {
+                    if (po.lines != null && po.lines.Count > 0)
+                    {
+                        string nameSM = await stockMoveService.GenerateNumber();
+
+                        var lineList = new List<StockMoveLine>();
+                        foreach (var line in po.lines)
+                        {
+                            lineList.Add(new StockMoveLine
+                            {
+                                pcode = line.prCode,
+                                pName = line.pName,
+                                qty = line.qty,
+                                @ref = line.purchaseNo,
+                                type_line = "IN",
+                            });
+                        }
+
+                        var stockMove = new StockMove
+                        {
+                            name = nameSM,
+                            type = "IN",
+                            mref = noOrder,
+                            @ref = noOrder,
+                            state = "DRAFT",
+                            lines = lineList,
+                        };
+
+                        await stockMoveService.CreateStockMove(stockMove);
+                    }
+
+                    po.state = "CONFIRMED";
+                    await purchaseService.ConfirmPurchase(noOrder, po);
+
+                    ApplyStateUI("CONFIRMED");
+                    MessageBox.Show($"Order {noOrder} berhasil dikonfirmasi!", "Confirmed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Gagal konfirmasi order: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                btnConfirm.Enabled = true;
+            }
+        }
 
         private void SetupPopUpContainer()
         {
